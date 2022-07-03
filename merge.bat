@@ -8,6 +8,7 @@ ECHO /                MyMedia Merge                 \
 ECHO ================================================
 git merge main
 git checkout main
+git pull
 git merge --no-ff dev
 git push -u origin main
 ECHO ================================================
