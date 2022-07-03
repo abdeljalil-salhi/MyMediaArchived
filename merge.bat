@@ -15,7 +15,6 @@ ECHO ================================================
 ECHO merged: main
 ECHO ================================================
 git checkout dev
-git pull origin main
 ECHO ================================================
 PAUSE
 CLEAR || CLS
