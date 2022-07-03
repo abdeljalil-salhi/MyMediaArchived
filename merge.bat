@@ -13,5 +13,8 @@ git merge --no-ff dev
 git push -u origin main
 ECHO ================================================
 ECHO merged: main
+ECHO ================================================
+git checkout dev
+ECHO ================================================
 PAUSE
 CLEAR || CLS
