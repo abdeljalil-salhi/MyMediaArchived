@@ -1,8 +1,14 @@
 {
   "name": "mymedia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MyMedia, in early development.",
   "author": "Abdeljalil Salhi",
   "bugs": "https://github.com/abdeljalil-salhi/MyMedia/issues",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "release": "standard-version"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  }
 }
