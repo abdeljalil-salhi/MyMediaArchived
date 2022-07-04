@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import "dotenv-safe/config";
 
+import logger from "./utils/logger";
 import { MongoConnection } from "./config/db";
 
 const main = async () => {
@@ -10,6 +11,6 @@ const main = async () => {
 
 // Bootstrap the application
 main().catch((err) => {
-  console.error(err);
+  logger.fatal(err);
   process.exit(1);
 });

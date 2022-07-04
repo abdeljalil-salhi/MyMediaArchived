@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+import logger from "../utils/logger";
 import { __prod__ } from "../constants";
 
 export const MongoConnection = () => {
@@ -12,7 +13,7 @@ export const MongoConnection = () => {
     )
     // Handle successful connection to database
     .then(() =>
-      console.log(
+      logger.info(
         `[+] CONNECTED >> MongoDB >> ${
           __prod__
             ? `prod:${process.env.PROD_DB_NAME}`
@@ -22,7 +23,7 @@ export const MongoConnection = () => {
     )
     // Handle error when connecting to database
     .catch((err) =>
-      console.error(
+      logger.error(
         `[!] FAILED >> MongoDB >> ${
           __prod__
             ? `prod:${process.env.PROD_DB_NAME}`
