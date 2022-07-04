@@ -1,0 +1,26 @@
+{
+  "name": "@mymedia/server",
+  "version": "1.0.1",
+  "description": "MyMedia API - In early development.",
+  "bugs": "https://github.com/abdeljalil-salhi/MyMedia/issues",
+  "main": "dist/index.js",
+  "scripts": {
+    "env": "gen-env-types .env -o src/env.d.ts -e .",
+    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prestart": "npm run build",
+    "start": "concurrently --kill-others \"npm run watch\" \"nodemon .\"",
+    "dev": "nodemon dist/index.js",
+    "ts:start": "ts-node src/index.ts",
+    "ts:dev": "nodemon --exec ts-node src/index.ts",
+    "test": "echo \"ERROR: no test specified\""
+  },
+  "author": "Abdeljalil Salhi",
+  "license": "MIT",
+  "keywords": [
+    "mymedia",
+    "server",
+    "api"
+  ]
+}
