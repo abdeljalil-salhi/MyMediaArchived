@@ -23,6 +23,6 @@
 
 | Codebase         |  Description   |
 | :--------------- | :------------: |
-<!-- | [Admin](admin)   |  Admin Client  | -->
 | [Server](server) |   NodeJS API   |
+<!-- | [Admin](admin)   |  Admin Client  | -->
 <!-- | [Client](client) | ReactJS CLient | -->
