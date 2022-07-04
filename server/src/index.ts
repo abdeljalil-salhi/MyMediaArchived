@@ -5,10 +5,20 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import compression from "compression";
+import { ApolloServer } from "apollo-server-express";
+import { buildSchema } from "type-graphql";
+import {
+  ApolloServerPluginLandingPageGraphQLPlayground,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "apollo-server-core";
+
+/* @ts-ignore */
+import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.js";
 
 import logger from "./utils/logger";
 import { MongoConnection } from "./config/db";
 import { CLIENT_URL, PORT } from "./constants";
+import { resolvers } from "./resolvers";
 
 const main = async () => {
   // Connect to the MongoDB database
@@ -64,6 +74,43 @@ const main = async () => {
 
   // Trust proxy settings
   app.set("trust proxy", 1);
+
+  // Apollo server configuration
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers,
+      validate: false,
+      authChecker: undefined,
+    }),
+    context: ({ req }) => ({
+      authentication: req.headers.authentication || "",
+    }),
+    plugins: [
+      process.env.NODE_ENV === "production"
+        ? ApolloServerPluginLandingPageProductionDefault()
+        : ApolloServerPluginLandingPageGraphQLPlayground(),
+    ],
+  });
+
+  // Start the Apollo server
+  await apolloServer.start();
+
+  // GraphQL Upload middleware
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+
+  // Apollo server middleware
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
+
+  // Main route
+  app.get("/", (_, res) => {
+    res.json({
+      status: 200,
+      message: "server is running",
+    });
+  });
 
   // Serve uploaded files from the /uploads directory
   app.use("/uploads", express.static(path.join(__dirname, "../uploads/")));
