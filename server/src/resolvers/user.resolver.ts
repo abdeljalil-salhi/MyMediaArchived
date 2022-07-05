@@ -9,7 +9,15 @@
  **********************/
 
 import argon2 from "argon2";
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
@@ -30,6 +38,11 @@ const unhandledError = (err: Error) => {
 
 @Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => [User])
+  public followingObj(@Root() user: User, @Ctx() context: MyContext) {
+    return context.userLoader.loadMany(user.following as string[]);
+  }
+
   @Mutation(() => UserResponse)
   public async register(
     @Arg("input") input: RegisterInput,
@@ -233,8 +246,8 @@ export class UserResolver {
     }
   }
 
-  @Query(() => UsersResponse)
-  async getFriends(@Arg("userId") userId: string): Promise<UsersResponse> {
+  @Query(() => UserResponse)
+  async getFriends(@Arg("userId") userId: string): Promise<UserResponse> {
     if (!isValidID(userId))
       return {
         errors: [
@@ -243,7 +256,7 @@ export class UserResolver {
             message: "Invalid ID",
           },
         ],
-        users: [],
+        user: null,
       };
 
     try {
@@ -257,18 +270,18 @@ export class UserResolver {
               message: "User not found",
             },
           ],
-          users: [],
+          user: null,
         };
       }
 
       return {
         errors: [],
-        users: user.following as User[],
+        user,
       };
     } catch (err) {
       return {
         errors: unhandledError(err),
-        users: [],
+        user: null,
       };
     }
   }
