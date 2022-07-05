@@ -1,7 +1,7 @@
 import { ObjectType, Field } from "type-graphql";
 
 @ObjectType()
-export default class ErrorResponse {
+export class ErrorResponse {
   @Field(() => String, { nullable: true })
   field: string;
 
