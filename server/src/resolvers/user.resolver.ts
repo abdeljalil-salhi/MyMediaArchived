@@ -2,14 +2,15 @@
  USER RESOLVER
  - register()
  - login()
+ - getAllUsers()
  **********************/
 
 import argon2 from "argon2";
-import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
-import { UserResponse } from "./res/user.res";
+import { UserResponse, UsersResponse } from "./res/user.res";
 import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
 import { signJWT } from "../authentication/signJwt";
@@ -140,6 +141,22 @@ export class UserResolver {
       return {
         errors: unhandledError(err),
         user: null,
+      };
+    }
+  }
+
+  @Query(() => UsersResponse)
+  public async getAllUsers(): Promise<UsersResponse> {
+    try {
+      const users = await UserModel.find({});
+      return {
+        errors: [],
+        users,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        users: [],
       };
     }
   }
