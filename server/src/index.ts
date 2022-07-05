@@ -19,6 +19,8 @@ import logger from "./utils/logger";
 import { MongoConnection } from "./config/db";
 import { CLIENT_URL, PORT } from "./constants";
 import { resolvers } from "./resolvers";
+import { userLoader } from "./dataloaders/user.loader";
+import { TypegooseMiddleware } from "./middlewares/Typegoose";
 
 const main = async () => {
   // Connect to the MongoDB database
@@ -81,9 +83,11 @@ const main = async () => {
       resolvers,
       validate: false,
       authChecker: undefined,
+      globalMiddlewares: [TypegooseMiddleware],
     }),
     context: ({ req }) => ({
       authentication: req.headers.authentication || "",
+      userLoader: userLoader(),
     }),
     plugins: [
       process.env.NODE_ENV === "production"
