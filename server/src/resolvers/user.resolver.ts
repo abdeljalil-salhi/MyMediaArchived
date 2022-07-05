@@ -1,8 +1,10 @@
 /*********************
  USER RESOLVER
  - register()
+ - login()
  **********************/
 
+import argon2 from "argon2";
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 
 import { MyContext } from "../types";
@@ -11,6 +13,15 @@ import { UserResponse } from "./res/user.res";
 import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
 import { signJWT } from "../authentication/signJwt";
+
+const unhandledError = (err: Error) => {
+  return [
+    {
+      field: "error",
+      message: `Please report this to the support: ${err}`,
+    },
+  ];
+};
 
 @Resolver(User)
 export class UserResolver {
@@ -67,15 +78,69 @@ export class UserResolver {
         };
       } else {
         return {
+          errors: unhandledError(err),
+          user: null,
+        };
+      }
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  public async login(
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    try {
+      const user = await UserModel.findOne(
+        usernameOrEmail.includes("@")
+          ? { email: usernameOrEmail }
+          : { username: usernameOrEmail }
+      ).lean();
+
+      if (!user)
+        return {
           errors: [
             {
-              field: "error",
-              message: `Please report this to the support: ${err}`,
+              field: "usernameOrEmail",
+              message: "Username or email don't exist",
             },
           ],
           user: null,
         };
-      }
+
+      const valid = await argon2.verify(user.password, password);
+
+      if (!valid)
+        return {
+          errors: [
+            {
+              field: "password",
+              message: "Incorrect password",
+            },
+          ],
+          user: null,
+        };
+
+      const accessToken = signJWT(user);
+
+      user.accessToken = accessToken;
+
+      context.user = {
+        id: user._id,
+        isAdmin: user.isAdmin,
+        isSeller: user.isSeller,
+      };
+
+      return {
+        errors: [],
+        user,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
+      };
     }
   }
 }
