@@ -1,11 +1,15 @@
-import { getModelForClass, prop as Property, Ref } from "@typegoose/typegoose";
+import {
+  getModelForClass,
+  Passthrough,
+  prop as Property,
+  Ref,
+} from "@typegoose/typegoose";
 import { Document, Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
 import { MaxLength } from "class-validator";
 
 import { User } from "./User.model";
 import { Feeling } from "./Feeling.model";
-import { PostReact } from "./PostReact.model";
 import { PostReport } from "./PostReport.model";
 
 @ObjectType()
@@ -107,15 +111,19 @@ export class Post extends Document {
 
   @Field(() => [String])
   @Property({
-    ref: "PostReact",
     default: [],
-    type: Schema.Types.ObjectId,
+    type: () =>
+      new Passthrough({
+        user: User,
+        react: { enum: [0, 1, 2, 3, 4, 5], default: 0, type: Number },
+        timestamp: { default: Date.now(), type: Date },
+      }),
   })
-  public reacts: Ref<PostReact>[];
-  @Field(() => [PostReact], {
-    defaultValue: [],
-  })
-  public reactsObj: PostReact[];
+  public reacts: {
+    user: Ref<User>;
+    react: number;
+    timestamp: Date;
+  };
 
   @Field(() => [String])
   @Property({
