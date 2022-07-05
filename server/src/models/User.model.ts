@@ -294,7 +294,7 @@ export class User extends Document {
   })
   public followersObj: User[];
 
-  @Field(() => [User])
+  @Field(() => [String])
   @Property({
     ref: "User",
     default: [],
@@ -306,7 +306,7 @@ export class User extends Document {
   })
   public followingObj: User[];
 
-  @Field(() => [User])
+  @Field(() => [String])
   @Property({
     ref: "User",
     default: [],
@@ -330,7 +330,7 @@ export class User extends Document {
   })
   public likesObj: Post[];
 
-  @Field(() => [Post])
+  @Field(() => [String])
   @Property({
     ref: "Post",
     default: [],
@@ -342,7 +342,7 @@ export class User extends Document {
   })
   public savedObj: Post[];
 
-  @Field(() => [Highlight])
+  @Field(() => [String])
   @Property({
     ref: "Highlight",
     default: [],
