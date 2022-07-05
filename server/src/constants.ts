@@ -10,3 +10,4 @@ export const PROD_DB_NAME = process.env.PROD_DB_NAME;
 export const DEV_DB_USER_PASS = process.env.DEV_DB_USER_PASS;
 export const DEV_DB_CLUSTER_ID = process.env.DEV_DB_CLUSTER_ID;
 export const DEV_DB_NAME = process.env.DEV_DB_NAME;
+export const PRIVATE_KEY = process.env.PRIVATE_KEY;
