@@ -8,7 +8,7 @@ import {
   ReturnModelType,
   Ref,
 } from "@typegoose/typegoose";
-import { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { AsQueryMethod } from "@typegoose/typegoose/lib/types";
 import { Field, Int, ObjectType } from "type-graphql";
 import { IsEmail, MaxLength, MinLength } from "class-validator";
@@ -37,7 +37,7 @@ function findByEmail(
 @Index({ email: 1 })
 @QueryMethod(findByEmail)
 @ObjectType()
-export class User extends Document {
+export class User {
   @Field(() => String)
   readonly _id: string;
 

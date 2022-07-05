@@ -4,16 +4,17 @@ import {
   prop as Property,
   Ref,
 } from "@typegoose/typegoose";
-import { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
 import { MaxLength } from "class-validator";
 
 import { User } from "./User.model";
 import { Feeling } from "./Feeling.model";
 import { PostReport } from "./PostReport.model";
+import { Comment } from "./Comment.model";
 
 @ObjectType()
-export class Post extends Document {
+export class Post {
   @Field(() => String)
   readonly _id: string;
 
@@ -114,7 +115,7 @@ export class Post extends Document {
     default: [],
     type: () =>
       new Passthrough({
-        user: User,
+        user: String,
         react: { enum: [0, 1, 2, 3, 4, 5], default: 0, type: Number },
         timestamp: { default: Date.now(), type: Date },
       }),

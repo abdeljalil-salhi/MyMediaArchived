@@ -1,11 +1,11 @@
 import { prop as Property, Ref, getModelForClass } from "@typegoose/typegoose";
-import { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { ObjectType, Field, Int } from "type-graphql";
 
 import { User } from "./User.model";
 
 @ObjectType()
-export class PostReact extends Document {
+export class PostReact {
   @Field(() => String)
   readonly _id: string;
 
