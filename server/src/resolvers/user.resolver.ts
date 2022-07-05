@@ -172,7 +172,7 @@ export class UserResolver {
         errors: [
           {
             field: "id",
-            message: "Invalid id",
+            message: "Invalid ID",
           },
         ],
         user: null,
@@ -229,6 +229,46 @@ export class UserResolver {
       return {
         errors: unhandledError(err),
         user: null,
+      };
+    }
+  }
+
+  @Query(() => UsersResponse)
+  async getFriends(@Arg("userId") userId: string): Promise<UsersResponse> {
+    if (!isValidID(userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        users: [],
+      };
+
+    try {
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return {
+          errors: [
+            {
+              field: "user",
+              message: "User not found",
+            },
+          ],
+          users: [],
+        };
+      }
+
+      return {
+        errors: [],
+        users: user.following as User[],
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        users: [],
       };
     }
   }
