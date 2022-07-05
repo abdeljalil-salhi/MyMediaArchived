@@ -203,4 +203,33 @@ export class UserResolver {
       };
     }
   }
+
+  @Query(() => UserResponse)
+  async getProfile(@Arg("username") username: string): Promise<UserResponse> {
+    try {
+      const user = await UserModel.findOne({ username });
+
+      if (!user) {
+        return {
+          errors: [
+            {
+              field: "user",
+              message: "User not found",
+            },
+          ],
+          user: null,
+        };
+      }
+
+      return {
+        errors: [],
+        user,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
+      };
+    }
+  }
 }
