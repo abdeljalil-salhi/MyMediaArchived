@@ -1,10 +1,10 @@
 import argon2 from "argon2";
 import {
   getModelForClass,
-  index,
-  pre,
+  index as Index,
+  pre as Pre,
   prop as Property,
-  queryMethod,
+  queryMethod as QueryMethod,
   ReturnModelType,
   Ref,
 } from "@typegoose/typegoose";
@@ -27,15 +27,15 @@ function findByEmail(
   return this.findOne({ email });
 }
 
-@pre<User>("save", async function () {
+@Pre<User>("save", async function () {
   if (!this.isModified("password")) {
     return;
   }
   const hash: string = await argon2.hash(this.password as string);
   this.password = hash;
 })
-@index({ email: 1 })
-@queryMethod(findByEmail)
+@Index({ email: 1 })
+@QueryMethod(findByEmail)
 @ObjectType()
 export class User {
   @Field(() => String)
