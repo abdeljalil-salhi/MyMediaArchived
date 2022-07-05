@@ -289,7 +289,9 @@ export class User {
     type: Schema.Types.ObjectId,
   })
   public followers: Ref<User>[];
-  @Field(() => [User], { defaultValue: [] })
+  @Field(() => [User], {
+    defaultValue: [],
+  })
   public followersObj: User[];
 
   @Field(() => [User])
@@ -299,7 +301,9 @@ export class User {
     type: Schema.Types.ObjectId,
   })
   public following: Ref<User>[];
-  @Field(() => [User], { defaultValue: [] })
+  @Field(() => [User], {
+    defaultValue: [],
+  })
   public followingObj: User[];
 
   @Field(() => [User])
@@ -309,7 +313,9 @@ export class User {
     type: Schema.Types.ObjectId,
   })
   public close: Ref<User>[];
-  @Field(() => [User], { defaultValue: [] })
+  @Field(() => [User], {
+    defaultValue: [],
+  })
   public closeObj: User[];
 
   @Field(() => [String])
@@ -319,7 +325,9 @@ export class User {
     type: Schema.Types.ObjectId,
   })
   public likes: Ref<Post>[];
-  @Field(() => [Post], { defaultValue: [] })
+  @Field(() => [Post], {
+    defaultValue: [],
+  })
   public likesObj: Post[];
 
   @Field(() => [Post])
@@ -329,7 +337,9 @@ export class User {
     type: Schema.Types.ObjectId,
   })
   public saved: Ref<Post>[];
-  @Field(() => [Post], { defaultValue: [] })
+  @Field(() => [Post], {
+    defaultValue: [],
+  })
   public savedObj: Post[];
 
   @Field(() => [Highlight])
@@ -339,7 +349,9 @@ export class User {
     type: Schema.Types.ObjectId,
   })
   public highlights: Ref<Highlight>[];
-  @Field(() => [Highlight], { defaultValue: [] })
+  @Field(() => [Highlight], {
+    defaultValue: [],
+  })
   public highlightsObj: Highlight[];
 
   @Field(() => Date)
