@@ -50,8 +50,6 @@ export class UserResolver {
         isSeller: user.isSeller,
       };
 
-      context.req.session.userId = user._id;
-
       return {
         errors: [],
         user,

@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
-export class Feeling {
+export class Comment {
   @Field(() => String)
   readonly _id: string;
 
@@ -14,6 +14,6 @@ export class Feeling {
   public value: string;
 }
 
-export const FeelingModel = getModelForClass<typeof Feeling>(Feeling, {
+export const CommentModel = getModelForClass<typeof Comment>(Comment, {
   schemaOptions: { timestamps: true },
 });
