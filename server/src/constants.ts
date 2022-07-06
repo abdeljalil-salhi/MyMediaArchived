@@ -11,3 +11,9 @@ export const DEV_DB_USER_PASS = process.env.DEV_DB_USER_PASS;
 export const DEV_DB_CLUSTER_ID = process.env.DEV_DB_CLUSTER_ID;
 export const DEV_DB_NAME = process.env.DEV_DB_NAME;
 export const PRIVATE_KEY = process.env.PRIVATE_KEY;
+
+export const usernameLength: number = 3;
+export const minPasswordLength: number = 6;
+export const maxPasswordLength: number = 30;
+export const passwordRegex: RegExp =
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
