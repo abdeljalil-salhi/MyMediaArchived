@@ -8,6 +8,7 @@
  - getFriends()
  - updateUser()
  - deleteUser()
+ - followUser()
  **********************/
 
 import argon2 from "argon2";
@@ -24,7 +25,7 @@ import {
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
-import { UserResponse, UsersResponse } from "./res/user.res";
+import { FollowResponse, UserResponse, UsersResponse } from "./res/user.res";
 import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
 import { updateUserValidation } from "../validations/updateUser.validation";
@@ -461,5 +462,100 @@ export class UserResolver {
         info: null,
         deleted: null,
       };
+  }
+
+  @Mutation(() => FollowResponse)
+  @UseMiddleware(isAuth)
+  async followUser(
+    @Arg("userId") userId: string,
+    @Arg("userIdToFollow") userIdToFollow: string,
+    @Ctx() context: MyContext
+  ): Promise<FollowResponse> {
+    if (!isValidID(userId) || !isValidID(userIdToFollow))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        following: null,
+        followed: null,
+      };
+
+    try {
+      if (context.user.id === userId || context.user.isAdmin) {
+        if (userId === userIdToFollow)
+          return {
+            errors: [
+              {
+                field: "following",
+                message: "Cannot follow yourself",
+              },
+            ],
+            following: null,
+            followed: null,
+          };
+
+        const following = await UserModel.findOneAndUpdate(
+          { _id: userId },
+          {
+            $addToSet: {
+              following: userIdToFollow,
+            },
+          }
+        );
+
+        if (!following)
+          return {
+            errors: [
+              {
+                field: "following",
+                message: `Failed to follow ${userIdToFollow}`,
+              },
+            ],
+            following: null,
+            followed: null,
+          };
+
+        const followed = await UserModel.findOneAndUpdate(
+          { _id: userIdToFollow },
+          {
+            $addToSet: {
+              followers: userId,
+            },
+          }
+        );
+
+        if (!followed)
+          return {
+            errors: [
+              {
+                field: "followed",
+                message: `Failed to follow ${userIdToFollow}`,
+              },
+            ],
+            following: null,
+            followed: null,
+          };
+
+        return {
+          errors: [],
+          following,
+          followed,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          following: null,
+          followed: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        following: null,
+        followed: null,
+      };
+    }
   }
 }

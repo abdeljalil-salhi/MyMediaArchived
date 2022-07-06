@@ -20,3 +20,15 @@ export class UsersResponse {
   @Field(() => [User], { nullable: true })
   users: User[] | null;
 }
+
+@ObjectType()
+export class FollowResponse {
+  @Field(() => [ErrorResponse], { nullable: true })
+  errors?: ErrorResponse[] | null;
+
+  @Field(() => User, { nullable: true })
+  following: User | null;
+
+  @Field(() => User, { nullable: true })
+  followed: User | null;
+}
