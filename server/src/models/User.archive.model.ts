@@ -13,6 +13,13 @@ export class UserArchive {
 
   @Field(() => String)
   @Property({
+    ref: "User",
+    type: Schema.Types.ObjectId,
+  })
+  public userId?: Ref<User>;
+
+  @Field(() => String)
+  @Property({
     trim: true,
     type: Schema.Types.String,
   })
