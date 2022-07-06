@@ -160,7 +160,7 @@ export class User {
   })
   password: string;
 
-  @Field(() => String)
+  @Field(() => String, { defaultValue: "" })
   public accessToken?: string;
 
   @Field(() => Boolean)
