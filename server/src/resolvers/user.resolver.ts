@@ -39,6 +39,11 @@ const unhandledError = (err: Error) => {
 @Resolver(User)
 export class UserResolver {
   @FieldResolver(() => [User])
+  public followersObj(@Root() user: User, @Ctx() context: MyContext) {
+    return context.userLoader.loadMany(user.followers as string[]);
+  }
+
+  @FieldResolver(() => [User])
   public followingObj(@Root() user: User, @Ctx() context: MyContext) {
     return context.userLoader.loadMany(user.following as string[]);
   }
