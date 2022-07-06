@@ -426,6 +426,9 @@ export class UserResolver {
 
         let archivedUser: UserArchive = user as User;
 
+        // Keep the original ID of the user in 'userId' field
+        archivedUser.userId = archivedUser._id;
+
         delete archivedUser.__v;
         delete archivedUser._id;
 
