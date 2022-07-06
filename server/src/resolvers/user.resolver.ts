@@ -56,7 +56,7 @@ export class UserResolver {
           user: null,
         };
 
-      const user = await UserModel.create(input);
+      let user = await UserModel.create(input);
 
       if (!user)
         return {
@@ -69,9 +69,10 @@ export class UserResolver {
           user: null,
         };
 
-      const accessToken = signJWT(user);
+      const token = signJWT(user);
 
-      user.accessToken = accessToken;
+      user = user.toObject();
+      user.accessToken = token;
 
       context.user = {
         id: user._id,
