@@ -7,6 +7,7 @@
  - getProfile()
  - getFriends()
  - updateUser()
+ - deleteUser()
  **********************/
 
 import argon2 from "argon2";
@@ -26,17 +27,28 @@ import { User, UserModel } from "../models/User.model";
 import { UserResponse, UsersResponse } from "./res/user.res";
 import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
+import { updateUserValidation } from "../validations/updateUser.validation";
 import { signJWT } from "../authentication/signJwt";
 import { isValidID } from "../utils/isValidID";
 import { isAuth } from "../middlewares/isAuth";
 import { UpdateUserInput } from "../models/inputs/UpdateUser.input";
-import { updateUserValidation } from "../validations/updateUser.validation";
+import { UserArchive, UserArchiveModel } from "../models/User.archive.model";
+import { DeleteUserResponse } from "./res/delete.res";
 
 const unhandledError = (err: Error) => {
   return [
     {
       field: "error",
       message: `Please report this to the support: ${err}`,
+    },
+  ];
+};
+
+const unauthorizedError = () => {
+  return [
+    {
+      field: "authorization",
+      message: "Not authorized",
     },
   ];
 };
@@ -190,7 +202,7 @@ export class UserResolver {
   }
 
   @Query(() => UserResponse)
-  async getUser(@Arg("userId") userId: string): Promise<UserResponse> {
+  public async getUser(@Arg("userId") userId: string): Promise<UserResponse> {
     if (!isValidID(userId))
       return {
         errors: [
@@ -229,7 +241,9 @@ export class UserResolver {
   }
 
   @Query(() => UserResponse)
-  async getProfile(@Arg("username") username: string): Promise<UserResponse> {
+  public async getProfile(
+    @Arg("username") username: string
+  ): Promise<UserResponse> {
     try {
       const user = await UserModel.findOne({ username });
 
@@ -258,7 +272,9 @@ export class UserResolver {
   }
 
   @Query(() => UserResponse)
-  async getFriends(@Arg("userId") userId: string): Promise<UserResponse> {
+  public async getFriends(
+    @Arg("userId") userId: string
+  ): Promise<UserResponse> {
     if (!isValidID(userId))
       return {
         errors: [
@@ -299,7 +315,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
-  async updateUser(
+  public async updateUser(
     @Arg("userId") userId: string,
     @Arg("accessToken") accessToken: string,
     @Arg("input") input: UpdateUserInput,
@@ -367,13 +383,80 @@ export class UserResolver {
       }
     } else
       return {
+        errors: unauthorizedError(),
+        user: null,
+      };
+  }
+
+  @Mutation(() => DeleteUserResponse)
+  @UseMiddleware(isAuth)
+  public async deleteUser(
+    @Arg("userId") userId: string,
+    @Ctx() context: MyContext
+  ): Promise<DeleteUserResponse> {
+    if (!isValidID(userId))
+      return {
         errors: [
           {
-            field: "authorization",
-            message: "Not authorized",
+            field: "id",
+            message: "Invalid ID",
           },
         ],
-        user: null,
+        info: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        let user: User | null = await UserModel.findByIdAndDelete(
+          userId
+        ).lean();
+
+        if (!user) {
+          return {
+            errors: [
+              {
+                field: "user",
+                message: "User not found",
+              },
+            ],
+            info: null,
+            deleted: null,
+          };
+        }
+
+        let archivedUser: UserArchive = user as User;
+
+        delete archivedUser.__v;
+        delete archivedUser._id;
+
+        if (archivedUser.hasOwnProperty("createdAt"))
+          delete archivedUser.createdAt;
+        if (archivedUser.hasOwnProperty("updatedAt"))
+          delete archivedUser.updatedAt;
+        if (archivedUser.hasOwnProperty("password"))
+          delete archivedUser.password;
+
+        const deletedUser: UserArchive = await UserArchiveModel.create(
+          archivedUser
+        );
+
+        return {
+          errors: [],
+          info: `User ${userId} deleted`,
+          deleted: deletedUser,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          info: null,
+          deleted: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        info: null,
+        deleted: null,
       };
   }
 }
