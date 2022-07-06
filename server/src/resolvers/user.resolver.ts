@@ -6,6 +6,7 @@
  - getUser()
  - getProfile()
  - getFriends()
+ - updateUser()
  **********************/
 
 import argon2 from "argon2";
@@ -17,6 +18,7 @@ import {
   Query,
   Resolver,
   Root,
+  UseMiddleware,
 } from "type-graphql";
 
 import { MyContext } from "../types";
@@ -26,6 +28,9 @@ import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
 import { signJWT } from "../authentication/signJwt";
 import { isValidID } from "../utils/isValidID";
+import { isAuth } from "../middlewares/isAuth";
+import { UpdateUserInput } from "../models/inputs/UpdateUser.input";
+import { updateUserValidation } from "../validations/updateUser.validation";
 
 const unhandledError = (err: Error) => {
   return [
@@ -290,5 +295,85 @@ export class UserResolver {
         user: null,
       };
     }
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async updateUser(
+    @Arg("userId") userId: string,
+    @Arg("accessToken") accessToken: string,
+    @Arg("input") input: UpdateUserInput,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    if (!isValidID(userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "invalid id",
+          },
+        ],
+        user: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        const errors = updateUserValidation(input);
+        if (errors)
+          return {
+            errors,
+            user: null,
+          };
+
+        if (input.password) {
+          input.password = await argon2.hash(input.password);
+        }
+
+        let user = await UserModel.findOneAndUpdate(
+          { _id: userId },
+          { $set: input },
+          { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
+
+        if (!user) {
+          return {
+            errors: [
+              {
+                field: "user",
+                message: "User not found",
+              },
+            ],
+          };
+        }
+
+        user = user.toObject();
+        user.accessToken = accessToken;
+
+        context.user = {
+          id: user._id,
+          isAdmin: user.isAdmin,
+          isSeller: user.isSeller,
+        };
+
+        return {
+          errors: [],
+          user,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          user: null,
+        };
+      }
+    } else
+      return {
+        errors: [
+          {
+            field: "authorization",
+            message: "Not authorized",
+          },
+        ],
+        user: null,
+      };
   }
 }
