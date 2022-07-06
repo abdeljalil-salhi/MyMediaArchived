@@ -1,10 +1,10 @@
+import {
+  usernameLength,
+  minPasswordLength,
+  maxPasswordLength,
+  passwordRegex,
+} from "../constants";
 import { RegisterInput } from "../models/inputs/Register.input";
-
-export const usernameLength: number = 3;
-export const minPasswordLength: number = 6;
-export const maxPasswordLength: number = 30;
-export const passwordRegex: RegExp =
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
 
 export const registerValidation = (input: RegisterInput) => {
   let altPosition: number = input.email.indexOf("@");
@@ -13,7 +13,7 @@ export const registerValidation = (input: RegisterInput) => {
     return [
       {
         field: "email",
-        message: "invalid email",
+        message: "Invalid email",
       },
     ];
 
@@ -21,7 +21,7 @@ export const registerValidation = (input: RegisterInput) => {
     return [
       {
         field: "username",
-        message: `lower than ${usernameLength} characters`,
+        message: `Lower than ${usernameLength} characters`,
       },
     ];
 
@@ -29,7 +29,7 @@ export const registerValidation = (input: RegisterInput) => {
     return [
       {
         field: "username",
-        message: "cannot include an @",
+        message: "Cannot include an @",
       },
     ];
 
@@ -37,7 +37,7 @@ export const registerValidation = (input: RegisterInput) => {
     return [
       {
         field: "password",
-        message: `lower than ${minPasswordLength} characters`,
+        message: `Lower than ${minPasswordLength} characters`,
       },
     ];
 
@@ -45,15 +45,16 @@ export const registerValidation = (input: RegisterInput) => {
     return [
       {
         field: "password",
-        message: `higher than ${maxPasswordLength} characters`,
+        message: `Higher than ${maxPasswordLength} characters`,
       },
     ];
 
+  // Need to be fixed
   if (passwordRegex.test(input.password))
     return [
       {
         field: "password",
-        message: `at least ${minPasswordLength} characters; 1 upper case, 1 lower case, 1 digit and 1 special character`,
+        message: `At least ${minPasswordLength} characters; 1 upper case, 1 lower case, 1 digit and 1 special character`,
       },
     ];
 
