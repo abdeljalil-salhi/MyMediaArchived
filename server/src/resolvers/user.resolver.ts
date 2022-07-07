@@ -2,6 +2,7 @@
  USER RESOLVER
  - register()
  - login()
+ - forgotPassword()
  - getAllUsers()
  - getUser()
  - getProfile()
@@ -26,6 +27,7 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
+import { v4 } from "uuid";
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
@@ -48,6 +50,10 @@ import {
 } from "../models/inputs/UpdateUser.input";
 import { UserArchive, UserArchiveModel } from "../models/User.archive.model";
 import { DeleteUserResponse } from "./res/delete.res";
+import { TokenResponse } from "./res/token.res";
+import { ForgotPasswordTokenModel } from "../models/ForgotPasswordToken.model";
+import { sendEmail } from "../utils/sendEmail";
+import { resetPasswordHTML } from "../utils/assets/resetPasswordHTML";
 
 const unhandledError = (err: Error) => {
   return [
@@ -200,6 +206,46 @@ export class UserResolver {
       return {
         errors: unhandledError(err),
         user: null,
+      };
+    }
+  }
+
+  @Mutation(() => TokenResponse)
+  async forgotPassword(@Arg("email") email: string): Promise<TokenResponse> {
+    try {
+      const user = await UserModel.findOne({ email });
+
+      if (!user)
+        return {
+          errors: [
+            {
+              field: "user",
+              message: "User not found",
+            },
+          ],
+          token: null,
+        };
+
+      const token = v4();
+
+      let tokenCreated = await ForgotPasswordTokenModel.create({
+        user: user._id,
+        token,
+      });
+
+      sendEmail(email, resetPasswordHTML(token));
+
+      tokenCreated = tokenCreated.toObject();
+      tokenCreated.userObj = user;
+
+      return {
+        errors: [],
+        token: tokenCreated,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        token: null,
       };
     }
   }

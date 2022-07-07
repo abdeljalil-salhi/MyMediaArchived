@@ -11,8 +11,11 @@ declare global {
       PORT: string;
       SESSION_SECRET: string;
       PRIVATE_KEY: string;
+      SMTP_HOST: string;
+      SMTP_PORT: string;
+      SMTP_AUTH: string;
     }
   }
 }
 
-export {};
+export {}

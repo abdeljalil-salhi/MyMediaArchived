@@ -29,12 +29,12 @@ export class ForgotPasswordToken {
 
   @Field(() => Date)
   @prop({
-    default: Date.now(),
+    default: Date.now() + 86400 * 1000,
     // Expires after 24 hours
     expires: 86400,
     type: Schema.Types.Date,
   })
-  public expireAt: Date;
+  public expiresAt: Date;
 
   @Field(() => Date)
   @prop({
