@@ -9,6 +9,7 @@
  - updateUser()
  - deleteUser()
  - followUser()
+ - addCloseFriend()
  **********************/
 
 import argon2 from "argon2";
@@ -69,6 +70,11 @@ export class UserResolver {
   @FieldResolver(() => [User])
   public followingObj(@Root() user: User, @Ctx() context: MyContext) {
     return context.userLoader.loadMany(user.following as string[]);
+  }
+
+  @FieldResolver(() => [User])
+  public closeObj(@Root() user: User, @Ctx() context: MyContext) {
+    return context.userLoader.loadMany(user.close as string[]);
   }
 
   @Mutation(() => UserResponse)
@@ -655,6 +661,74 @@ export class UserResolver {
         errors: unhandledError(err),
         unfollowing: null,
         unfollowed: null,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async addCloseFriend(
+    @Arg("userId") userId: string,
+    @Arg("userIdToAdd") userIdToAdd: string,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    if (!isValidID(userId) || !isValidID(userIdToAdd))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        user: null,
+      };
+
+    try {
+      if (context.user.id === userId || context.user.isAdmin) {
+        if (userId === userIdToAdd)
+          return {
+            errors: [
+              {
+                field: "closeFriend",
+                message: "Cannot add yourself",
+              },
+            ],
+            user: null,
+          };
+
+        const user = await UserModel.findOneAndUpdate(
+          { _id: userId },
+          {
+            $addToSet: {
+              close: userIdToAdd,
+            },
+          }
+        );
+
+        if (!user)
+          return {
+            errors: [
+              {
+                field: "closeFriend",
+                message: `Failed to add ${userIdToAdd}`,
+              },
+            ],
+            user: null,
+          };
+
+        return {
+          errors: [],
+          user,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          user: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
       };
     }
   }
