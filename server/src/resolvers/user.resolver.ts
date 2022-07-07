@@ -55,24 +55,7 @@ import { TokenResponse } from "./res/token.res";
 import { ForgotPasswordTokenModel } from "../models/ForgotPasswordToken.model";
 import { sendEmail } from "../utils/sendEmail";
 import { resetPasswordHTML } from "../utils/assets/resetPasswordHTML";
-
-const unhandledError = (err: Error) => {
-  return [
-    {
-      field: "error",
-      message: `Please report this error to the support: ${err}`,
-    },
-  ];
-};
-
-const unauthorizedError = () => {
-  return [
-    {
-      field: "authorization",
-      message: "Not authorized",
-    },
-  ];
-};
+import { unhandledError, unauthorizedError } from "./errors.resolvers";
 
 @Resolver(User)
 export class UserResolver {
