@@ -64,14 +64,15 @@ export class PostResolver {
             : ""
           : "";
         input.video = media
-          ? media.mimetype == "text/plain"
+          ? media.mimetype == "video/mp4"
             ? media.path
             : ""
           : "";
         input.file = media
           ? media.mimetype == "application/zip" ||
             media.mimetype == "application/x-7z-compressed" ||
-            media.mimetype == "application/vnd.rar"
+            media.mimetype == "application/vnd.rar" ||
+            media.mimetype == "text/plain"
             ? media.path
             : ""
           : "";
@@ -105,4 +106,6 @@ export class PostResolver {
         post: null,
       };
   }
+
+  
 }
