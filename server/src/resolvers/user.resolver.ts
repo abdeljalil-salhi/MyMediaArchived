@@ -8,6 +8,7 @@
  - getFriends()
  - updateUser()
  - deleteUser()
+ - followUser()
  **********************/
 
 import argon2 from "argon2";
@@ -24,7 +25,12 @@ import {
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
-import { UserResponse, UsersResponse } from "./res/user.res";
+import {
+  FollowResponse,
+  UnfollowResponse,
+  UserResponse,
+  UsersResponse,
+} from "./res/user.res";
 import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
 import { updateUserValidation } from "../validations/updateUser.validation";
@@ -461,5 +467,195 @@ export class UserResolver {
         info: null,
         deleted: null,
       };
+  }
+
+  @Mutation(() => FollowResponse)
+  @UseMiddleware(isAuth)
+  async followUser(
+    @Arg("userId") userId: string,
+    @Arg("userIdToFollow") userIdToFollow: string,
+    @Ctx() context: MyContext
+  ): Promise<FollowResponse> {
+    if (!isValidID(userId) || !isValidID(userIdToFollow))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        following: null,
+        followed: null,
+      };
+
+    try {
+      if (context.user.id === userId || context.user.isAdmin) {
+        if (userId === userIdToFollow)
+          return {
+            errors: [
+              {
+                field: "following",
+                message: "Cannot follow yourself",
+              },
+            ],
+            following: null,
+            followed: null,
+          };
+
+        const following = await UserModel.findOneAndUpdate(
+          { _id: userId },
+          {
+            $addToSet: {
+              following: userIdToFollow,
+            },
+          }
+        );
+
+        if (!following)
+          return {
+            errors: [
+              {
+                field: "following",
+                message: `Failed to follow ${userIdToFollow}`,
+              },
+            ],
+            following: null,
+            followed: null,
+          };
+
+        const followed = await UserModel.findOneAndUpdate(
+          { _id: userIdToFollow },
+          {
+            $addToSet: {
+              followers: userId,
+            },
+          }
+        );
+
+        if (!followed)
+          return {
+            errors: [
+              {
+                field: "followed",
+                message: `Failed to follow ${userIdToFollow}`,
+              },
+            ],
+            following: null,
+            followed: null,
+          };
+
+        return {
+          errors: [],
+          following,
+          followed,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          following: null,
+          followed: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        following: null,
+        followed: null,
+      };
+    }
+  }
+
+  @Mutation(() => UnfollowResponse)
+  @UseMiddleware(isAuth)
+  async unfollowUser(
+    @Arg("userId") userId: string,
+    @Arg("userIdToUnfollow") userIdToUnfollow: string,
+    @Ctx() context: MyContext
+  ): Promise<UnfollowResponse> {
+    if (!isValidID(userId) || !isValidID(userIdToUnfollow))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        unfollowing: null,
+        unfollowed: null,
+      };
+
+    try {
+      if (context.user.id === userId || context.user.isAdmin) {
+        if (userId === userIdToUnfollow)
+          return {
+            errors: [
+              {
+                field: "unfollowing",
+                message: "Cannot unfollow yourself",
+              },
+            ],
+            unfollowing: null,
+            unfollowed: null,
+          };
+
+        const unfollowing = await UserModel.findOneAndUpdate(
+          { _id: userId },
+          {
+            $pull: {
+              following: userIdToUnfollow,
+            },
+          }
+        );
+
+        if (!unfollowing)
+          return {
+            errors: [
+              {
+                field: "unfollowing",
+                message: `Failed to unfollow ${userIdToUnfollow}`,
+              },
+            ],
+            unfollowing: null,
+            unfollowed: null,
+          };
+
+        const unfollowed = await UserModel.findOneAndUpdate(
+          { _id: userIdToUnfollow },
+          {
+            $pull: {
+              followers: userId,
+            },
+          }
+        );
+
+        if (!unfollowed)
+          return {
+            errors: [
+              {
+                field: "unfollowed",
+                message: `Failed to unfollow ${userIdToUnfollow}`,
+              },
+            ],
+            unfollowing: null,
+            unfollowed: null,
+          };
+
+        return {
+          errors: [],
+          unfollowing,
+          unfollowed,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          unfollowing: null,
+          unfollowed: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        unfollowing: null,
+        unfollowed: null,
+      };
+    }
   }
 }
