@@ -58,3 +58,12 @@ export class UpdateUserInput {
   @Field(() => String, { nullable: true })
   public website?: string;
 }
+
+@InputType()
+export class UpdateTagsInput {
+  @Field(() => String, { nullable: true })
+  public userId: string;
+
+  @Field(() => [String], { nullable: true })
+  public tags: string[];
+}
