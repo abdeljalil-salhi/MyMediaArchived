@@ -17,7 +17,7 @@ import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.js";
 
 import logger from "./utils/logger";
 import { MongoConnection } from "./config/db";
-import { CLIENT_URL, PORT } from "./constants";
+import { CLIENT_URL, PORT, __prod__ } from "./constants";
 import { resolvers } from "./resolvers";
 import { userLoader } from "./dataloaders/user.loader";
 import { TypegooseMiddleware } from "./middlewares/Typegoose";
@@ -90,7 +90,7 @@ const main = async () => {
       userLoader: userLoader(),
     }),
     plugins: [
-      process.env.NODE_ENV === "production"
+      __prod__
         ? ApolloServerPluginLandingPageProductionDefault()
         : ApolloServerPluginLandingPageGraphQLPlayground(),
     ],
