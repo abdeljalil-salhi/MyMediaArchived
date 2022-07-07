@@ -3,6 +3,7 @@
  - register()
  - login()
  - forgotPassword()
+ - changePassword()
  - getAllUsers()
  - getUser()
  - getProfile()
@@ -250,6 +251,104 @@ export class UserResolver {
     }
   }
 
+  @Mutation(() => UserResponse)
+  async changePassword(
+    @Arg("token") token: string,
+    @Arg("userId") userId: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    if (!isValidID(userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        user: null,
+      };
+
+    try {
+      const errors = updateUserValidation({
+        password: newPassword,
+      });
+      if (errors)
+        return {
+          errors,
+          user: null,
+        };
+
+      const tokenStored = await ForgotPasswordTokenModel.findOne({ token });
+
+      if (!tokenStored)
+        return {
+          errors: [
+            {
+              field: "token",
+              message: "Token expired",
+            },
+          ],
+          user: null,
+        };
+
+      let user;
+      if (userId == tokenStored.user) {
+        user = await UserModel.findOneAndUpdate(
+          { _id: tokenStored.user },
+          {
+            $set: {
+              password: await argon2.hash(newPassword),
+            },
+          },
+          { returnDocument: "after" }
+        );
+
+        if (!user)
+          return {
+            errors: [
+              {
+                field: "token",
+                message: "Invalid token",
+              },
+            ],
+            user: null,
+          };
+      } else
+        return {
+          errors: [
+            {
+              field: "user",
+              message: "Invalid user",
+            },
+          ],
+        };
+
+      await ForgotPasswordTokenModel.deleteOne({ _id: tokenStored._id });
+
+      const accessToken = signJWT(user);
+
+      user = user.toObject();
+      user.accessToken = accessToken;
+
+      context.user = {
+        id: user._id,
+        isAdmin: user.isAdmin,
+        isSeller: user.isSeller,
+      };
+
+      return {
+        errors: [],
+        user,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
+      };
+    }
+  }
+
   @Query(() => UsersResponse)
   public async getAllUsers(): Promise<UsersResponse> {
     try {
@@ -391,7 +490,7 @@ export class UserResolver {
         errors: [
           {
             field: "id",
-            message: "invalid id",
+            message: "Invalid ID",
           },
         ],
         user: null,
