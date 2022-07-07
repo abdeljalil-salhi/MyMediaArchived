@@ -10,6 +10,7 @@
  - deleteUser()
  - followUser()
  - addCloseFriend()
+ - removeCloseFriend()
  **********************/
 
 import argon2 from "argon2";
@@ -46,7 +47,7 @@ const unhandledError = (err: Error) => {
   return [
     {
       field: "error",
-      message: `Please report this to the support: ${err}`,
+      message: `Please report this error to the support: ${err}`,
     },
   ];
 };
@@ -360,7 +361,12 @@ export class UserResolver {
         let user = await UserModel.findOneAndUpdate(
           { _id: userId },
           { $set: input },
-          { new: true, upsert: true, setDefaultsOnInsert: true }
+          {
+            new: true,
+            upsert: true,
+            setDefaultsOnInsert: true,
+            returnDocument: "after",
+          }
         );
 
         if (!user) {
@@ -514,7 +520,8 @@ export class UserResolver {
             $addToSet: {
               following: userIdToFollow,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!following)
@@ -535,7 +542,8 @@ export class UserResolver {
             $addToSet: {
               followers: userId,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!followed)
@@ -609,7 +617,8 @@ export class UserResolver {
             $pull: {
               following: userIdToUnfollow,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!unfollowing)
@@ -630,7 +639,8 @@ export class UserResolver {
             $pull: {
               followers: userId,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!unfollowed)
@@ -702,7 +712,8 @@ export class UserResolver {
             $addToSet: {
               close: userIdToAdd,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!user)
@@ -711,6 +722,75 @@ export class UserResolver {
               {
                 field: "closeFriend",
                 message: `Failed to add ${userIdToAdd}`,
+              },
+            ],
+            user: null,
+          };
+
+        return {
+          errors: [],
+          user,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          user: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async removeCloseFriend(
+    @Arg("userId") userId: string,
+    @Arg("userIdToRemove") userIdToRemove: string,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    if (!isValidID(userId) || !isValidID(userIdToRemove))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        user: null,
+      };
+
+    try {
+      if (context.user.id === userId || context.user.isAdmin) {
+        if (userId === userIdToRemove)
+          return {
+            errors: [
+              {
+                field: "closeFriend",
+                message: "Cannot remove yourself",
+              },
+            ],
+            user: null,
+          };
+
+        const user = await UserModel.findOneAndUpdate(
+          { _id: userId },
+          {
+            $pull: {
+              close: userIdToRemove,
+            },
+          },
+          { returnDocument: "after" }
+        );
+
+        if (!user)
+          return {
+            errors: [
+              {
+                field: "closeFriend",
+                message: `Failed to remove ${userIdToRemove}`,
               },
             ],
             user: null,
