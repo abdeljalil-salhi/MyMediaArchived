@@ -11,6 +11,8 @@
  - followUser()
  - addCloseFriend()
  - removeCloseFriend()
+ - updateTags()
+ - updateSocials()
  **********************/
 
 import argon2 from "argon2";
@@ -39,7 +41,11 @@ import { updateUserValidation } from "../validations/updateUser.validation";
 import { signJWT } from "../authentication/signJwt";
 import { isValidID } from "../utils/isValidID";
 import { isAuth } from "../middlewares/isAuth";
-import { UpdateUserInput } from "../models/inputs/UpdateUser.input";
+import {
+  UpdateSocialsInput,
+  UpdateTagsInput,
+  UpdateUserInput,
+} from "../models/inputs/UpdateUser.input";
 import { UserArchive, UserArchiveModel } from "../models/User.archive.model";
 import { DeleteUserResponse } from "./res/delete.res";
 
@@ -791,6 +797,120 @@ export class UserResolver {
               {
                 field: "closeFriend",
                 message: `Failed to remove ${userIdToRemove}`,
+              },
+            ],
+            user: null,
+          };
+
+        return {
+          errors: [],
+          user,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          user: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async updateTags(
+    @Arg("input") input: UpdateTagsInput,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    if (!isValidID(input.userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        user: null,
+      };
+
+    try {
+      if (context.user.id === input.userId || context.user.isAdmin) {
+        const user = await UserModel.findOneAndUpdate(
+          { _id: input.userId },
+          {
+            $set: {
+              tags: input.tags,
+            },
+          },
+          { returnDocument: "after" }
+        );
+
+        if (!user)
+          return {
+            errors: [
+              {
+                field: "tags",
+                message: `Failed to add tags for ${input.userId}`,
+              },
+            ],
+            user: null,
+          };
+
+        return {
+          errors: [],
+          user,
+        };
+      } else
+        return {
+          errors: unauthorizedError(),
+          user: null,
+        };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        user: null,
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async updateSocials(
+    @Arg("input") input: UpdateSocialsInput,
+    @Ctx() context: MyContext
+  ): Promise<UserResponse> {
+    if (!isValidID(input.userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        user: null,
+      };
+
+    try {
+      if (context.user.id === input.userId || context.user.isAdmin) {
+        const user = await UserModel.findOneAndUpdate(
+          { _id: input.userId },
+          {
+            $set: {
+              socials: input.socials,
+            },
+          },
+          { returnDocument: "after" }
+        );
+
+        if (!user)
+          return {
+            errors: [
+              {
+                field: "socials",
+                message: `Failed to add socials for ${input.userId}`,
               },
             ],
             user: null,
