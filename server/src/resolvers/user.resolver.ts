@@ -361,7 +361,12 @@ export class UserResolver {
         let user = await UserModel.findOneAndUpdate(
           { _id: userId },
           { $set: input },
-          { new: true, upsert: true, setDefaultsOnInsert: true }
+          {
+            new: true,
+            upsert: true,
+            setDefaultsOnInsert: true,
+            returnDocument: "after",
+          }
         );
 
         if (!user) {
@@ -515,7 +520,8 @@ export class UserResolver {
             $addToSet: {
               following: userIdToFollow,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!following)
@@ -536,7 +542,8 @@ export class UserResolver {
             $addToSet: {
               followers: userId,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!followed)
@@ -610,7 +617,8 @@ export class UserResolver {
             $pull: {
               following: userIdToUnfollow,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!unfollowing)
@@ -631,7 +639,8 @@ export class UserResolver {
             $pull: {
               followers: userId,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!unfollowed)
@@ -703,7 +712,8 @@ export class UserResolver {
             $addToSet: {
               close: userIdToAdd,
             },
-          }
+          },
+          { returnDocument: "after" }
         );
 
         if (!user)
