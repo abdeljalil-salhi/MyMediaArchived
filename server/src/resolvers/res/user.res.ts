@@ -32,3 +32,15 @@ export class FollowResponse {
   @Field(() => User, { nullable: true })
   followed: User | null;
 }
+
+@ObjectType()
+export class UnfollowResponse {
+  @Field(() => [ErrorResponse], { nullable: true })
+  errors?: ErrorResponse[] | null;
+
+  @Field(() => User, { nullable: true })
+  unfollowing: User | null;
+
+  @Field(() => User, { nullable: true })
+  unfollowed: User | null;
+}
