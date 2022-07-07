@@ -46,6 +46,9 @@ export class Post {
   public text?: String;
 
   @Field(() => String, { nullable: true })
+  public textSnippet?: string;
+
+  @Field(() => String, { nullable: true })
   @Property({
     type: Schema.Types.String,
   })
