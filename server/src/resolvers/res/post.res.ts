@@ -11,3 +11,12 @@ export class PostResponse {
   @Field(() => Post, { nullable: true })
   post?: Post | null;
 }
+
+@ObjectType()
+export class PostsResponse {
+  @Field(() => [ErrorResponse], { nullable: true })
+  errors?: ErrorResponse[] | null;
+
+  @Field(() => [Post], { nullable: true })
+  posts: Post[] | null;
+}

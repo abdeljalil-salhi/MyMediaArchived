@@ -2,6 +2,7 @@
  POST RESOLVER
  - createPost()
  - postMedia()
+ - getAllPosts()
  **********************/
 
 import {
@@ -9,6 +10,7 @@ import {
   Ctx,
   FieldResolver,
   Mutation,
+  Query,
   Resolver,
   Root,
   UseMiddleware,
@@ -24,7 +26,7 @@ import { MyContext } from "../types";
 import { User } from "../models/User.model";
 import { Post, PostModel } from "../models/Post.model";
 import { isAuth } from "../middlewares/isAuth";
-import { PostResponse } from "./res/post.res";
+import { PostResponse, PostsResponse } from "./res/post.res";
 import { MediaResponse } from "./res/media.res";
 import { CreatePostInput, MediaInput } from "../models/inputs/CreatePost.input";
 import { isValidID } from "../utils/isValidID";
@@ -45,7 +47,7 @@ export class PostResolver {
 
   @Mutation(() => PostResponse)
   @UseMiddleware(isAuth)
-  async createPost(
+  public async createPost(
     @Ctx() context: MyContext,
     @Arg("input") input: CreatePostInput,
     @Arg("file") media?: MediaInput
@@ -117,7 +119,7 @@ export class PostResolver {
 
   @Mutation(() => MediaResponse)
   @UseMiddleware(isAuth)
-  async postMedia(
+  public async postMedia(
     @Arg("file", () => GraphQLUpload)
     { createReadStream, mimetype }: Upload,
     @Ctx() context: MyContext
@@ -179,6 +181,22 @@ export class PostResolver {
           },
         ],
         media: null,
+      };
+    }
+  }
+
+  @Query(() => PostsResponse)
+  public async getAllPosts(): Promise<PostsResponse> {
+    try {
+      const posts = await PostModel.find({}).sort({ createdAt: -1 });
+      return {
+        errors: [],
+        posts,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        posts: [],
       };
     }
   }
