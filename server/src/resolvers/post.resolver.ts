@@ -200,4 +200,43 @@ export class PostResolver {
       };
     }
   }
+
+  @Query(() => PostResponse)
+  public async getPost(@Arg("postId") postId: string): Promise<PostResponse> {
+    if (!isValidID(postId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        post: null,
+      };
+
+    try {
+      const post = await PostModel.findById(postId);
+
+      if (!post)
+        return {
+          errors: [
+            {
+              field: "post",
+              message: "Post not found",
+            },
+          ],
+          post: null,
+        };
+
+      return {
+        errors: [],
+        post,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        post: null,
+      };
+    }
+  }
 }
