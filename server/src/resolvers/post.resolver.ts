@@ -291,7 +291,11 @@ export class PostResolver {
           cursor
             ? {
                 $and: [
-                  { user: userId },
+                  {
+                    user: {
+                      $in: [...user.following, userId],
+                    },
+                  },
                   {
                     createdAt: {
                       $gt: cursor,
@@ -299,39 +303,20 @@ export class PostResolver {
                   },
                 ],
               }
-            : { user: userId }
+            : {
+                user: {
+                  $in: [...user.following, userId],
+                },
+              }
         )
           .limit(limit)
           .sort({ createdAt: -1 });
 
-        const followingPosts = await Promise.all(
-          user.following.map((followingId: any) => {
-            return PostModel.find(
-              cursor
-                ? {
-                    $and: [
-                      { user: followingId },
-                      {
-                        createdAt: {
-                          $gt: cursor,
-                        },
-                      },
-                    ],
-                  }
-                : { user: followingId }
-            )
-              .limit(limit)
-              .sort({ createdAt: -1 });
-          })
-        );
-
-        const timelinePosts = posts.concat(...followingPosts);
-
-        const hasMore = timelinePosts.length > hasMoreLimit ? true : false;
+        const hasMore = posts.length > hasMoreLimit ? true : false;
 
         return {
           errors: [],
-          posts: timelinePosts.slice(0, realLimit),
+          posts: posts.slice(0, realLimit),
           hasMore,
         };
       } catch (err) {
