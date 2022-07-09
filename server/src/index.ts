@@ -22,6 +22,7 @@ import { resolvers } from "./resolvers";
 import { userLoader } from "./dataloaders/user.loader";
 import { postReactLoader } from "./dataloaders/postReact.loader";
 import { TypegooseMiddleware } from "./middlewares/Typegoose";
+import { connectToSocketsServer } from "./sockets";
 
 const main = async () => {
   // Connect to the MongoDB database
@@ -134,6 +135,9 @@ const main = async () => {
       }, 1000);
     }
   });
+
+  // Socket.io Websocket protocol
+  connectToSocketsServer(server);
 
   // Listening for connections
   server.listen(PORT, () => {
