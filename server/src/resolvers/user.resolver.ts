@@ -617,7 +617,7 @@ export class UserResolver {
 
   @Mutation(() => FollowResponse)
   @UseMiddleware(isAuth)
-  async followUser(
+  public async followUser(
     @Arg("userId") userId: string,
     @Arg("userIdToFollow") userIdToFollow: string,
     @Ctx() context: MyContext
@@ -714,7 +714,7 @@ export class UserResolver {
 
   @Mutation(() => UnfollowResponse)
   @UseMiddleware(isAuth)
-  async unfollowUser(
+  public async unfollowUser(
     @Arg("userId") userId: string,
     @Arg("userIdToUnfollow") userIdToUnfollow: string,
     @Ctx() context: MyContext
@@ -811,7 +811,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
-  async addCloseFriend(
+  public async addCloseFriend(
     @Arg("userId") userId: string,
     @Arg("userIdToAdd") userIdToAdd: string,
     @Ctx() context: MyContext
@@ -880,7 +880,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
-  async removeCloseFriend(
+  public async removeCloseFriend(
     @Arg("userId") userId: string,
     @Arg("userIdToRemove") userIdToRemove: string,
     @Ctx() context: MyContext
@@ -949,7 +949,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
-  async updateTags(
+  public async updateTags(
     @Arg("input") input: UpdateTagsInput,
     @Ctx() context: MyContext
   ): Promise<UserResponse> {
@@ -1006,7 +1006,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
-  async updateSocials(
+  public async updateSocials(
     @Arg("input") input: UpdateSocialsInput,
     @Ctx() context: MyContext
   ): Promise<UserResponse> {
