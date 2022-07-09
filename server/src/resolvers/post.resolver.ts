@@ -7,6 +7,7 @@
  - getTimelinePosts()
  - getUserPosts()
  - updatePost()
+ - deletePost()
  **********************/
 
 import {
@@ -30,6 +31,7 @@ import Upload from "graphql-upload/Upload.js";
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
 import { Post, PostModel } from "../models/Post.model";
+import { PostArchive, PostArchiveModel } from "../models/Post.archive.model";
 import { isAuth } from "../middlewares/isAuth";
 import {
   PaginatedPostsResponse,
@@ -37,6 +39,7 @@ import {
   PostsResponse,
 } from "./res/post.res";
 import { MediaResponse } from "./res/media.res";
+import { DeletePostResponse } from "./res/delete.res";
 import { CreatePostInput, MediaInput } from "../models/inputs/CreatePost.input";
 import { UpdatePostInput } from "../models/inputs/UpdatePost.input";
 import { isValidID } from "../utils/isValidID";
@@ -450,6 +453,81 @@ export class PostResolver {
       return {
         errors: unauthorizedError(),
         post: null,
+      };
+  }
+
+  @Mutation(() => DeletePostResponse)
+  @UseMiddleware(isAuth)
+  public async deletePost(
+    @Arg("userId") userId: string,
+    @Arg("postId") postId: string,
+    @Ctx() context: MyContext
+  ): Promise<DeletePostResponse> {
+    if (!isValidID(postId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        info: null,
+        deleted: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        let post: Post | null = await PostModel.findByIdAndDelete(
+          postId
+        ).lean();
+
+        if (!post) {
+          return {
+            errors: [
+              {
+                field: "post",
+                message: "Post not found",
+              },
+            ],
+            info: null,
+            deleted: null,
+          };
+        }
+
+        let archivedPost: PostArchive = post as Post;
+
+        // Keep the original ID of the post in 'postId' field
+        archivedPost.postId = archivedPost._id;
+
+        delete archivedPost.__v;
+        delete archivedPost._id;
+
+        if (archivedPost.hasOwnProperty("createdAt"))
+          delete archivedPost.createdAt;
+        if (archivedPost.hasOwnProperty("updatedAt"))
+          delete archivedPost.updatedAt;
+
+        const deletedPost: PostArchive = await PostArchiveModel.create(
+          archivedPost
+        );
+
+        return {
+          errors: [],
+          info: `Post ${postId} deleted`,
+          deleted: deletedPost,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          info: null,
+          deleted: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        info: null,
+        deleted: null,
       };
   }
 }
