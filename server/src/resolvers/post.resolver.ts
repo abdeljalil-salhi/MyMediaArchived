@@ -6,6 +6,7 @@
  - getPost()
  - getTimelinePosts()
  - getUserPosts()
+ - updatePost()
  **********************/
 
 import {
@@ -37,6 +38,7 @@ import {
 } from "./res/post.res";
 import { MediaResponse } from "./res/media.res";
 import { CreatePostInput, MediaInput } from "../models/inputs/CreatePost.input";
+import { UpdatePostInput } from "../models/inputs/UpdatePost.input";
 import { isValidID } from "../utils/isValidID";
 import { unauthorizedError, unhandledError } from "./errors.resolvers";
 
@@ -250,7 +252,7 @@ export class PostResolver {
 
   @Query(() => PaginatedPostsResponse)
   @UseMiddleware(isAuth)
-  async getTimelinePosts(
+  public async getTimelinePosts(
     @Arg("userId") userId: string,
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
@@ -337,7 +339,7 @@ export class PostResolver {
 
   @Query(() => PaginatedPostsResponse)
   @UseMiddleware(isAuth)
-  async getUserPosts(
+  public async getUserPosts(
     @Arg("userId") userId: string,
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String, { nullable: true }) cursor: string | null
@@ -387,5 +389,67 @@ export class PostResolver {
         hasMore: false,
       };
     }
+  }
+
+  @Mutation(() => PostResponse)
+  @UseMiddleware(isAuth)
+  public async updatePost(
+    @Arg("userId") userId: string,
+    @Arg("postId") postId: string,
+    @Arg("input") input: UpdatePostInput,
+    @Ctx() context: MyContext
+  ): Promise<PostResponse> {
+    if (!isValidID(postId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        post: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        input.isEdited = true;
+
+        const post = await PostModel.findOneAndUpdate(
+          { _id: postId },
+          { $set: input },
+          {
+            new: true,
+            upsert: true,
+            setDefaultsOnInsert: true,
+            returnDocument: "after",
+          }
+        );
+
+        if (!post) {
+          return {
+            errors: [
+              {
+                field: "post",
+                message: "Post not found",
+              },
+            ],
+          };
+        }
+
+        return {
+          errors: [],
+          post,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          post: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        post: null,
+      };
   }
 }
