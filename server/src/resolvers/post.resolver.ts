@@ -3,12 +3,15 @@
  - createPost()
  - postMedia()
  - getAllPosts()
+ - getPost()
+ - getTimelinePosts()
  **********************/
 
 import {
   Arg,
   Ctx,
   FieldResolver,
+  Int,
   Mutation,
   Query,
   Resolver,
@@ -23,10 +26,14 @@ import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
 import Upload from "graphql-upload/Upload.js";
 
 import { MyContext } from "../types";
-import { User } from "../models/User.model";
+import { User, UserModel } from "../models/User.model";
 import { Post, PostModel } from "../models/Post.model";
 import { isAuth } from "../middlewares/isAuth";
-import { PostResponse, PostsResponse } from "./res/post.res";
+import {
+  PaginatedPostsResponse,
+  PostResponse,
+  PostsResponse,
+} from "./res/post.res";
 import { MediaResponse } from "./res/media.res";
 import { CreatePostInput, MediaInput } from "../models/inputs/CreatePost.input";
 import { isValidID } from "../utils/isValidID";
@@ -238,5 +245,107 @@ export class PostResolver {
         post: null,
       };
     }
+  }
+
+  @Query(() => PaginatedPostsResponse)
+  @UseMiddleware(isAuth)
+  async getTimelinePosts(
+    @Arg("userId") userId: string,
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+    @Ctx() context: MyContext
+  ): Promise<PaginatedPostsResponse> {
+    if (!isValidID(userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        posts: [],
+        hasMore: false,
+      };
+
+    const realLimit = Math.min(50, limit);
+    const hasMoreLimit = Math.min(50, limit) + 1;
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        const user = await UserModel.findById(userId);
+
+        if (!user) {
+          return {
+            errors: [
+              {
+                field: "user",
+                message: "User not found",
+              },
+            ],
+            posts: [],
+            hasMore: false,
+          };
+        }
+
+        const posts = await PostModel.find(
+          cursor
+            ? {
+                $and: [
+                  { user: userId },
+                  {
+                    createdAt: {
+                      $gt: cursor,
+                    },
+                  },
+                ],
+              }
+            : { user: userId }
+        )
+          .limit(limit)
+          .sort({ createdAt: -1 });
+
+        const followingPosts = await Promise.all(
+          user.following.map((followingId: any) => {
+            return PostModel.find(
+              cursor
+                ? {
+                    $and: [
+                      { user: followingId },
+                      {
+                        createdAt: {
+                          $gt: cursor,
+                        },
+                      },
+                    ],
+                  }
+                : { user: followingId }
+            )
+              .limit(limit)
+              .sort({ createdAt: -1 });
+          })
+        );
+
+        const timelinePosts = posts.concat(...followingPosts);
+
+        const hasMore = timelinePosts.length > hasMoreLimit ? true : false;
+
+        return {
+          errors: [],
+          posts: timelinePosts.slice(0, realLimit),
+          hasMore,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          posts: [],
+          hasMore: false,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        posts: [],
+        hasMore: false,
+      };
   }
 }
