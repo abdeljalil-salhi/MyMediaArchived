@@ -20,3 +20,15 @@ export class PostsResponse {
   @Field(() => [Post], { nullable: true })
   posts: Post[] | null;
 }
+
+@ObjectType()
+export class PaginatedPostsResponse {
+  @Field(() => [ErrorResponse], { nullable: true })
+  errors?: ErrorResponse[] | null;
+
+  @Field(() => [Post], { nullable: true })
+  posts: Post[] | null;
+
+  @Field(() => Boolean, { defaultValue: false })
+  hasMore?: boolean | null;
+}
