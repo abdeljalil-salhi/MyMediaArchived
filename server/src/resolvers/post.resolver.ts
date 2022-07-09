@@ -9,6 +9,7 @@
  - updatePost()
  - deletePost()
  - reactPost()
+ - unreactPost()
  **********************/
 
 import {
@@ -595,6 +596,67 @@ export class PostResolver {
               {
                 field: "react",
                 message: `Failed to react to ${postId} by ${userId}`,
+              },
+            ],
+            post: null,
+          };
+
+        return {
+          errors: [],
+          post,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          post: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        post: null,
+      };
+  }
+
+  @Mutation(() => PostResponse)
+  @UseMiddleware(isAuth)
+  async unreactPost(
+    @Arg("userId") userId: string,
+    @Arg("postId") postId: string,
+    @Arg("reactId") reactId: string,
+    @Ctx() context: MyContext
+  ): Promise<PostResponse> {
+    if (!isValidID(userId) || !isValidID(postId) || !isValidID(reactId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        post: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        await PostReactModel.deleteOne({ _id: reactId });
+
+        const post = await PostModel.findOneAndUpdate(
+          { _id: postId },
+          {
+            $pull: {
+              reacts: reactId,
+            },
+          },
+          { returnDocument: "after" }
+        );
+
+        if (!post)
+          return {
+            errors: [
+              {
+                field: "unreact",
+                message: `Failed to unreact ${postId} by ${userId}`,
               },
             ],
             post: null,
