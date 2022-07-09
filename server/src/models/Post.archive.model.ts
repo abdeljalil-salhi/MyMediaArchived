@@ -28,8 +28,6 @@ export class PostArchive {
     type: Schema.Types.ObjectId,
   })
   public user: Ref<User>;
-  @Field(() => User)
-  public userObj: User;
 
   @Field(() => Boolean)
   @Property({
