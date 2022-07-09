@@ -7,6 +7,8 @@
  - getTimelinePosts()
  - getUserPosts()
  - updatePost()
+ - deletePost()
+ - reactPost()
  **********************/
 
 import {
@@ -30,6 +32,8 @@ import Upload from "graphql-upload/Upload.js";
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
 import { Post, PostModel } from "../models/Post.model";
+import { PostArchive, PostArchiveModel } from "../models/Post.archive.model";
+import { PostReact, PostReactModel } from "../models/PostReact.model";
 import { isAuth } from "../middlewares/isAuth";
 import {
   PaginatedPostsResponse,
@@ -37,7 +41,12 @@ import {
   PostsResponse,
 } from "./res/post.res";
 import { MediaResponse } from "./res/media.res";
-import { CreatePostInput, MediaInput } from "../models/inputs/CreatePost.input";
+import { DeletePostResponse } from "./res/delete.res";
+import {
+  CreatePostInput,
+  MediaInput,
+  ReactInput,
+} from "../models/inputs/CreatePost.input";
 import { UpdatePostInput } from "../models/inputs/UpdatePost.input";
 import { isValidID } from "../utils/isValidID";
 import { unauthorizedError, unhandledError } from "./errors.resolvers";
@@ -53,6 +62,11 @@ export class PostResolver {
   @FieldResolver(() => User)
   public userObj(@Root() post: Post, @Ctx() context: MyContext) {
     return context.userLoader.load(post.user?.toString());
+  }
+
+  @FieldResolver(() => [PostReact])
+  public reactsObj(@Root() post: Post, @Ctx() context: MyContext) {
+    return context.postReactLoader.loadMany(post.reacts as string[]);
   }
 
   @Mutation(() => PostResponse)
@@ -435,6 +449,156 @@ export class PostResolver {
             ],
           };
         }
+
+        return {
+          errors: [],
+          post,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          post: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        post: null,
+      };
+  }
+
+  @Mutation(() => DeletePostResponse)
+  @UseMiddleware(isAuth)
+  public async deletePost(
+    @Arg("userId") userId: string,
+    @Arg("postId") postId: string,
+    @Ctx() context: MyContext
+  ): Promise<DeletePostResponse> {
+    if (!isValidID(postId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        info: null,
+        deleted: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        let post: Post | null = await PostModel.findByIdAndDelete(
+          postId
+        ).lean();
+
+        if (!post) {
+          return {
+            errors: [
+              {
+                field: "post",
+                message: "Post not found",
+              },
+            ],
+            info: null,
+            deleted: null,
+          };
+        }
+
+        let archivedPost: PostArchive = post as Post;
+
+        // Keep the original ID of the post in 'postId' field
+        archivedPost.postId = archivedPost._id;
+
+        delete archivedPost.__v;
+        delete archivedPost._id;
+
+        if (archivedPost.hasOwnProperty("createdAt"))
+          delete archivedPost.createdAt;
+        if (archivedPost.hasOwnProperty("updatedAt"))
+          delete archivedPost.updatedAt;
+
+        const deletedPost: PostArchive = await PostArchiveModel.create(
+          archivedPost
+        );
+
+        return {
+          errors: [],
+          info: `Post ${postId} deleted`,
+          deleted: deletedPost,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          info: null,
+          deleted: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        info: null,
+        deleted: null,
+      };
+  }
+
+  @Mutation(() => PostResponse)
+  @UseMiddleware(isAuth)
+  public async reactPost(
+    @Arg("userId") userId: string,
+    @Arg("postId") postId: string,
+    @Arg("input") input: ReactInput,
+    @Ctx() context: MyContext
+  ): Promise<PostResponse> {
+    if (!isValidID(userId) || !isValidID(postId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        post: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        const react = await PostReactModel.create({
+          user: userId,
+          react: input.react,
+        });
+
+        if (!react)
+          return {
+            errors: [
+              {
+                field: "react",
+                message: `Failed to create a react by ${userId}`,
+              },
+            ],
+            post: null,
+          };
+
+        const post = await PostModel.findOneAndUpdate(
+          { _id: postId },
+          {
+            $addToSet: {
+              reacts: react._id,
+            },
+          },
+          { returnDocument: "after" }
+        );
+
+        if (!post)
+          return {
+            errors: [
+              {
+                field: "react",
+                message: `Failed to react to ${postId} by ${userId}`,
+              },
+            ],
+            post: null,
+          };
 
         return {
           errors: [],

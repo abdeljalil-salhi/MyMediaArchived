@@ -1,4 +1,4 @@
-import { InputType, Field } from "type-graphql";
+import { InputType, Field, Int } from "type-graphql";
 
 @InputType()
 export class CreatePostInput {
@@ -34,4 +34,10 @@ export class MediaInput {
 
   @Field(() => String, { nullable: true })
   public mimetype?: string;
+}
+
+@InputType()
+export class ReactInput {
+  @Field(() => Int)
+  public react: number;
 }

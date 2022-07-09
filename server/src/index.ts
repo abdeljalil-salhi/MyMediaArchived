@@ -20,6 +20,7 @@ import { MongoConnection } from "./config/db";
 import { CLIENT_URL, PORT, __prod__ } from "./constants";
 import { resolvers } from "./resolvers";
 import { userLoader } from "./dataloaders/user.loader";
+import { postReactLoader } from "./dataloaders/postReact.loader";
 import { TypegooseMiddleware } from "./middlewares/Typegoose";
 
 const main = async () => {
@@ -88,6 +89,7 @@ const main = async () => {
     context: ({ req }) => ({
       authentication: req.headers.authentication || "",
       userLoader: userLoader(),
+      postReactLoader: postReactLoader(),
     }),
     plugins: [
       __prod__
