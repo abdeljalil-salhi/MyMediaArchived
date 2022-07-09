@@ -5,6 +5,7 @@
  - getAllPosts()
  - getPost()
  - getTimelinePosts()
+ - getUserPosts()
  **********************/
 
 import {
@@ -332,5 +333,59 @@ export class PostResolver {
         posts: [],
         hasMore: false,
       };
+  }
+
+  @Query(() => PaginatedPostsResponse)
+  @UseMiddleware(isAuth)
+  async getUserPosts(
+    @Arg("userId") userId: string,
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+  ): Promise<PaginatedPostsResponse> {
+    if (!isValidID(userId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        posts: [],
+        hasMore: false,
+      };
+
+    const realLimit = Math.min(50, limit);
+    const hasMoreLimit = Math.min(50, limit) + 1;
+
+    try {
+      const posts = await PostModel.find(
+        cursor
+          ? {
+              $and: [
+                { user: userId },
+                {
+                  createdAt: {
+                    $gt: cursor,
+                  },
+                },
+              ],
+            }
+          : { user: userId }
+      )
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
+      return {
+        errors: [],
+        posts: posts.slice(0, realLimit),
+        hasMore: posts.length === hasMoreLimit,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        posts: [],
+        hasMore: false,
+      };
+    }
   }
 }
