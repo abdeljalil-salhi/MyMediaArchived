@@ -8,6 +8,7 @@
  - getUserPosts()
  - updatePost()
  - deletePost()
+ - reactPost()
  **********************/
 
 import {
@@ -32,6 +33,7 @@ import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
 import { Post, PostModel } from "../models/Post.model";
 import { PostArchive, PostArchiveModel } from "../models/Post.archive.model";
+import { PostReactModel } from "../models/PostReact.model";
 import { isAuth } from "../middlewares/isAuth";
 import {
   PaginatedPostsResponse,
@@ -40,7 +42,11 @@ import {
 } from "./res/post.res";
 import { MediaResponse } from "./res/media.res";
 import { DeletePostResponse } from "./res/delete.res";
-import { CreatePostInput, MediaInput } from "../models/inputs/CreatePost.input";
+import {
+  CreatePostInput,
+  MediaInput,
+  ReactInput,
+} from "../models/inputs/CreatePost.input";
 import { UpdatePostInput } from "../models/inputs/UpdatePost.input";
 import { isValidID } from "../utils/isValidID";
 import { unauthorizedError, unhandledError } from "./errors.resolvers";
@@ -528,6 +534,81 @@ export class PostResolver {
         errors: unauthorizedError(),
         info: null,
         deleted: null,
+      };
+  }
+
+  @Mutation(() => PostResponse)
+  @UseMiddleware(isAuth)
+  async reactPost(
+    @Arg("userId") userId: string,
+    @Arg("postId") postId: string,
+    @Arg("input") input: ReactInput,
+    @Ctx() context: MyContext
+  ): Promise<PostResponse> {
+    if (!isValidID(userId) || !isValidID(postId))
+      return {
+        errors: [
+          {
+            field: "id",
+            message: "Invalid ID",
+          },
+        ],
+        post: null,
+      };
+
+    if (context.user.id === userId || context.user.isAdmin) {
+      try {
+        const react = await PostReactModel.create({
+          user: userId,
+          react: input.react,
+        });
+
+        if (!react)
+          return {
+            errors: [
+              {
+                field: "react",
+                message: `Failed to create a react by ${userId}`,
+              },
+            ],
+            post: null,
+          };
+
+        const post = await PostModel.findOneAndUpdate(
+          { _id: postId },
+          {
+            $addToSet: {
+              reacts: react._id,
+            },
+          },
+          { new: true, upsert: true, returnDocument: "after" }
+        );
+
+        if (!post)
+          return {
+            errors: [
+              {
+                field: "react",
+                message: `Failed to react to ${postId} by ${userId}`,
+              },
+            ],
+            post: null,
+          };
+
+        return {
+          errors: [],
+          post,
+        };
+      } catch (err) {
+        return {
+          errors: unhandledError(err),
+          post: null,
+        };
+      }
+    } else
+      return {
+        errors: unauthorizedError(),
+        post: null,
       };
   }
 }
