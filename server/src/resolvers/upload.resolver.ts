@@ -7,6 +7,7 @@
 
 import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
 import { createWriteStream, promises } from "fs";
+import { v4 } from "uuid";
 
 // @ts-ignore
 import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
@@ -45,9 +46,9 @@ export class UploadResolver {
         ],
       };
 
-    if (mimetype == "video/mp4") fileName = `${Date.now()}.mp4`;
-    else if (mimetype == "image/gif") fileName = `${Date.now()}.gif`;
-    else fileName = `${Date.now()}.png`;
+    if (mimetype == "video/mp4") fileName = `${v4()}.mp4`;
+    else if (mimetype == "image/gif") fileName = `${v4()}.gif`;
+    else fileName = `${v4()}.png`;
 
     try {
       await promises.access(folder);
@@ -111,7 +112,7 @@ export class UploadResolver {
         ],
       };
 
-    fileName = `${Date.now()}.png`;
+    fileName = `${v4()}.png`;
 
     try {
       await promises.access(folder);
@@ -175,7 +176,7 @@ export class UploadResolver {
         ],
       };
 
-    fileName = `${Date.now()}.png`;
+    fileName = `${v4()}.png`;
 
     try {
       await promises.access(folder);
