@@ -33,7 +33,7 @@ import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
 import { Post, PostModel } from "../models/Post.model";
 import { PostArchive, PostArchiveModel } from "../models/Post.archive.model";
-import { PostReactModel } from "../models/PostReact.model";
+import { PostReact, PostReactModel } from "../models/PostReact.model";
 import { isAuth } from "../middlewares/isAuth";
 import {
   PaginatedPostsResponse,
@@ -62,6 +62,11 @@ export class PostResolver {
   @FieldResolver(() => User)
   public userObj(@Root() post: Post, @Ctx() context: MyContext) {
     return context.userLoader.load(post.user?.toString());
+  }
+
+  @FieldResolver(() => [PostReact])
+  public reactsObj(@Root() post: Post, @Ctx() context: MyContext) {
+    return context.postReactLoader.loadMany(post.reacts as string[]);
   }
 
   @Mutation(() => PostResponse)
@@ -539,7 +544,7 @@ export class PostResolver {
 
   @Mutation(() => PostResponse)
   @UseMiddleware(isAuth)
-  async reactPost(
+  public async reactPost(
     @Arg("userId") userId: string,
     @Arg("postId") postId: string,
     @Arg("input") input: ReactInput,
@@ -581,7 +586,7 @@ export class PostResolver {
               reacts: react._id,
             },
           },
-          { new: true, upsert: true, returnDocument: "after" }
+          { returnDocument: "after" }
         );
 
         if (!post)
