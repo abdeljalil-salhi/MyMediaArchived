@@ -31,7 +31,7 @@ export const connectToSocketsServer = (server: HttpServer) => {
       });
 
       // Messages - Handle the messages events
-      messagesHandler(socket, io);
+      messagesHandler(socket, io, users);
 
       // Disconnected - Remove the user from the list of users
       socket.on("disconnect", (): void => {
