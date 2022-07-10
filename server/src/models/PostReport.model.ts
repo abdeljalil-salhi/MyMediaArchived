@@ -22,7 +22,7 @@ export class PostReport {
 
   @Field(() => String)
   @Property({
-    required: [true, "User is required"],
+    required: [true, "Post is required"],
     ref: "Post",
     type: Schema.Types.ObjectId,
   })
