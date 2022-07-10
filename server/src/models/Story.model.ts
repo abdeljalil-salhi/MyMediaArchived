@@ -6,6 +6,8 @@ import { Field, ObjectType } from "type-graphql";
 import { User } from "./User.model";
 import { Feeling } from "./Feeling.model";
 import { StoryReact } from "./StoryReact";
+import { StoryQuestion } from "./StoryQuestion";
+import { StoryShare } from "./StoryShare.model";
 
 @ObjectType()
 export class Story {
@@ -116,9 +118,31 @@ export class Story {
   })
   public isQuestions: boolean;
 
+  @Field(() => [String])
+  @Property({
+    ref: "StoryQuestion",
+    default: [],
+    type: Schema.Types.ObjectId,
+  })
+  public questions: Ref<StoryQuestion>[];
+  @Field(() => [StoryQuestion], {
+    defaultValue: [],
+  })
+  public questionsObj: StoryQuestion[];
+
+  @Field(() => [String])
+  @Property({
+    ref: "StoryShare",
+    default: [],
+    type: Schema.Types.ObjectId,
+  })
+  public shares: Ref<StoryShare>[];
+  @Field(() => [StoryShare], {
+    defaultValue: [],
+  })
+  public sharesObj: StoryShare[];
+
   // TODO
-  public questions: string[];
-  public shares: string[];
   public reports: string[];
 
   @Field(() => Date)

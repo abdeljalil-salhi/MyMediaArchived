@@ -2,15 +2,15 @@ import { prop as Property, Ref, getModelForClass } from "@typegoose/typegoose";
 import { Schema } from "mongoose";
 import { ObjectType, Field } from "type-graphql";
 
+import { Story } from "./Story.model";
 import { User } from "./User.model";
-import { Post } from "./Post.model";
 
 @ObjectType()
-export class PostReport {
+export class StoryShare {
   @Field(() => String)
   readonly _id: string;
 
-  @Field(() => String)
+  @Field(() => User)
   @Property({
     required: [true, "User is required"],
     ref: "User",
@@ -22,27 +22,11 @@ export class PostReport {
 
   @Field(() => String)
   @Property({
-    required: [true, "Post is required"],
-    ref: "Post",
+    required: [true, "Story is required"],
+    ref: "Story",
     type: Schema.Types.ObjectId,
   })
-  public post: Ref<Post>;
-  @Field(() => Post)
-  public postObj: Post;
-
-  @Field(() => String)
-  @Property({
-    enum: ["spam", "inappropriate", "other"],
-    default: "other",
-    type: Schema.Types.String,
-  })
-  public reason: string;
-
-  @Field(() => String)
-  @Property({
-    type: Schema.Types.String,
-  })
-  public description: string;
+  public storyId: Ref<Story>;
 
   @Field(() => Date)
   @Property({
@@ -57,6 +41,6 @@ export class PostReport {
   public updatedAt: Date;
 }
 
-export const PostReportModel = getModelForClass<typeof PostReport>(PostReport, {
+export const StoryShareModel = getModelForClass<typeof StoryShare>(StoryShare, {
   schemaOptions: { timestamps: true },
 });
