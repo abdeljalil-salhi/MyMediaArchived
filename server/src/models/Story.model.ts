@@ -8,6 +8,7 @@ import { Feeling } from "./Feeling.model";
 import { StoryReact } from "./StoryReact";
 import { StoryQuestion } from "./StoryQuestion";
 import { StoryShare } from "./StoryShare.model";
+import { StoryReport } from "./StoryReport.model";
 
 @ObjectType()
 export class Story {
@@ -142,8 +143,17 @@ export class Story {
   })
   public sharesObj: StoryShare[];
 
-  // TODO
-  public reports: string[];
+  @Field(() => [String])
+  @Property({
+    ref: "StoryReport",
+    default: [],
+    type: Schema.Types.ObjectId,
+  })
+  public reports: Ref<StoryReport>[];
+  @Field(() => [StoryReport], {
+    defaultValue: [],
+  })
+  public reportsObj: StoryReport[];
 
   @Field(() => Date)
   @Property({
