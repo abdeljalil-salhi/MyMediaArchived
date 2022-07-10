@@ -9,9 +9,30 @@ export class Feeling {
 
   @Field(() => String)
   @Property({
+    trim: true,
+    default: `unknown_${new Date().getTime()}`,
     type: Schema.Types.String,
   })
-  public value: string;
+  public name?: String;
+
+  @Field(() => String)
+  @Property({
+    default: "feeling/unknown.png",
+    type: Schema.Types.String,
+  })
+  public picture?: String;
+
+  @Field(() => Date)
+  @Property({
+    type: Schema.Types.Date,
+  })
+  public createdAt: Date;
+
+  @Field(() => Date)
+  @Property({
+    type: Schema.Types.Date,
+  })
+  public updatedAt: Date;
 }
 
 export const FeelingModel = getModelForClass<typeof Feeling>(Feeling, {
