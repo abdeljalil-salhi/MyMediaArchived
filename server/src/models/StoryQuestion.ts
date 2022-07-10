@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 import { ObjectType, Field } from "type-graphql";
 
 import { User } from "./User.model";
+import { Story } from "./Story.model";
 
 @ObjectType()
 export class StoryQuestion {
@@ -18,6 +19,14 @@ export class StoryQuestion {
   public user: Ref<User>;
   @Field(() => User)
   public userObj: User;
+
+  @Field(() => String)
+  @Property({
+    required: [true, "Story is required"],
+    ref: "Story",
+    type: Schema.Types.ObjectId,
+  })
+  public storyId: Ref<Story>;
 
   @Field(() => String)
   @Property({
