@@ -4,12 +4,11 @@ import { Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
 
 import { User } from "./User.model";
-import { CommentReact } from "./CommentReact.model";
-import { Reply } from "./Reply.model";
-import { CommentReport } from "./CommentReport.model";
+import { ReplyReact } from "./ReplyReact.model";
+import { ReplyReport } from "./ReplyReport.model";
 
 @ObjectType()
-export class Comment {
+export class Reply {
   @Field(() => String)
   readonly _id: string;
 
@@ -24,7 +23,7 @@ export class Comment {
   public userObj: User;
 
   @MaxLength(1000, {
-    message: "Comment text must not be longer than 1000 characters",
+    message: "Reply text must not be longer than 1000 characters",
   })
   @Field(() => String, { nullable: true })
   @Property({
@@ -68,39 +67,27 @@ export class Comment {
 
   @Field(() => [String])
   @Property({
-    ref: "CommentReact",
+    ref: "ReplyReact",
     default: [],
     type: Schema.Types.ObjectId,
   })
-  public reacts: Ref<CommentReact>[];
-  @Field(() => [CommentReact], {
+  public reacts: Ref<ReplyReact>[];
+  @Field(() => [ReplyReact], {
     defaultValue: [],
   })
-  public reactsObj: CommentReact[];
+  public reactsObj: ReplyReact[];
 
   @Field(() => [String])
   @Property({
-    ref: "Reply",
+    ref: "ReplyReport",
     default: [],
     type: Schema.Types.ObjectId,
   })
-  public replies: Ref<Reply>[];
-  @Field(() => [Reply], {
+  public reports: Ref<ReplyReport>[];
+  @Field(() => [ReplyReport], {
     defaultValue: [],
   })
-  public repliesObj: Reply[];
-
-  @Field(() => [String])
-  @Property({
-    ref: "CommentReport",
-    default: [],
-    type: Schema.Types.ObjectId,
-  })
-  public reports: Ref<CommentReport>[];
-  @Field(() => [CommentReport], {
-    defaultValue: [],
-  })
-  public reportsObj: CommentReport[];
+  public reportsObj: ReplyReport[];
 
   @Field(() => Date)
   @Property({
@@ -115,6 +102,6 @@ export class Comment {
   public updatedAt: Date;
 }
 
-export const CommentModel = getModelForClass<typeof Comment>(Comment, {
+export const ReplyModel = getModelForClass<typeof Reply>(Reply, {
   schemaOptions: { timestamps: true },
 });
