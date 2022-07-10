@@ -1,15 +1,20 @@
 export interface IAddUserParams {
   userId: string;
   socketId: string;
-  users: any[];
+  users: TUser[];
 }
 
 export interface IRemoveUserParams {
   socketId: string;
-  users: any[];
+  users: TUser[];
 }
 
 export interface IGetUserParams {
   userId: string;
-  users: any[];
+  users: TUser[];
 }
+
+export type TUser = {
+  userId: string;
+  socketId: string;
+};

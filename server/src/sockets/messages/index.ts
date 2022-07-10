@@ -1,12 +1,13 @@
 import { Server, Socket } from "socket.io";
 
 import { getUser } from "../functions";
+import { TUser } from "../interfaces";
 import { ISendMessageParams } from "./interfaces";
 
 export const messagesHandler = (
   socket: Socket,
   io: Server<any, any, any, any>,
-  users: any[]
+  users: TUser[]
 ) => {
   const sendMessage = ({
     senderId,
