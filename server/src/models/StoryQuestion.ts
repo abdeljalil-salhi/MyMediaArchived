@@ -1,6 +1,7 @@
 import { prop as Property, Ref, getModelForClass } from "@typegoose/typegoose";
 import { Schema } from "mongoose";
 import { ObjectType, Field } from "type-graphql";
+
 import { User } from "./User.model";
 
 @ObjectType()
