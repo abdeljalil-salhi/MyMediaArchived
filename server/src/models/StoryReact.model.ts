@@ -3,10 +3,10 @@ import { Schema } from "mongoose";
 import { ObjectType, Field, Int } from "type-graphql";
 
 import { User } from "./User.model";
-import { Post } from "./Post.model";
+import { Story } from "./Story.model";
 
 @ObjectType()
-export class PostReact {
+export class StoryReact {
   @Field(() => String)
   readonly _id: string;
 
@@ -22,11 +22,11 @@ export class PostReact {
 
   @Field(() => String)
   @Property({
-    required: [true, "Post is required"],
-    ref: "Post",
+    required: [true, "Story is required"],
+    ref: "Story",
     type: Schema.Types.ObjectId,
   })
-  public postId: Ref<Post>;
+  public storyId: Ref<Story>;
 
   @Field(() => Int)
   @Property({
@@ -35,6 +35,15 @@ export class PostReact {
     type: Schema.Types.Number,
   })
   public react: number;
+
+  @Field(() => Date)
+  @Property({
+    default: Date.now() + 86400 * 1000,
+    // Expires after 24 hours
+    expires: 86400,
+    type: Schema.Types.Date,
+  })
+  public expiresAt: Date;
 
   @Field(() => Date)
   @Property({
@@ -49,6 +58,6 @@ export class PostReact {
   public updatedAt: Date;
 }
 
-export const PostReactModel = getModelForClass<typeof PostReact>(PostReact, {
+export const StoryReactModel = getModelForClass<typeof StoryReact>(StoryReact, {
   schemaOptions: { timestamps: true },
 });

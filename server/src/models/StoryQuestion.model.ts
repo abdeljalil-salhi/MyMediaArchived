@@ -1,15 +1,16 @@
 import { prop as Property, Ref, getModelForClass } from "@typegoose/typegoose";
 import { Schema } from "mongoose";
-import { ObjectType, Field, Int } from "type-graphql";
+import { ObjectType, Field } from "type-graphql";
 
 import { User } from "./User.model";
+import { Story } from "./Story.model";
 
 @ObjectType()
-export class StoryReact {
+export class StoryQuestion {
   @Field(() => String)
   readonly _id: string;
 
-  @Field(() => String)
+  @Field(() => User)
   @Property({
     required: [true, "User is required"],
     ref: "User",
@@ -19,13 +20,20 @@ export class StoryReact {
   @Field(() => User)
   public userObj: User;
 
-  @Field(() => Int)
+  @Field(() => String)
   @Property({
-    enum: [0, 1, 2, 3, 4, 5],
-    default: 0,
-    type: Schema.Types.Number,
+    required: [true, "Story is required"],
+    ref: "Story",
+    type: Schema.Types.ObjectId,
   })
-  public react: number;
+  public storyId: Ref<Story>;
+
+  @Field(() => String)
+  @Property({
+    trim: true,
+    type: Schema.Types.String,
+  })
+  public question: String;
 
   @Field(() => Date)
   @Property({
@@ -49,6 +57,9 @@ export class StoryReact {
   public updatedAt: Date;
 }
 
-export const StoryReactModel = getModelForClass<typeof StoryReact>(StoryReact, {
-  schemaOptions: { timestamps: true },
-});
+export const StoryQuestionModel = getModelForClass<typeof StoryQuestion>(
+  StoryQuestion,
+  {
+    schemaOptions: { timestamps: true },
+  }
+);

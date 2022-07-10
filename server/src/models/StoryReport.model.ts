@@ -3,9 +3,10 @@ import { Schema } from "mongoose";
 import { ObjectType, Field } from "type-graphql";
 
 import { User } from "./User.model";
+import { Story } from "./Story.model";
 
 @ObjectType()
-export class StoryQuestion {
+export class StoryReport {
   @Field(() => String)
   readonly _id: string;
 
@@ -21,19 +22,26 @@ export class StoryQuestion {
 
   @Field(() => String)
   @Property({
+    required: [true, "Story is required"],
+    ref: "Story",
+    type: Schema.Types.ObjectId,
+  })
+  public storyId: Ref<Story>;
+
+  @Field(() => String)
+  @Property({
+    enum: ["spam", "inappropriate", "other"],
+    default: "other",
+    type: Schema.Types.String,
+  })
+  public reason: string;
+
+  @Field(() => String)
+  @Property({
     trim: true,
     type: Schema.Types.String,
   })
-  public question: String;
-
-  @Field(() => Date)
-  @Property({
-    default: Date.now() + 86400 * 1000,
-    // Expires after 24 hours
-    expires: 86400,
-    type: Schema.Types.Date,
-  })
-  public expiresAt: Date;
+  public description: string;
 
   @Field(() => Date)
   @Property({
@@ -48,8 +56,8 @@ export class StoryQuestion {
   public updatedAt: Date;
 }
 
-export const StoryQuestionModel = getModelForClass<typeof StoryQuestion>(
-  StoryQuestion,
+export const StoryReportModel = getModelForClass<typeof StoryReport>(
+  StoryReport,
   {
     schemaOptions: { timestamps: true },
   }
