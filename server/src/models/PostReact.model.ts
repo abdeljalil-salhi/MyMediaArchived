@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 import { ObjectType, Field, Int } from "type-graphql";
 
 import { User } from "./User.model";
+import { Post } from "./Post.model";
 
 @ObjectType()
 export class PostReact {
@@ -18,6 +19,14 @@ export class PostReact {
   public user: Ref<User>;
   @Field(() => User)
   public userObj: User;
+
+  @Field(() => String)
+  @Property({
+    required: [true, "Post is required"],
+    ref: "Post",
+    type: Schema.Types.ObjectId,
+  })
+  public postId: Ref<Post>;
 
   @Field(() => Int)
   @Property({
