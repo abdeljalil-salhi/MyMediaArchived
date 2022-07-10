@@ -5,10 +5,11 @@ import { Field, ObjectType } from "type-graphql";
 
 import { User } from "./User.model";
 import { Feeling } from "./Feeling.model";
-import { StoryReact } from "./StoryReact";
-import { StoryQuestion } from "./StoryQuestion";
+import { StoryReact } from "./StoryReact.model";
+import { StoryQuestion } from "./StoryQuestion.model";
 import { StoryShare } from "./StoryShare.model";
 import { StoryReport } from "./StoryReport.model";
+import { Music } from "./Music.model";
 
 @ObjectType()
 export class Story {
@@ -64,6 +65,15 @@ export class Story {
     type: Schema.Types.String,
   })
   public link?: String;
+
+  @Field(() => String, { nullable: true })
+  @Property({
+    ref: "Music",
+    type: Schema.Types.ObjectId,
+  })
+  public music?: Ref<Music>;
+  @Field(() => Music)
+  public musicObj?: Music;
 
   @Field(() => String, { nullable: true })
   @Property({
