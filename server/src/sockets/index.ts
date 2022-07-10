@@ -25,9 +25,9 @@ export const connectToSocketsServer = (server: HttpServer) => {
     // Socket.io Websocket protocol events
     io.on("connection", (socket: Socket) => {
       // Connected - Add the user to the list of users
-      socket.on("addUser", (userId: string): void => {
+      socket.on("add-user", (userId: string): void => {
         addUser({ userId, socketId: socket.id, users });
-        io.emit("getUsers", users);
+        io.emit("get-users", users);
       });
 
       // Messages - Handle the messages events
@@ -36,7 +36,7 @@ export const connectToSocketsServer = (server: HttpServer) => {
       // Disconnected - Remove the user from the list of users
       socket.on("disconnect", (): void => {
         removeUser({ socketId: socket.id, users });
-        io.emit("getUsers", users);
+        io.emit("get-users", users);
       });
     });
   } catch (err) {
