@@ -1,6 +1,30 @@
 import { Server, Socket } from "socket.io";
 
+import { getUser } from "../functions";
+import { ISendMessageParams } from "./interfaces";
+
 export const messagesHandler = (
-  _socket: Socket,
-  _io: Server<any, any, any, any>
-) => {};
+  socket: Socket,
+  io: Server<any, any, any, any>,
+  users: any[]
+) => {
+  const sendMessage = ({
+    senderId,
+    receiverId,
+    text,
+    deleted,
+  }: ISendMessageParams): void => {
+    const sender = getUser({ userId: senderId, users });
+    const receiver = getUser({ userId: receiverId, users });
+    if (sender && receiver) {
+      io.to(receiver.socketId).emit("get-message", {
+        senderId,
+        text,
+        deleted,
+      });
+    }
+  };
+
+  // Send/Get message
+  socket.on("send-message", sendMessage);
+};
