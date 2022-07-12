@@ -15,6 +15,7 @@ import { IsEmail, MaxLength, MinLength } from "class-validator";
 
 import { Post } from "./Post.model";
 import { Highlight } from "./Highlight.model";
+import { Seller } from "./Seller.model";
 
 interface QueryHelpers {
   findByEmail: AsQueryMethod<typeof findByEmail>;
@@ -183,6 +184,15 @@ export class User {
     type: Schema.Types.Boolean,
   })
   public isSeller: boolean;
+
+  @Field(() => String, { nullable: true })
+  @Property({
+    ref: "Seller",
+    type: Schema.Types.ObjectId,
+  })
+  public seller?: Ref<Seller>;
+  @Field(() => Seller, { nullable: true })
+  public sellerObj?: Seller;
 
   @Field(() => String)
   @Property({
