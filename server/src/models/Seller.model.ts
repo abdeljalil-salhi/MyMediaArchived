@@ -1,12 +1,21 @@
-import { getModelForClass, prop as Property } from "@typegoose/typegoose";
+import { getModelForClass, prop as Property, Ref } from "@typegoose/typegoose";
 import { IsEmail } from "class-validator";
 import { Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
+
+import { User } from "./User.model";
 
 @ObjectType()
 export class Seller {
   @Field(() => String)
   readonly _id: string;
+
+  @Field(() => String)
+  @Property({
+    ref: "User",
+    type: Schema.Types.ObjectId,
+  })
+  public userId: Ref<User>;
 
   @Field(() => String)
   @Property({
