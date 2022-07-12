@@ -4,6 +4,7 @@ import { Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
 
 import { Seller } from "./Seller.model";
+import { ProductReview } from "./ProductReview.model";
 
 @ObjectType()
 export class Product {
@@ -89,10 +90,15 @@ export class Product {
 
   @Field(() => [String])
   @Property({
+    ref: "ProductReview",
     default: [],
-    type: Schema.Types.String,
+    type: Schema.Types.ObjectId,
   })
-  public reviews: string[];
+  public reviews: Ref<ProductReview>[];
+  @Field(() => [ProductReview], {
+    defaultValue: [],
+  })
+  public reviewsObj: ProductReview[];
 
   @Field(() => Date)
   @Property({
