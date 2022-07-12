@@ -1,7 +1,7 @@
 {
   "name": "@mymedia/client",
   "version": "1.0.1",
-  "description": "MyMedia API - In early development.",
+  "description": "MyMedia Client - In early development.",
   "bugs": "https://github.com/abdeljalil-salhi/MyMedia/issues",
   "scripts": {
     "start": "react-scripts start",
