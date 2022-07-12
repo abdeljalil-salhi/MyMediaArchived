@@ -490,6 +490,7 @@ export class PostResolver {
       try {
         const react = await PostReactModel.create({
           user: userId,
+          postId,
           react: input.react,
         });
 
