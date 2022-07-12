@@ -29,3 +29,6 @@ export const minPasswordLength: number = 6;
 export const maxPasswordLength: number = 30;
 export const passwordRegex: RegExp =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
+
+// Payment methods
+export const paymentMethodENUM = ["paypal"];
