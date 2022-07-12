@@ -5,6 +5,7 @@ import { Field, ObjectType } from "type-graphql";
 
 import { Seller } from "./Seller.model";
 import { ProductReview } from "./ProductReview.model";
+import { ProductCategory } from "./ProductCategory.model";
 
 @ObjectType()
 export class Product {
@@ -49,13 +50,15 @@ export class Product {
   })
   public brand?: string;
 
-  // TODO: Add categories
   @Field(() => String)
   @Property({
-    default: "Unknown",
-    type: Schema.Types.String,
+    required: [true, "Category is required"],
+    ref: "ProductCategory",
+    type: Schema.Types.ObjectId,
   })
-  public category: string;
+  public category: Ref<ProductCategory>;
+  @Field(() => ProductCategory)
+  public categoryObj: ProductCategory;
 
   @MaxLength(2048, {
     message: "Bio cannot be longer than 2048 characters",
