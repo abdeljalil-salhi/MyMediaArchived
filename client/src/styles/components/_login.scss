@@ -1,0 +1,194 @@
+.login {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  animation: undrop 1s ease;
+  -webkit-animation: undrop 1s ease;
+  @include tablet {
+    -webkit-box-pack: center !important;
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
+    -webkit-box-align: center !important;
+    -ms-flex-align: center !important;
+    align-items: center !important;
+    display: -webkit-box !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+  }
+
+  .loginError {
+    padding: 5px 20px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+
+    .loginErrorAlert {
+      background-color: $background-primary;
+      color: #ef5350;
+      width: 420px;
+      @include mobile {
+        width: 310px !important;
+      }
+    }
+  }
+
+  .loginBox {
+    width: 400px;
+    height: 270px;
+    padding: 20px;
+    background-color: $background-primary;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -ms-flex-item-align: center;
+    align-self: center;
+    -webkit-box-shadow: $shadow-secondary;
+    box-shadow: $shadow-secondary;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    @include mobile {
+      width: 300px !important;
+    }
+
+    .loginBoxInput {
+      min-height: 40px;
+      height: 50px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      background-color: $background-input;
+      color: $color-secondary;
+
+      .MuiSvgIcon-root {
+        color: $color-primary;
+        margin-left: 10px;
+      }
+
+      input {
+        width: 100%;
+        border: none;
+        font-size: 18px;
+        outline-width: 0;
+        padding: 0 20px 0 10px;
+        background-color: transparent;
+        color: inherit;
+
+        &:-webkit-autofill {
+          background-color: transparent !important;
+        }
+
+        &:autofill {
+          background-color: transparent !important;
+        }
+      }
+    }
+
+    .loginBoxButton {
+      font-family: $font-primary !important;
+      height: 50px !important;
+      border-radius: 10px !important;
+      -webkit-border-radius: 10px !important;
+      -moz-border-radius: 10px !important;
+      border: none !important;
+      background-color: $color-primary !important;
+      color: $color-secondary !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      font-size: 20px !important;
+      text-transform: none !important;
+      margin: 0 0 10px 0;
+    }
+
+    .loginBoxButton:disabled,
+    .loginBoxButton[disabled] {
+      background-color: $background-primary-disabled !important;
+    }
+
+    .loginBoxButton > .MuiCircularProgress-root {
+      color: $color-secondary !important;
+    }
+
+    .loginBoxForgot {
+      color: $color-primary;
+      cursor: pointer;
+      -ms-flex-item-align: center;
+      align-self: center;
+    }
+
+    .loginBoxRegisterBox {
+      width: 100%;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+
+      a {
+        width: 100% !important;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+      }
+
+      .loginBoxRegister {
+        font-family: $font-primary !important;
+        width: 60% !important;
+        height: 40px !important;
+        border-radius: 10px !important;
+        -webkit-border-radius: 10px !important;
+        -moz-border-radius: 10px !important;
+        border: none !important;
+        background-color: $background-input !important;
+        color: $color-secondary !important;
+        font-weight: 500 !important;
+        text-transform: none !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+      }
+    }
+  }
+}

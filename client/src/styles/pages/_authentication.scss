@@ -1,0 +1,102 @@
+.authContainer {
+  height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  overflow-y: hidden;
+
+  .authWrapper {
+    width: 80%;
+    height: 70%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    @include tablet {
+      display: block !important;
+      -webkit-transform: scale(1.1) !important;
+      -ms-transform: scale(1.1) !important;
+      transform: scale(1.1) !important;
+      -webkit-transform-origin: 0 0 !important;
+      -ms-transform-origin: 0 0 !important;
+      transform-origin: 0 0 !important;
+    }
+    @include mobile {
+      -webkit-transform: scale(1) !important;
+      -ms-transform: scale(1) !important;
+      transform: scale(1) !important;
+    }
+
+    .auth {
+      -webkit-box-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      animation: drop 1s ease;
+      -webkit-animation: drop 1s ease;
+      @include tablet {
+        -webkit-box-align: center !important;
+        -ms-flex-align: center !important;
+        align-items: center !important;
+        margin-bottom: 20px !important;
+      }
+
+      .authLogo {
+        font-size: 70px;
+        font-weight: 800;
+        color: $color-primary;
+        -webkit-filter: $shadow-primary;
+        filter: $shadow-primary;
+      }
+
+      .authDesc {
+        font-size: 30px;
+        -webkit-filter: $shadow-primary;
+        filter: $shadow-primary;
+      }
+    }
+  }
+}
+
+// Transition CSS
+.authTransition-enter {
+  opacity: 0.01;
+}
+.authTransition-enter.authTransition-enter-active {
+  opacity: 1;
+  -webkit-transition: opacity 500ms ease-in;
+  -o-transition: opacity 500ms ease-in;
+  transition: opacity 500ms ease-in;
+}
+.authTransition-leave {
+  opacity: 1;
+  -webkit-transform: translateY(0px);
+  -ms-transform: translateY(0px);
+  transform: translateY(0px);
+}
+.authTransition-leave.authTransition-leave-active {
+  opacity: 0.01;
+  -webkit-transform: translateY(-80px);
+  -ms-transform: translateY(-80px);
+  transform: translateY(-80px);
+  -webkit-transition: all 300ms ease-in;
+  -o-transition: all 300ms ease-in;
+  transition: all 300ms ease-in;
+}
