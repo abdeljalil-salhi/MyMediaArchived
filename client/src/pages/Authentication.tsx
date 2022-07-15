@@ -24,7 +24,7 @@ export const Authentication: FC<AuthenticationProps> = () => {
             transitionEnterTimeout={300}
             transitionLeaveTimeout={300}
           >
-            hello world
+            <div>hello world</div>
           </ReactCSSTransitionGroup>
         </div>
       </div>
