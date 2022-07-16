@@ -13,8 +13,14 @@ import {
   ReportGmailerrorred,
 } from "@mui/icons-material";
 
+import { USER } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { useLoginMutation } from "../../generated/graphql";
+import {
+  loginFailure,
+  loginStart,
+  loginSuccess,
+} from "../../context/actions/auth.actions";
 
 interface LoginProps {
   goToRegister: () => void;
@@ -30,7 +36,49 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
   const [login] = useLoginMutation();
   const { dispatch } = useContext(AuthContext);
 
-  const handleSubmit = async (e: any) => {};
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    setIsFetching(true);
+    setErrorOpened(false);
+    setError("");
+
+    let usernameOrEmailToLowerCase = usernameOrEmail.toLowerCase();
+
+    // Start the login process by dispatching the loginStart action
+    dispatch(loginStart());
+    try {
+      // Send the GraphQL login request to the server
+      const res = await login({
+        variables: {
+          usernameOrEmail: usernameOrEmailToLowerCase,
+          password,
+        },
+      });
+
+      if (res.data?.login.user) {
+        // Dispatch the login response by dispatching the loginSuccess action
+        dispatch(loginSuccess(res.data?.login.user));
+        localStorage.setItem(USER, JSON.stringify(res.data?.login.user));
+      } else if (res.data?.login.errors) {
+        // Handle known errors and show them to the user
+        setError(res.data.login.errors[0].message as string);
+        setErrorOpened(true);
+      } else if (res.errors) {
+        // Handle unknown errors and show them to the user
+        setError(
+          `${
+            res.errors[0].message as string
+          }. Please report this error to the support.`
+        );
+        setErrorOpened(true);
+      }
+    } catch (err: unknown) {
+      // Dispatch the login failure by dispatching the loginFailure action
+      dispatch(loginFailure());
+    }
+    setIsFetching(false);
+  };
 
   return (
     <div className="login">

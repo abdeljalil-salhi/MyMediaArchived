@@ -2,6 +2,7 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import { FC, useEffect, useRef, useState } from "react";
 
 import { Login } from "../components/login/Login";
+import { Register } from "../components/register/Register";
 
 interface AuthenticationProps {}
 
@@ -46,7 +47,10 @@ export const Authentication: FC<AuthenticationProps> = () => {
           transitionEnterTimeout={300}
           transitionLeaveTimeout={300}
         >
-          {isLogin && <Login goToRegister={goToRegister} />}
+          <div>
+            {isLogin && <Login goToRegister={goToRegister} />}
+            {isRegister && <Register goToLogin={goToLogin} />}
+          </div>
         </ReactCSSTransitionGroup>
       </div>
     </div>

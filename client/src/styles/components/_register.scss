@@ -1,0 +1,190 @@
+.register {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  animation: undrop 1s ease;
+  -webkit-animation: undrop 1s ease;
+  @include tablet {
+    -webkit-box-pack: center !important;
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
+    -webkit-box-align: center !important;
+    -ms-flex-align: center !important;
+    align-items: center !important;
+    display: -webkit-box !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+  }
+
+  .registerError {
+    margin-top: -15px;
+    padding: 5px 20px 15px 20px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+
+    .registerErrorAlert {
+      background-color: $background-primary;
+      color: #ef5350;
+      width: 420px;
+      @include mobile {
+        width: 310px !important;
+      }
+    }
+  }
+
+  .registerBox {
+    width: 400px;
+    height: 400px;
+    padding: 20px;
+    margin-top: -20px;
+    background-color: $background-primary;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -ms-flex-item-align: center;
+    align-self: center;
+    -webkit-box-shadow: $shadow-secondary;
+    box-shadow: $shadow-secondary;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+
+    .registerBoxInput {
+      min-height: 40px;
+      height: 50px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      background-color: $background-input;
+      color: $color-secondary;
+
+      .MuiSvgIcon-root {
+        color: $color-primary;
+        margin-left: 10px;
+      }
+
+      input {
+        width: 100%;
+        border: none;
+        font-size: 18px;
+        outline-width: 0;
+        padding: 0 20px 0 10px;
+        background-color: transparent;
+        color: inherit;
+
+        &:-webkit-autofill {
+          background-color: transparent !important;
+        }
+
+        &:autofill {
+          background-color: transparent !important;
+        }
+      }
+    }
+
+    .registerBoxRadios {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: start;
+      -ms-flex-align: start;
+      align-items: flex-start;
+
+      small {
+        font-weight: 400;
+      }
+
+      & > div:nth-child(2) {
+        margin-left: 80px;
+      }
+
+      .MuiRadio-root {
+        color: $color-secondary !important;
+      }
+
+      .Mui-checked {
+        color: $color-primary !important;
+      }
+
+      .MuiTypography-root {
+        font-family: $font-primary !important;
+        font-weight: 300 !important;
+      }
+    }
+
+    .registerBoxTerms {
+      .MuiCheckbox-root {
+        color: $color-secondary !important;
+      }
+
+      .Mui-checked {
+        color: $color-primary !important;
+      }
+    }
+
+    .registerBoxButton {
+      font-family: $font-primary !important;
+      height: 50px !important;
+      border-radius: 10px !important;
+      -webkit-border-radius: 10px !important;
+      -moz-border-radius: 10px !important;
+      border: none !important;
+      background-color: $color-primary !important;
+      color: $color-secondary !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      font-size: 20px !important;
+      text-transform: none !important;
+      margin: 0 0 10px 0;
+    }
+
+    .registerBoxButton:disabled,
+    .registerBoxButton[disabled] {
+      background-color: $background-primary-disabled !important;
+    }
+
+    .registerBoxButton > .MuiCircularProgress-root {
+      color: $color-secondary !important;
+    }
+
+    .registerBoxLogin {
+      margin-left: 3px;
+      color: $color-primary;
+      cursor: pointer;
+    }
+  }
+}
