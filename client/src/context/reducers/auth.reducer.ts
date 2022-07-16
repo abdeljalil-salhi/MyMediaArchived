@@ -12,7 +12,7 @@ type PeerState = Record<string, any>;
 type AuthAction = {
   type: string;
   payload: {
-    user: string | null;
+    user: any;
     isFetching: boolean;
     error: boolean;
   };

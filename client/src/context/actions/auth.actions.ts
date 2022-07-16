@@ -12,7 +12,7 @@ export const loginStart = () => ({
   type: LOGIN_START,
 });
 
-export const loginSuccess = (user: string | null) => ({
+export const loginSuccess = (user: any) => ({
   type: LOGIN_SUCCESS,
   payload: user,
 });
@@ -25,7 +25,7 @@ export const registerStart = () => ({
   type: REGISTER_START,
 });
 
-export const registerSuccess = (user: string | null) => ({
+export const registerSuccess = (user: any) => ({
   type: REGISTER_SUCCESS,
   payload: user,
 });
