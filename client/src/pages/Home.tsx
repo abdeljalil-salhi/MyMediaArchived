@@ -1,15 +1,11 @@
-import { FC } from "react";
-import { Helmet } from "react-helmet";
+import { FC, useEffect } from "react";
 
 interface HomeProps {}
 
 export const Home: FC<HomeProps> = () => {
-  return (
-    <>
-      <Helmet>
-        <title>MyMedia</title>
-      </Helmet>
-      homepage
-    </>
-  );
+  useEffect(() => {
+    document.title = "MyMedia";
+  });
+
+  return <>homepage</>;
 };

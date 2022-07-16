@@ -11,9 +11,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const root = createRoot(
-  document.getElementById("root") as Element | DocumentFragment
-);
+const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <StrictMode>

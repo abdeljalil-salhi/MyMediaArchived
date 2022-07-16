@@ -10,5 +10,6 @@
   },
   "devDependencies": {
     "standard-version": "^9.5.0"
-  }
+  },
+  "dependencies": {}
 }

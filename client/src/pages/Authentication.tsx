@@ -1,6 +1,5 @@
 import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import { FC, useEffect, useRef, useState } from "react";
-import { Helmet } from "react-helmet";
 
 import { Login } from "../components/login/Login";
 
@@ -24,6 +23,10 @@ export const Authentication: FC<AuthenticationProps> = () => {
   };
 
   useEffect(() => {
+    document.title = `MyMedia - ${isLogin ? "Log In" : "Sign Up"}`;
+  });
+
+  useEffect(() => {
     return () => clearTimeout(timerRegisterRef.current);
   }, []);
 
@@ -32,26 +35,20 @@ export const Authentication: FC<AuthenticationProps> = () => {
   }, []);
 
   return (
-    <>
-      <Helmet>
-        <title>MyMedia - {isLogin ? "Log In" : "Sign Up"}</title>
-        <meta name="description" content="Authenticate into MyMedia!" />
-      </Helmet>
-      <div className="authContainer">
-        <div className="authWrapper">
-          <div className="auth">
-            <div className="authLogo">MyMedia</div>
-            <span className="authDesc">Connect with the world on MyMedia.</span>
-          </div>
-          <ReactCSSTransitionGroup
-            transitionName="authTransition"
-            transitionEnterTimeout={300}
-            transitionLeaveTimeout={300}
-          >
-            {isLogin && <Login goToRegister={goToRegister} />}
-          </ReactCSSTransitionGroup>
+    <div className="authContainer">
+      <div className="authWrapper">
+        <div className="auth">
+          <div className="authLogo">MyMedia</div>
+          <span className="authDesc">Connect with the world on MyMedia.</span>
         </div>
+        <ReactCSSTransitionGroup
+          transitionName="authTransition"
+          transitionEnterTimeout={300}
+          transitionLeaveTimeout={300}
+        >
+          {isLogin && <Login goToRegister={goToRegister} />}
+        </ReactCSSTransitionGroup>
       </div>
-    </>
+    </div>
   );
 };
