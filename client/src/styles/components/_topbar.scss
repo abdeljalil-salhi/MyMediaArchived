@@ -1,0 +1,291 @@
+.topbarContainer {
+  height: 50px;
+  width: 100%;
+  background-color: $background-primary;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  -webkit-box-shadow: $shadow-secondary;
+  box-shadow: $shadow-secondary;
+  border-bottom: 1px solid $background-input;
+
+  .topbarLeft {
+    -webkit-box-flex: 4;
+    -ms-flex: 4;
+    flex: 4;
+
+    .topbarLogo {
+      font-style: 24px;
+      margin-left: 5px;
+      font-weight: bold;
+      color: $color-secondary;
+      cursor: pointer;
+      height: 100%;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+
+      img {
+        height: 43px;
+        width: 43px;
+      }
+
+      h1 {
+        font-size: 30px;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .topbarCenter {
+    -webkit-box-flex: 5;
+    -ms-flex: 5;
+    flex: 5;
+
+    .topbarSearchbar {
+      width: 100%;
+      height: 35px;
+      background-color: $background-input;
+      border-radius: 30px;
+      -webkit-border-radius: 30px;
+      -moz-border-radius: 30px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+
+      .MuiSvgIcon-root {
+        font-size: 22px !important;
+        margin-left: 10px;
+        margin-right: 5px;
+        color: $color-secondary;
+      }
+
+      .topbarSearchbarInput {
+        border: none;
+        width: 70%;
+        background-color: transparent;
+        color: $color-secondary;
+      }
+    }
+  }
+
+  .topbarRight {
+    -webkit-box-flex: 4;
+    -ms-flex: 4;
+    flex: 4;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 100%;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    color: $color-secondary;
+
+    .topbarLink {
+      margin-top: 10px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      position: relative;
+      bottom: -3px;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+
+      .MuiButtonBase-root {
+        color: $color-secondary !important;
+
+        .MuiSvgIcon-root {
+          height: 1.2em !important;
+          width: 1.2em !important;
+          padding: 2px;
+          -o-transition: 0.3s ease;
+          transition: 0.3s ease;
+          -webkit-transition: 0.3s ease;
+          border-radius: 999px;
+          -webkit-border-radius: 999px;
+          -moz-border-radius: 999px;
+
+          &:hover {
+            background-color: $background-input !important;
+          }
+        }
+      }
+    }
+
+    .logoutStyle {
+      background: transparent;
+      border: 0;
+      font-weight: 600;
+      padding: 10px;
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      color: $color-secondary;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+      -webkit-transition: all 0.3s ease;
+
+      &:hover {
+        background-color: $background-input;
+      }
+    }
+
+    .topbarIcons {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      height: 100%;
+
+      .topbarIconItem {
+        margin-right: 15px;
+        cursor: pointer;
+        position: relative;
+        bottom: -3px;
+
+        .MuiButtonBase-root {
+          color: $color-secondary !important;
+
+          .topbarIconBadge {
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 999px;
+            -webkit-border-radius: 999px;
+            -moz-border-radius: 999px;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .topbarProfileDiv {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+
+      a {
+        margin-right: 15px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+
+        .topbarImage {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      span {
+        position: relative;
+
+        .MuiButtonBase-root {
+          color: $color-secondary;
+
+          .MuiSvgIcon-root {
+            cursor: pointer;
+            bottom: -3px;
+            -o-transition: 0.3s ease;
+            transition: 0.3s ease;
+            -webkit-transition: 0.3s ease;
+            border-radius: 999px;
+            -webkit-border-radius: 999px;
+            -moz-border-radius: 999px;
+
+            &:hover {
+              background-color: $background-input;
+            }
+          }
+        }
+
+        .topbarProfileDivDropdown {
+          background-color: $background-primary;
+          z-index: 99999;
+          position: absolute;
+          width: 200px;
+          top: 46px;
+          left: -170px;
+          -webkit-box-shadow: $shadow-secondary;
+          box-shadow: $shadow-secondary;
+          border-bottom: 1px solid $background-input;
+          border-left: 1px solid $background-input;
+          border-right: 1px solid $background-input;
+          border-bottom-left-radius: 5px;
+          -webkit-border-bottom-left-radius: 5px;
+          -moz-border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
+          -webkit-border-bottom-right-radius: 5px;
+          -moz-border-bottom-right-radius: 5px;
+
+          .topbarProfileDivDropdownItem {
+            padding: 8px 15px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -o-transition: 0.3s ease;
+            transition: 0.3s ease;
+            -webkit-transition: 0.3s ease;
+            cursor: pointer;
+
+            .MuiSvgIcon-root {
+              background-color: $background-input;
+              padding: 3px;
+              border-radius: 999px;
+              -webkit-border-radius: 999px;
+              -moz-border-radius: 999px;
+            }
+
+            div {
+              margin-left: 10px;
+              font-size: 16px;
+              font-weight: 400;
+            }
+
+            &:hover {
+              background-color: $background-input;
+            }
+          }
+        }
+      }
+    }
+  }
+}

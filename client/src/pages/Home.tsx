@@ -1,4 +1,5 @@
 import { FC, useEffect } from "react";
+import { Topbar } from "../components/topbar/Topbar";
 
 interface HomeProps {}
 
@@ -7,5 +8,10 @@ export const Home: FC<HomeProps> = () => {
     document.title = "MyMedia";
   });
 
-  return <>homepage</>;
+  return (
+    <>
+      <Topbar />
+      <div>homepage</div>
+    </>
+  );
 };
