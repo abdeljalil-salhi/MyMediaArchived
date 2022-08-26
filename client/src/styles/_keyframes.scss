@@ -1,6 +1,7 @@
 // Keyframes
 // - drop
 // - undrop
+// - sekeleton-loading
 
 @keyframes drop {
   0% {
@@ -72,5 +73,22 @@
     opacity: 1;
     -webkit-transform: translateY(0px);
     transform: translateY(0px);
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.315);
+  }
+}
+@-webkit-keyframes skeleton-loading {
+  0% {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.315);
   }
 }

@@ -9,6 +9,14 @@ interface HomeProps {}
 
 export const Home: FC<HomeProps> = () => {
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  useEffect(() => {
     document.title = "MyMedia";
   });
 
