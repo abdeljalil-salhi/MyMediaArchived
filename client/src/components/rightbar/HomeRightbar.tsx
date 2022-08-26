@@ -30,7 +30,7 @@ export const HomeRightbar: FC<HomeRightbarProps> = () => {
         <img
           src={`${PC}assets/images/gift.png`}
           alt="Birthday gift"
-          className="rightbarBirthdayImage skeleton"
+          className="rightbarBirthdayImage"
           draggable={false}
         />
         <span className="rightbarBirthdayText">
