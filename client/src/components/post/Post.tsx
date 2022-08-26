@@ -12,7 +12,7 @@ import { format } from "timeago.js";
 import { Link } from "react-router-dom";
 import { Twemoji } from "react-emoji-render";
 
-import { PU } from "../../globals";
+import { PU, TRANSPARENT } from "../../globals";
 import { dateParser } from "../../utils/parsers";
 import { AuthContext } from "../../context/auth.context";
 import { DeleteModal } from "./DeleteModal";
@@ -171,14 +171,11 @@ export const Post: FC<PostProps> = ({ post }) => {
                 src={
                   post.userObj.profile
                     ? `${PU}${post.userObj.profile}`
-                    : `${PU}profile/noAvatar.png`
+                    : TRANSPARENT
                 }
-                title={
-                  post.userObj.firstname &&
-                  `${post.userObj.firstname} ${post.userObj.lastname}`
-                }
+                title={post.userObj.fullName}
                 className="postTopLeftProfileImg skeleton"
-                alt={post.userObj.username && post.userObj.username}
+                alt={`${post.userObj.username}'s profile`}
                 draggable={false}
               />
             </Link>
@@ -335,8 +332,8 @@ export const Post: FC<PostProps> = ({ post }) => {
                   >
                     <img
                       className="postCommentInputImage skeleton"
-                      src={`${PU}${user.profile}`}
-                      alt={user.username && user.username}
+                      src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
+                      alt={`${user.username}'s profile`}
                       draggable={false}
                     />
                   </Link>

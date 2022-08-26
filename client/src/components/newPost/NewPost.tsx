@@ -10,7 +10,7 @@ import {
 import { Twemoji } from "react-emoji-render";
 import { format } from "timeago.js";
 
-import { PU } from "../../globals";
+import { PU, TRANSPARENT } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { isEmpty } from "../../utils/isEmpty";
 import { ErrorModal } from "./ErrorModal";
@@ -71,17 +71,9 @@ export const NewPost: FC<NewPostProps> = () => {
   return (
     <div className="newPostContainer">
       <div className="newPostProfile">
-        <Link
-          to={`/u/${user.username}`}
-          state={{ user }}
-          draggable={false}
-        >
+        <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
           <img
-            src={
-              user.profile
-                ? `${PU}${user.profile}`
-                : `${PU}profile/noAvatar.png`
-            }
+            src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
             alt={user.fullName ? user.fullName : "Your avatar"}
             className="newPostAvatar avatar skeleton"
             draggable={false}
@@ -102,12 +94,8 @@ export const NewPost: FC<NewPostProps> = () => {
           <div className="newPostCard">
             <div className="newPostCardLeft">
               <img
-                src={
-                  user.profile
-                    ? `${PU}${user.profile}`
-                    : `${PU}profile/noAvatar.png`
-                }
-                alt={user.firstName && user.fullName}
+                src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
+                alt={user.firstName ? user.fullName : "Your avatar"}
                 className="avatar skeleton"
                 draggable={false}
               />
@@ -121,7 +109,12 @@ export const NewPost: FC<NewPostProps> = () => {
                 <p>
                   <Twemoji text={text} onlyEmojiClassName="makeEmojisLarge" />
                 </p>
-                {picture && <img src={picture} alt={`Preview: ${text}`} />}
+                {picture && (
+                  <img
+                    src={picture ? picture : TRANSPARENT}
+                    alt={`Preview: ${text}`}
+                  />
+                )}
                 {ytvideo && (
                   <iframe
                     src={ytvideo}

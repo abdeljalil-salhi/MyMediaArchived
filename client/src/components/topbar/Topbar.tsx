@@ -13,7 +13,7 @@ import {
 } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 
-import { GEO, IP_API, PC, PU, USER } from "../../globals";
+import { GEO, IP_API, PC, PU, TRANSPARENT, USER } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { logout as logOut } from "../../context/actions/auth.actions";
 import { SocketContext } from "../../context/socket.context";
@@ -141,17 +141,9 @@ export const Topbar: FC<TopbarProps> = () => {
           </div>
         </div>
         <div className="topbarProfileDiv">
-          <Link
-            to={`/u/${user.username}`}
-            state={{ user }}
-            draggable={false}
-          >
+          <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
             <img
-              src={
-                user.profile
-                  ? `${PU}${user.profile}`
-                  : `${PU}profile/noAvatar.png`
-              }
+              src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
               alt={user.firstName && user.fullName}
               className="topbarImage avatar skeleton"
               draggable={false}

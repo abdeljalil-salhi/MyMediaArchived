@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
 
-import { PU } from "../../globals";
+import { PU, TRANSPARENT } from "../../globals";
 
 interface OnlineFriendProps {
   user: any;
@@ -21,7 +21,7 @@ export const OnlineFriend: FC<OnlineFriendProps> = ({ user }) => {
           src={
             user.profile
               ? `${PU}${user?.profile}`
-              : `${PU}profile/noAvatar.png`
+              : TRANSPARENT
           }
           alt={user.username}
           className="onlineFriendImage avatar skeleton"

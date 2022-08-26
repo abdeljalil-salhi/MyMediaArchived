@@ -8,7 +8,7 @@ import {
   StoreRounded,
 } from "@mui/icons-material";
 
-import { PU } from "../../globals";
+import { PU, TRANSPARENT } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { CloseFriend } from "../closeFriend/CloseFriend";
 
@@ -22,19 +22,11 @@ export const Sidebar: FC<SidebarProps> = () => {
     <div className="sidebarContainer">
       <div className="sidebarWrapper">
         <div className="sidebarItems">
-          <Link
-            to={`/u/${user.username}`}
-            state={{ user }}
-            draggable={false}
-          >
+          <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
             <div className={`sidebarItem noneStyle`}>
               <img
-                src={
-                  user.profile
-                    ? `${PU}${user.profile}`
-                    : `${PU}profile/noAvatar.png`
-                }
-                className="avatar"
+                src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
+                className="avatar skeleton"
                 alt={user.fullName && user.fullName}
                 draggable={false}
               />
