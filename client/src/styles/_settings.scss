@@ -115,9 +115,6 @@ a:visited {
 }
 
 // Skeleton loading
-img.skeleton {
-  text-indent: -1000000px;
-}
 .skeleton {
   animation: skeleton-loading 1s linear infinite alternate;
   -webkit-animation: skeleton-loading 1s linear infinite alternate;
