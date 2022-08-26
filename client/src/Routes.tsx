@@ -10,6 +10,7 @@ import { AuthContext } from "./context/auth.context";
 import { Home } from "./pages/Home";
 import { Authentication } from "./pages/Authentication";
 import { NotFound404 } from "./pages/NotFound404";
+import { Profile } from "./pages/Profile";
 
 const Routes = () => {
   const { user } = useContext(AuthContext);
@@ -18,8 +19,11 @@ const Routes = () => {
     <Router>
       <Switch>
         <Route path="/" element={user ? <Home /> : <Authentication />} />
+        <Route path="login" element={<Navigate to="/" replace />} />
+        <Route path="register" element={<Navigate to="/" replace />} />
+        <Route path="auth" element={<Navigate to="/" replace />} />
         <Route path="u">
-          {/* <Route path=":userId" element={<Profile />} /> */}
+          <Route path=":username" element={<Profile />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Route>
         <Route path="404" element={<NotFound404 />} />
