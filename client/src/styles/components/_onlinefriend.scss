@@ -1,0 +1,46 @@
+.onlineFriendContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  -webkit-transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $background-primary;
+  }
+
+  .onlineFriendProfile {
+    margin-right: 10px;
+    position: relative;
+
+    .onlineFriendImage {
+      width: 40px;
+      height: 40px;
+    }
+
+    .onlineFriendStatus {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      -moz-border-radius: 999px;
+      -webkit-border-radius: 999px;
+      background-color: limegreen;
+      position: absolute;
+      bottom: 1px;
+      right: 0;
+      border: 2px solid $background-primary;
+    }
+  }
+
+  .onlineFriendName {
+    font-weight: 500;
+  }
+}
