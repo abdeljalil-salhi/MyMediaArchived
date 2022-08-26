@@ -142,7 +142,7 @@ export const Topbar: FC<TopbarProps> = () => {
         </div>
         <div className="topbarProfileDiv">
           <Link
-            to={`../../u/${user.username}`}
+            to={`/u/${user.username}`}
             state={{ user }}
             draggable={false}
           >
