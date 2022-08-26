@@ -778,6 +778,8 @@ export type UsersResponse = {
 
 export type ErrorFragmentFragment = { __typename?: 'ErrorResponse', field?: string | null, message?: string | null };
 
+export type PostFragmentFragment = { __typename?: 'Post', _id: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, tags: Array<string>, location?: string | null, isShared: boolean, reacts: Array<string>, comments: Array<string>, mentions: Array<string>, shares: Array<string>, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any };
+
 export type UserFragmentFragment = { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any };
 
 export type LoginMutationVariables = Exact<{
@@ -803,10 +805,50 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, accessToken?: string | null, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any }> | null } | null } };
 
+export type GetTimelinePostsQueryVariables = Exact<{
+  userId: Scalars['String'];
+  limit: Scalars['Int'];
+  cursor?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetTimelinePostsQuery = { __typename?: 'Query', getTimelinePosts: { __typename?: 'PaginatedPostsResponse', hasMore?: boolean | null, errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, posts?: Array<{ __typename?: 'Post', _id: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, tags: Array<string>, location?: string | null, isShared: boolean, reacts: Array<string>, comments: Array<string>, mentions: Array<string>, shares: Array<string>, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any, userObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any } }> | null } };
+
+export type GetUserQueryVariables = Exact<{
+  userId: Scalars['String'];
+}>;
+
+
+export type GetUserQuery = { __typename?: 'Query', getUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, createdAt: any, updatedAt: any }> | null } | null } };
+
 export const ErrorFragmentFragmentDoc = gql`
     fragment ErrorFragment on ErrorResponse {
   field
   message
+}
+    `;
+export const PostFragmentFragmentDoc = gql`
+    fragment PostFragment on Post {
+  _id
+  isEdited
+  text
+  textSnippet
+  picture
+  video
+  file
+  link
+  ytvideo
+  tags
+  location
+  isShared
+  reacts
+  comments
+  mentions
+  shares
+  saves
+  reports
+  createdAt
+  updatedAt
 }
     `;
 export const UserFragmentFragmentDoc = gql`
@@ -955,3 +997,104 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const GetTimelinePostsDocument = gql`
+    query GetTimelinePosts($userId: String!, $limit: Int!, $cursor: String) {
+  getTimelinePosts(userId: $userId, limit: $limit, cursor: $cursor) {
+    errors {
+      ...ErrorFragment
+    }
+    posts {
+      userObj {
+        ...UserFragment
+      }
+      ...PostFragment
+    }
+    hasMore
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}
+${PostFragmentFragmentDoc}`;
+
+/**
+ * __useGetTimelinePostsQuery__
+ *
+ * To run a query within a React component, call `useGetTimelinePostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTimelinePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTimelinePostsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useGetTimelinePostsQuery(baseOptions: Apollo.QueryHookOptions<GetTimelinePostsQuery, GetTimelinePostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTimelinePostsQuery, GetTimelinePostsQueryVariables>(GetTimelinePostsDocument, options);
+      }
+export function useGetTimelinePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimelinePostsQuery, GetTimelinePostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTimelinePostsQuery, GetTimelinePostsQueryVariables>(GetTimelinePostsDocument, options);
+        }
+export type GetTimelinePostsQueryHookResult = ReturnType<typeof useGetTimelinePostsQuery>;
+export type GetTimelinePostsLazyQueryHookResult = ReturnType<typeof useGetTimelinePostsLazyQuery>;
+export type GetTimelinePostsQueryResult = Apollo.QueryResult<GetTimelinePostsQuery, GetTimelinePostsQueryVariables>;
+export const GetUserDocument = gql`
+    query GetUser($userId: String!) {
+  getUser(userId: $userId) {
+    errors {
+      ...ErrorFragment
+    }
+    user {
+      ...UserFragment
+      followersObj {
+        ...UserFragment
+      }
+      followingObj {
+        ...UserFragment
+      }
+      closeObj {
+        ...UserFragment
+      }
+      likes
+      saved
+      highlights
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}`;
+
+/**
+ * __useGetUserQuery__
+ *
+ * To run a query within a React component, call `useGetUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserQuery(baseOptions: Apollo.QueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+      }
+export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+        }
+export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
+export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
+export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;

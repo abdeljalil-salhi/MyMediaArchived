@@ -1,0 +1,289 @@
+.rightbarContainer {
+  -webkit-box-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
+
+  .rightbarWrapper {
+    padding: 20px 20px 0 0;
+
+    .rightbarBirthdays {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: start;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+
+      .rightbarBirthdayImage {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .rightbarBirthdayText {
+        font-weight: 300;
+        font-size: 15px;
+      }
+    }
+
+    .rightbarAds {
+      margin: 30px 0;
+      width: 100%;
+
+      .rightbarAdText {
+        font-size: 10px;
+        margin-left: 10px;
+      }
+
+      .rightbarAdImage {
+        width: 100%;
+        min-height: 100px;
+        max-height: 250px;
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+      }
+    }
+
+    .rightbarOnline {
+      .rightbarOnlineTitle {
+        margin-bottom: 10px;
+      }
+    }
+
+    .rightbarFollowButton {
+      font-family: $font-primary !important;
+      text-transform: none !important;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      border: none;
+      background-color: $color-primary;
+      color: $color-secondary;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      padding: 3px 10px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .rightbarSection {
+      background-color: $background-primary;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-box-shadow: $shadow-secondary;
+      box-shadow: $shadow-secondary;
+
+      .righbarSectionPadding {
+        padding: 10px;
+
+        .rightbarTitle {
+          font-size: 18px;
+          font-weight: 500;
+          margin-bottom: 10px;
+        }
+
+        .rightbarInfo {
+          .rightbarInfoItem {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: start;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+
+            .rightbarInfoItemKey {
+              display: -webkit-box;
+              display: -ms-flexbox;
+              display: flex;
+              -webkit-box-align: center;
+              -ms-flex-align: center;
+              align-items: center;
+              font-weight: 300;
+              margin-right: 6px;
+
+              .MuiSvgIcon-root {
+                margin-right: 10px;
+              }
+
+              .customSVG {
+                margin-right: 10px;
+                -webkit-filter: invert(99%) sepia(2%) saturate(1524%)
+                  hue-rotate(180deg) brightness(97%) contrast(89%);
+                filter: invert(99%) sepia(2%) saturate(1524%) hue-rotate(180deg)
+                  brightness(97%) contrast(89%);
+                -webkit-transform: scale(0.9);
+                -ms-transform: scale(0.9);
+                transform: scale(0.9);
+              }
+
+              .astroSVG {
+                margin-right: 10px;
+                -webkit-filter: invert(99%) sepia(2%) saturate(1524%)
+                  hue-rotate(180deg) brightness(97%) contrast(89%);
+                filter: invert(99%) sepia(2%) saturate(1524%) hue-rotate(180deg)
+                  brightness(97%) contrast(89%);
+                -webkit-transform: scale(0.8);
+                -ms-transform: scale(0.8);
+                transform: scale(0.8);
+              }
+            }
+
+            .ignoreMargins {
+              margin-right: 0 !important;
+            }
+
+            .rightbarInfoItemValue {
+              font-size: 16px;
+              font-weight: 500;
+              cursor: pointer;
+
+              &:hover {
+                text-decoration: underline;
+              }
+
+              .rightbarInfoItemValueAstrologicalSign {
+                font-weight: 500;
+                margin-right: 7px;
+              }
+
+              .rightbarInfoItemValueAstrologicalTitle {
+                font-size: 12px;
+                color: gray;
+                font-style: italic;
+              }
+            }
+
+            .rightbarInfoItemComment {
+              margin-left: 10px;
+              font-size: 12px;
+              color: gray;
+              font-style: italic;
+            }
+
+            .normalInfo {
+              font-weight: 300 !important;
+              cursor: auto !important;
+
+              &:hover {
+                text-decoration: none !important;
+              }
+            }
+
+            .ignoreWeight {
+              font-weight: 400 !important;
+            }
+          }
+
+          .rightbarInfoChips {
+            width: 100%;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: start;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+
+            .MuiChip-root {
+              color: $color-secondary !important;
+              background-color: $background-input !important;
+              margin-right: 10px;
+              margin-top: 5px;
+
+              .MuiSvgIcon-root {
+                color: gray !important;
+              }
+            }
+          }
+        }
+      }
+
+      .rightbarInfoEdit {
+        padding: 10px 20px;
+        width: 100%;
+        background-color: $background-input;
+        color: $color-secondary;
+        font-weight: 500;
+        font-size: 16px;
+        cursor: pointer;
+        border-bottom-left-radius: 10px;
+        -webkit-border-bottom-left-radius: 10px;
+        -moz-border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        -webkit-border-bottom-right-radius: 10px;
+        -moz-border-bottom-right-radius: 10px;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        -webkit-transition: all 0.3s ease;
+        line-height: 0.9 !important;
+
+        &:hover {
+          background-color: rgb(70, 70, 70);
+        }
+      }
+    }
+
+    .rightbarFollowings {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+      -webkit-box-pack: start;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+
+      .rightbarFollowing {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        margin: 10px 5px;
+        cursor: pointer;
+
+        .rightbarFollowingImage {
+          width: 100px;
+          height: 100px;
+          -o-object-fit: cover;
+          object-fit: cover;
+          border-radius: 5px;
+          -webkit-border-radius: 5px;
+          -moz-border-radius: 5px;
+        }
+
+        .rightbarFollowingName {
+          font-size: 13px;
+          font-weight: 500;
+          color: $color-secondary !important;
+        }
+      }
+    }
+  }
+}
