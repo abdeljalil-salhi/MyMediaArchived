@@ -44,8 +44,10 @@ export const Profile: FC<ProfileProps> = () => {
   }, []);
 
   useEffect(() => {
-    document.title = `MyMedia ${params.username}`;
-  }, [params.username]);
+    document.title = !isEmpty(data?.getProfile.user?.fullName)
+      ? `${data?.getProfile?.user?.fullName} - MyMedia`
+      : "MyMedia";
+  }, [data]);
 
   useEffect(() => {
     !isEmpty(data?.getProfile.user) && setUserProfile(data?.getProfile.user);
