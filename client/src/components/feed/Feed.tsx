@@ -16,7 +16,7 @@ export const Feed: FC<FeedProps> = ({ userId }) => {
     <div className="feedContainer">
       <div className="feedWrapper">
         {(!userId || userId === user._id) && <NewPost />}
-        {userId ? <ProfileFeed /> : <HomeFeed />}
+        {userId ? <ProfileFeed userId={userId} /> : <HomeFeed />}
       </div>
     </div>
   );
