@@ -175,7 +175,7 @@ export const Profile: FC<ProfileProps> = () => {
             </div>
           </div>
           <div className="profileBottom">
-            <Feed />
+            <Feed userId={userProfile._id} />
             <Rightbar isProfile profile={userProfile} />
           </div>
         </div>
