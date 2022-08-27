@@ -41,7 +41,7 @@ export const Profile: FC<ProfileProps> = () => {
       left: 0,
       behavior: "smooth",
     });
-  }, []);
+  }, [params.username]);
 
   useEffect(() => {
     document.title = !isEmpty(data?.getProfile.user?.fullName)
