@@ -18,7 +18,7 @@ export const Home: FC<HomeProps> = () => {
 
   useEffect(() => {
     document.title = "MyMedia";
-  });
+  }, []);
 
   return (
     <>
