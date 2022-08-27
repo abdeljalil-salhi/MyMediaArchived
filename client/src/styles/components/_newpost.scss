@@ -63,6 +63,26 @@
       border-radius: 10px;
       -webkit-border-radius: 10px;
       -moz-border-radius: 10px;
+
+      &::-webkit-scrollbar {
+        width: 14px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: $background-primary;
+        border: 3px solid $background-input;
+        border-radius: 999px;
+        -webkit-border-radius: 999px;
+        -moz-border-radius: 999px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: $background;
+      }
     }
   }
 
@@ -156,6 +176,7 @@
         width: 100%;
 
         p {
+          white-space: pre-line;
           word-wrap: break-word;
           word-break: break-all;
         }
