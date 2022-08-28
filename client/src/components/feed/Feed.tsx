@@ -7,10 +7,18 @@ import { ProfileFeed } from "./ProfileFeed";
 
 interface FeedProps {
   userId?: any;
+  notFound?: boolean;
 }
 
-export const Feed: FC<FeedProps> = ({ userId }) => {
+export const Feed: FC<FeedProps> = ({ userId, notFound }) => {
   const { user } = useContext(AuthContext);
+
+  if (notFound)
+    return (
+      <div className="feedContainer">
+        <div className="feedWrapper">User not found</div>
+      </div>
+    );
 
   return (
     <div className="feedContainer">
