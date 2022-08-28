@@ -92,6 +92,12 @@ export const Profile: FC<ProfileProps> = () => {
 
   if (error) return <p>{error.message}</p>;
 
+  if (
+    !isEmpty(data?.getProfile.errors) &&
+    (data?.getProfile as any).errors[0].message === "User not found"
+  )
+    window.location.href = "/404?user=notfound";
+
   return (
     <>
       <Topbar />
