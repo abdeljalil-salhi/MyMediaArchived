@@ -90,7 +90,7 @@
           box-shadow: $shadow-secondary;
 
           &::-webkit-scrollbar {
-            width: 7px;
+            width: 14px;
           }
 
           &::-webkit-scrollbar-track {
@@ -99,6 +99,7 @@
 
           &::-webkit-scrollbar-thumb {
             background-color: $background-primary;
+            border: 3px solid $background-input;
             border-radius: 999px;
             -webkit-border-radius: 999px;
             -moz-border-radius: 999px;

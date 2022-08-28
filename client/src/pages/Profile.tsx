@@ -41,7 +41,7 @@ export const Profile: FC<ProfileProps> = () => {
       left: 0,
       behavior: "smooth",
     });
-  }, []);
+  }, [params.username]);
 
   useEffect(() => {
     document.title = !isEmpty(data?.getProfile.user?.fullName)
@@ -91,6 +91,12 @@ export const Profile: FC<ProfileProps> = () => {
   if (!loading && !data) return <h3>Sorry, user not found.</h3>;
 
   if (error) return <p>{error.message}</p>;
+
+  if (
+    !isEmpty(data?.getProfile.errors) &&
+    (data?.getProfile as any).errors[0].message === "User not found"
+  )
+    window.location.href = "/404?user=notfound";
 
   return (
     <>
@@ -175,7 +181,7 @@ export const Profile: FC<ProfileProps> = () => {
             </div>
           </div>
           <div className="profileBottom">
-            <Feed />
+            <Feed userId={userProfile._id} />
             <Rightbar isProfile profile={userProfile} />
           </div>
         </div>

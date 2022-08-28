@@ -27,6 +27,8 @@ export const FRAGMENT_USER = gql`
     tags
     socials
     website
+    following
+    followers
     createdAt
     updatedAt
   }

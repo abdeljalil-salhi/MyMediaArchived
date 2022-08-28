@@ -1,5 +1,5 @@
 .notFoundContainer {
-  height: 80vh;
+  height: calc(100vh - 51px);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -15,6 +15,19 @@
   flex-direction: column;
   gap: 10px;
   width: 100%;
+
+  .notFoundNavigation {
+    width: 400px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+  }
 
   .notFoundGoBack {
     font-family: $font-primary !important;
@@ -38,6 +51,31 @@
     .MuiSvgIcon-root {
       font-size: 24px !important;
       margin-right: 2px;
+    }
+  }
+
+  .notFoundGoFeed {
+    font-family: $font-primary !important;
+    text-transform: none !important;
+    font-size: 21px;
+    background-color: transparent;
+    color: $color-primary;
+    font-weight: 400 !important;
+    cursor: pointer;
+    padding: 0px 10px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+
+    .MuiSvgIcon-root {
+      font-size: 24px !important;
+      margin-left: 2px;
     }
   }
 }
