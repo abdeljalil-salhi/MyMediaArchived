@@ -16,7 +16,6 @@ import { IconButton } from "@mui/material";
 import { GEO, IP_API, PC, PU, TRANSPARENT, USER } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { logout as logOut } from "../../context/actions/auth.actions";
-import { SocketContext } from "../../context/socket.context";
 
 interface TopbarProps {}
 
@@ -29,7 +28,6 @@ export const Topbar: FC<TopbarProps> = () => {
   );
 
   const { user, dispatch } = useContext(AuthContext);
-  const { ws } = useContext(SocketContext);
 
   useEffect(() => {
     if (localStorage.getItem("localGeo") === null) {
@@ -49,10 +47,6 @@ export const Topbar: FC<TopbarProps> = () => {
       xhr.send();
     }
   }, []);
-
-  useEffect(() => {
-    ws.emit("add-user", user._id);
-  }, [user._id, ws]);
 
   useEffect(() => {
     const pageClickEvent = (e: any) => {
