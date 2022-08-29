@@ -1,8 +1,9 @@
 import { gql } from "@apollo/client";
 
-export const FRAGMENT_POST = gql`
-  fragment PostFragment on Post {
+export const FRAGMENT_POST_ARCHIVE = gql`
+  fragment PostArchiveFragment on PostArchive {
     _id
+    postId
     user
     isEdited
     text

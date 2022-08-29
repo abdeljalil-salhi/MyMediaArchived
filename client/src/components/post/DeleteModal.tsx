@@ -1,5 +1,9 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useContext, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+
+import { AuthContext } from "../../context/auth.context";
+import { GraphQLAccessToken } from "../../utils/_graphql";
+import { useDeletePostMutation } from "../../generated/graphql";
 
 interface DeleteModalProps {
   open: Boolean;
@@ -18,6 +22,10 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   const deleteModalRef: any = useRef<HTMLDivElement>(
     null as unknown as HTMLDivElement
   );
+
+  const { user } = useContext(AuthContext);
+
+  const [deletePost] = useDeletePostMutation();
 
   useEffect(() => {
     const pageClickEvent = (e: any) => {
@@ -43,7 +51,15 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   }, []);
 
   const deletePostFn = () => {
-    // TODO: delete post
+    deletePost({
+      variables: {
+        userId: user._id,
+        postId,
+      },
+      context: GraphQLAccessToken(user.accessToken),
+    });
+    onClose();
+    window.location.reload();
   };
 
   if (!open) return null;
