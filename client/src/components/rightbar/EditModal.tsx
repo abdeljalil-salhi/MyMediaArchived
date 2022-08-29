@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Close,
@@ -20,16 +20,11 @@ interface EditModalProps {
 
 export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
   const [city, setCity] = useState("");
-  const [hometown, setHometown] = useState("second");
+  const [hometown, setHometown] = useState("");
   const [relationship, setRelationship] = useState(0);
   const [localSuggestion, setLocalSuggestion] = useState({} as any);
 
   const { user } = useContext(AuthContext);
-
-  const timerRef: any = useRef(null as any);
-  const editModalRef: any = useRef<HTMLDivElement>(
-    null as unknown as HTMLDivElement
-  );
 
   const customSelectOptions: string[] = [
     "Prefer not to say",
@@ -62,29 +57,6 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
         setLocalSuggestion(JSON.parse(localStorage.getItem(GEO) as string));
     } catch (e: any) {}
   }, [user]);
-
-  useEffect(() => {
-    const pageClickEvent = (e: any) => {
-      if (
-        editModalRef.current !== null &&
-        !editModalRef.current.contains(e.target)
-      )
-        onClose();
-    };
-
-    if (onClose as any) {
-      timerRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
-        100
-      );
-    }
-
-    return () => window.removeEventListener("click", pageClickEvent);
-  }, [onClose]);
-
-  useEffect(() => {
-    return () => clearTimeout(timerRef.current);
-  }, []);
 
   if (!open) return null;
 
