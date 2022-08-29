@@ -7,12 +7,16 @@ import { Button } from "@mui/material";
 
 import { PU, TRANSPARENT } from "../globals";
 import { Sidebar } from "../components/sidebar/Sidebar";
-import { useGetProfileQuery } from "../generated/graphql";
+import {
+  useGetProfileQuery,
+  useUpdateUserMutation,
+} from "../generated/graphql";
 import { isEmpty } from "../utils/isEmpty";
 import { Rightbar } from "../components/rightbar/Rightbar";
 import { AuthContext } from "../context/auth.context";
 import { Feed } from "../components/feed/Feed";
 import { Topbar } from "../components/topbar/Topbar";
+import { GraphQLAccessToken } from "../utils/_graphql";
 
 interface ProfileProps {}
 
@@ -28,6 +32,8 @@ export const Profile: FC<ProfileProps> = () => {
 
   const { user } = useContext(AuthContext);
   const params: any = useParams();
+
+  const [updateUser] = useUpdateUserMutation();
 
   const { data, loading, error } = useGetProfileQuery({
     variables: {
@@ -79,9 +85,17 @@ export const Profile: FC<ProfileProps> = () => {
 
   const handleUpdateBio = () => {
     if (bio.trim()) {
-      // TODO: update bio
+      updateUser({
+        variables: {
+          userId: user._id,
+          accessToken: user.accessToken,
+          bio,
+        },
+        context: GraphQLAccessToken(user.accessToken),
+      });
       setUpdatingBio(false);
       setBio(null as any);
+      window.location.reload();
     } else {
       setUpdatingBio(false);
       setBio(null as any);
