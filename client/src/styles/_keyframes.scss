@@ -2,6 +2,7 @@
 // - drop
 // - undrop
 // - sekeleton-loading
+// - show
 
 @keyframes drop {
   0% {
@@ -90,5 +91,28 @@
   }
   100% {
     background-color: rgba(0, 0, 0, 0.315);
+  }
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes show {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
