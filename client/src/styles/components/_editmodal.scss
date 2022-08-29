@@ -1,13 +1,3 @@
-.editModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 10000;
-}
-
 .editModal {
   position: fixed;
   top: 50%;
@@ -16,13 +6,15 @@
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   background-color: $background-primary;
-  width: 50%;
+  width: clamp(50%, 700px, 90%);
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   z-index: 10001;
   -webkit-box-shadow: $shadow-secondary;
   box-shadow: $shadow-secondary;
+  -webkit-animation: show 1s ease;
+  animation: show 1s ease;
 
   .editModalHeader {
     display: -webkit-box;
@@ -171,24 +163,6 @@
         -ms-flex-align: start;
         align-items: flex-start;
       }
-
-      //   .MuiInputLabel-root {
-      //     font-family: $font-primary !important;
-      //     color: $color-secondary !important;
-      //     font-weight: 300 !important;
-      //   }
-
-      //   .MuiOutlinedInput-root {
-      //     font-family: $font-primary !important;
-      //     color: $color-secondary !important;
-      //     font-weight: 400 !important;
-      //     width: 320px !important;
-      //     outline-width: 0 !important;
-      //     background-color: $background-input !important;
-      //     border-radius: 10px !important;
-      //     -webkit-border-radius: 10px !important;
-      //     -moz-border-radius: 10px !important;
-      //   }
     }
   }
 
