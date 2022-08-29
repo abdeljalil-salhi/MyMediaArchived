@@ -22,6 +22,13 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
+import { createWriteStream, promises } from "fs";
+import { v4 } from "uuid";
+
+// @ts-ignore
+import GraphQLUpload from "graphql-upload/GraphQLUpload.js";
+/* @ts-ignore */
+import Upload from "graphql-upload/Upload.js";
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
@@ -35,11 +42,7 @@ import {
   PostsResponse,
 } from "./res/post.res";
 import { DeletePostResponse } from "./res/delete.res";
-import {
-  CreatePostInput,
-  MediaInput,
-  ReactInput,
-} from "../models/inputs/CreatePost.input";
+import { CreatePostInput, ReactInput } from "../models/inputs/CreatePost.input";
 import { UpdatePostInput } from "../models/inputs/UpdatePost.input";
 import { isValidID } from "../utils/isValidID";
 import { unauthorizedError, unhandledError } from "./errors.resolvers";
@@ -67,7 +70,9 @@ export class PostResolver {
   public async createPost(
     @Ctx() context: MyContext,
     @Arg("input") input: CreatePostInput,
-    @Arg("file") media?: MediaInput
+    @Arg("isMedia") isMedia: boolean,
+    @Arg("file", () => GraphQLUpload, { nullable: true })
+    file: Upload
   ): Promise<PostResponse> {
     if (!isValidID(input.user))
       return {
@@ -81,29 +86,87 @@ export class PostResolver {
       };
 
     if (context.user.id === input.user || context.user.isAdmin) {
-      try {
-        input.picture = media
-          ? media.mimetype == "image/jpg" ||
-            media.mimetype == "image/png" ||
-            media.mimetype == "image/jpeg" ||
-            media.mimetype == "image/gif"
-            ? media.path
-            : ""
-          : "";
-        input.video = media
-          ? media.mimetype == "video/mp4"
-            ? media.path
-            : ""
-          : "";
-        input.file = media
-          ? media.mimetype == "application/zip" ||
-            media.mimetype == "application/x-7z-compressed" ||
-            media.mimetype == "application/vnd.rar" ||
-            media.mimetype == "text/plain"
-            ? media.path
-            : ""
-          : "";
+      if (isMedia) {
+        let fileName: string;
+        let folder: string = `${__dirname}/../../uploads/post/${context.user.id}`;
 
+        const mimetype = file.mimetype;
+        const createReadStream = () => file.createReadStream();
+
+        if (
+          mimetype != "image/jpg" &&
+          mimetype != "image/png" &&
+          mimetype != "image/jpeg" &&
+          mimetype != "image/gif" &&
+          mimetype != "video/mp4" &&
+          mimetype != "application/zip" &&
+          mimetype != "application/x-7z-compressed" &&
+          mimetype != "application/vnd.rar" &&
+          mimetype != "application/pdf" &&
+          mimetype != "text/plain"
+        )
+          return {
+            errors: [
+              {
+                field: "file",
+                message: "Invalid file format",
+              },
+            ],
+          };
+
+        if (mimetype == "video/mp4") fileName = `${v4()}.mp4`;
+        else if (mimetype == "image/gif") fileName = `${v4()}.gif`;
+        else fileName = `${v4()}.png`;
+
+        try {
+          await promises.access(folder);
+        } catch (_: any) {
+          await promises.mkdir(folder);
+        }
+
+        input.picture =
+          mimetype == "image/jpg" ||
+          mimetype == "image/png" ||
+          mimetype == "image/jpeg" ||
+          mimetype == "image/gif"
+            ? `post/${context.user.id}/${fileName}`
+            : "";
+        input.video =
+          mimetype == "video/mp4" ? `post/${context.user.id}/${fileName}` : "";
+        input.file =
+          mimetype == "application/zip" ||
+          mimetype == "application/x-7z-compressed" ||
+          mimetype == "application/vnd.rar" ||
+          mimetype == "application/pdf" ||
+          mimetype == "text/plain"
+            ? `post/${context.user.id}/${fileName}`
+            : "";
+
+        try {
+          await new Promise(async (resolve, reject) =>
+            createReadStream()
+              .pipe(createWriteStream(`${folder}/${fileName}`))
+              .on("finish", async () => {
+                resolve(true);
+              })
+              .on("error", (_: Error) => {
+                reject(false);
+              })
+          );
+        } catch (_: unknown) {
+          return {
+            errors: [
+              {
+                field: "file",
+                message: "File not found or invalid",
+              },
+            ],
+            post: null,
+          };
+        }
+      }
+
+      try {
         const post = await PostModel.create(input);
 
         if (!post)
@@ -121,7 +184,7 @@ export class PostResolver {
           errors: [],
           post,
         };
-      } catch (err) {
+      } catch (err: any) {
         return {
           errors: unhandledError(err),
           post: null,
