@@ -11,6 +11,7 @@ import { GEO } from "../../globals";
 import { isEmpty } from "../../utils/isEmpty";
 import { AuthContext } from "../../context/auth.context";
 import { CustomSelect } from "../customs/customSelect/CustomSelect";
+import { Backdrop } from "../backdrop/Backdrop";
 
 interface EditModalProps {
   open: boolean;
@@ -89,67 +90,68 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
 
   return createPortal(
     <>
-      <div className="editModalOverlay"></div>
-      <div className="editModal" ref={editModalRef}>
-        <div className="editModalHeader">
-          <div></div>
-          <h2>Edit Informations</h2>
-          <span onClick={onClose}>
-            <Close />
-          </span>
-        </div>
-        <div className="editModalBody">
-          <div className="editModalBodyElement">
-            <span className="editModalBodyHeader">
-              <HomeWorkRounded />
-              City
+      <Backdrop onClick={onClose}>
+        <div className="editModal" onClick={(e: any) => e.stopPropagation()}>
+          <div className="editModalHeader">
+            <div></div>
+            <h2>Edit Informations</h2>
+            <span onClick={onClose}>
+              <Close />
             </span>
-            <input
-              className="editModalBodyInput"
-              type="text"
-              placeholder="Where are you living?"
-              value={city}
-              onChange={(e: any) => setCity(e.target.value)}
-            />
-            <span className="editModalBodySuggests">
-              Suggestions:{" "}
-              <span
-                className="editModalBodySuggestsName"
-                onClick={handleSuggestion}
-              >
-                {localSuggestion.city}
+          </div>
+          <div className="editModalBody">
+            <div className="editModalBodyElement">
+              <span className="editModalBodyHeader">
+                <HomeWorkRounded />
+                City
               </span>
-            </span>
+              <input
+                className="editModalBodyInput"
+                type="text"
+                placeholder="Where are you living?"
+                value={city}
+                onChange={(e: any) => setCity(e.target.value)}
+              />
+              <span className="editModalBodySuggests">
+                Suggestions:{" "}
+                <span
+                  className="editModalBodySuggestsName"
+                  onClick={handleSuggestion}
+                >
+                  {localSuggestion.city}
+                </span>
+              </span>
+            </div>
+            <div className="editModalBodyElement">
+              <span className="editModalBodyHeader">
+                <FireplaceRounded />
+                Hometown
+              </span>
+              <input
+                className="editModalBodyInput"
+                type="text"
+                placeholder="Where are you from?"
+                value={hometown}
+                onChange={(e) => setHometown(e.target.value)}
+              />
+            </div>
+            <div className="editModalBodyElement editModalBodyRelationship">
+              <span className="editModalBodyHeader editModalBodyHeaderRelationship">
+                <FavoriteRounded />
+                Relationship
+              </span>
+              <CustomSelect
+                optionsList={customSelectOptions}
+                customState={relationship}
+                setCustomState={setRelationship}
+              />
+            </div>
           </div>
-          <div className="editModalBodyElement">
-            <span className="editModalBodyHeader">
-              <FireplaceRounded />
-              Hometown
-            </span>
-            <input
-              className="editModalBodyInput"
-              type="text"
-              placeholder="Where are you from?"
-              value={hometown}
-              onChange={(e) => setHometown(e.target.value)}
-            />
-          </div>
-          <div className="editModalBodyElement editModalBodyRelationship">
-            <span className="editModalBodyHeader editModalBodyHeaderRelationship">
-              <FavoriteRounded />
-              Relationship
-            </span>
-            <CustomSelect
-              optionsList={customSelectOptions}
-              customState={relationship}
-              setCustomState={setRelationship}
-            />
+          <div className="editModalFooter">
+            <button onClick={handleConfirm}>Confirm</button>
           </div>
         </div>
-        <div className="editModalFooter">
-          <button onClick={handleConfirm}>Confirm</button>
-        </div>
-      </div>
+      </Backdrop>
     </>,
     document.getElementById("portal") as Element
   );
