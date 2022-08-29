@@ -88,9 +88,9 @@ export const Profile: FC<ProfileProps> = () => {
     }
   };
 
-  if (!loading && !data) return <h3>Sorry, user not found.</h3>;
+  if (!loading && !data) window.location.href = "/404?user=notfound";
 
-  if (error) return <p>{error.message}</p>;
+  if (error) window.location.href = "/404?user=notfound";
 
   if (
     !isEmpty(data?.getProfile.errors) &&
