@@ -14,6 +14,8 @@ import { PU, TRANSPARENT } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { isEmpty } from "../../utils/isEmpty";
 import { ErrorModal } from "./ErrorModal";
+import { useCreatePostMutation } from "../../generated/graphql";
+import { GraphQLAccessToken } from "../../utils/_graphql";
 
 interface NewPostProps {}
 
@@ -22,9 +24,11 @@ export const NewPost: FC<NewPostProps> = () => {
   const [text, setText] = useState("");
   const [picture, setPicture] = useState("");
   const [ytvideo, setYtvideo] = useState("");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState(null as any);
 
   const { user } = useContext(AuthContext);
+
+  const [createPost] = useCreatePostMutation();
 
   const labelNames = {
     upload: "file-upload",
@@ -34,6 +38,7 @@ export const NewPost: FC<NewPostProps> = () => {
   };
 
   useEffect(() => {
+    // Bootstrap the function to handle the youtube video detection
     const handleYtvideo = () => {
       let findLink = text.split(" ");
 
@@ -53,7 +58,19 @@ export const NewPost: FC<NewPostProps> = () => {
     handleYtvideo();
   }, [text]);
 
-  const handlePost = async () => {};
+  const handlePost = async () => {
+    await createPost({
+      variables: {
+        user: user._id,
+        text,
+        ytvideo,
+        isMedia: !isEmpty(picture),
+        file,
+      },
+      context: GraphQLAccessToken(user.accessToken),
+    });
+    window.location.reload();
+  };
 
   const handlePicture = (e: any) => {
     setPicture(URL.createObjectURL(e.target.files[0]));
@@ -65,7 +82,7 @@ export const NewPost: FC<NewPostProps> = () => {
     setText("");
     setPicture("");
     setYtvideo("");
-    setFile("");
+    setFile(null);
   };
 
   return (
