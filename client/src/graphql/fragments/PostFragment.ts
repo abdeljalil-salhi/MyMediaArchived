@@ -3,6 +3,7 @@ import { gql } from "@apollo/client";
 export const FRAGMENT_POST = gql`
   fragment PostFragment on Post {
     _id
+    user
     isEdited
     text
     textSnippet
@@ -11,13 +12,15 @@ export const FRAGMENT_POST = gql`
     file
     link
     ytvideo
+    feeling
     tags
+    mentions
     location
-    isShared
     reacts
     comments
-    mentions
     shares
+    isShared
+    originalPost
     saves
     reports
     createdAt
