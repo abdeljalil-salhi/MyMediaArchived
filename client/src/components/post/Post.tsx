@@ -286,6 +286,16 @@ export const Post: FC<PostProps> = ({ post }) => {
               allowFullScreen
             ></iframe>
           )}
+          {post.video && (
+            <video
+              className="postCenterVideo"
+              src={`${PU}${post.video}`}
+              title={
+                `${post.userObj.fullName}` + (post.text ? ": " + post.text : "")
+              }
+              controls
+            ></video>
+          )}
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">
