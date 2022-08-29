@@ -1,0 +1,105 @@
+.CustomSelectContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+
+  .CustomSelectWrapper {
+    width: 100%;
+
+    button {
+      padding: 4px 10px 7px 10px;
+      margin: 5px 0px 4px 0px;
+      background-color: $background-input;
+      color: $color-secondary;
+      font-weight: 400;
+      font-size: 15px;
+      border-radius: 10px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      width: 100%;
+      cursor: pointer;
+      text-align: left;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+      -webkit-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+
+      &.CustomSelectExpanded {
+        border-bottom-left-radius: 0 !important;
+        -webkit-border-bottom-left-radius: 0 !important;
+        -moz-border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        -webkit-border-bottom-right-radius: 0 !important;
+        -moz-border-bottom-right-radius: 0 !important;
+      }
+
+      .MuiSvgIcon-root {
+        margin-top: 5px;
+      }
+    }
+
+    .CustomSelectOptions {
+      background-color: $background-primary;
+      -webkit-box-shadow: $shadow-secondary;
+      box-shadow: $shadow-secondary;
+      border-bottom: 1px solid $background-input;
+      border-left: 1px solid $background-input;
+      border-right: 1px solid $background-input;
+      border-bottom-left-radius: 5px;
+      -webkit-border-bottom-left-radius: 5px;
+      -moz-border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      -webkit-border-bottom-right-radius: 5px;
+      -moz-border-bottom-right-radius: 5px;
+      display: none;
+      list-style: none;
+      margin-top: -4px;
+      -webkit-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+
+      &.CustomSelectOptionsDisplay {
+        display: block;
+        -webkit-animation: show 0.5s ease;
+        animation: show 0.5s ease;
+      }
+
+      li {
+        padding: 4px 15px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -o-transition: 0.3s ease;
+        transition: 0.3s ease;
+        -webkit-transition: 0.3s ease;
+        cursor: pointer;
+
+        &.CustomSelectItemSelected {
+          background-color: $background-input;
+        }
+
+        &:hover {
+          background-color: $background-input;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,222 @@
+.editModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+}
+
+.editModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background-color: $background-primary;
+  width: 50%;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  z-index: 10001;
+  -webkit-box-shadow: $shadow-secondary;
+  box-shadow: $shadow-secondary;
+
+  .editModalHeader {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid $border-color;
+
+    h2 {
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    span {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      padding: 3px;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      background-color: $background-input;
+      cursor: pointer;
+      border-radius: 999px;
+      -webkit-border-radius: 999px;
+      -moz-border-radius: 999px;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+      -webkit-transition: all 0.3s ease;
+
+      &:hover {
+        background-color: rgb(70, 70, 70);
+      }
+    }
+  }
+
+  .editModalBody {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    height: calc(100vh - 200px);
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+      width: 14px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgb(99, 99, 99);
+      border: 3px solid $background-primary;
+      border-radius: 999px;
+      -webkit-border-radius: 999px;
+      -moz-border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: $border-color;
+    }
+
+    .editModalBodyElement {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      margin-bottom: 5px;
+
+      .editModalBodyHeader {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        margin-left: 10px;
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: 500;
+
+        .MuiSvgIcon-root {
+          margin-right: 5px;
+        }
+      }
+
+      .editModalBodyInput {
+        padding: 10px 10px 13px 10px;
+        margin: 5px 0px 0px 0px;
+        background-color: $background-input;
+        color: $color-secondary;
+        font-weight: 400;
+        font-size: 15px;
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        width: 300px;
+      }
+
+      .editModalBodySuggests {
+        font-size: 14px;
+        margin-left: 7px;
+
+        .editModalBodySuggestsName {
+          color: $color-primary;
+          cursor: pointer;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    .editModalBodyRelationship {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: start;
+      -ms-flex-align: start;
+      align-items: flex-start;
+      width: 320px;
+
+      .editModalBodyHeaderRelationship {
+        -webkit-box-align: start;
+        -ms-flex-align: start;
+        align-items: flex-start;
+      }
+
+      //   .MuiInputLabel-root {
+      //     font-family: $font-primary !important;
+      //     color: $color-secondary !important;
+      //     font-weight: 300 !important;
+      //   }
+
+      //   .MuiOutlinedInput-root {
+      //     font-family: $font-primary !important;
+      //     color: $color-secondary !important;
+      //     font-weight: 400 !important;
+      //     width: 320px !important;
+      //     outline-width: 0 !important;
+      //     background-color: $background-input !important;
+      //     border-radius: 10px !important;
+      //     -webkit-border-radius: 10px !important;
+      //     -moz-border-radius: 10px !important;
+      //   }
+    }
+  }
+
+  .editModalFooter {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    margin-top: 5px;
+    padding: 10px 0px;
+    width: 100%;
+
+    button {
+      background-color: $color-primary;
+      padding: 10px !important;
+      margin: 0px 10px;
+      border-radius: 5px !important;
+      -webkit-border-radius: 5px !important;
+      -moz-border-radius: 5px !important;
+      cursor: pointer;
+      font-weight: 500;
+      color: $color-secondary;
+      font-size: 16px;
+      width: 100%;
+    }
+  }
+}
