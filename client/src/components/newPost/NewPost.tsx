@@ -21,8 +21,11 @@ interface NewPostProps {}
 
 export const NewPost: FC<NewPostProps> = () => {
   const [showErrorModal, setShowErrorModal] = useState<Boolean>(false);
+  const [showErrorFormatModal, setShowErrorFormatModal] =
+    useState<Boolean>(false);
   const [text, setText] = useState("");
   const [picture, setPicture] = useState("");
+  const [video, setVideo] = useState("");
   const [ytvideo, setYtvideo] = useState("");
   const [file, setFile] = useState(null as any);
 
@@ -59,28 +62,50 @@ export const NewPost: FC<NewPostProps> = () => {
   }, [text]);
 
   const handlePost = async () => {
-    await createPost({
-      variables: {
-        user: user._id,
-        text,
-        ytvideo,
-        isMedia: !isEmpty(picture),
-        file,
-      },
-      context: GraphQLAccessToken(user.accessToken),
-    });
-    window.location.reload();
+    if (
+      !isEmpty(text.trim()) ||
+      !isEmpty(picture) ||
+      !isEmpty(video) ||
+      !isEmpty(ytvideo)
+    ) {
+      await createPost({
+        variables: {
+          user: user._id,
+          text,
+          ytvideo,
+          isMedia: !isEmpty(picture),
+          file,
+        },
+        context: GraphQLAccessToken(user.accessToken),
+      });
+      window.location.reload();
+    } else {
+      setShowErrorModal(true);
+    }
   };
 
-  const handlePicture = (e: any) => {
-    setPicture(URL.createObjectURL(e.target.files[0]));
-    setFile(e.target.files[0]);
-    setYtvideo("");
+  const handleMedia = (e: any) => {
+    console.log(e.target.files[0]);
+    if (e.target.files[0].type.includes("image")) {
+      // If the uploaded file is an image
+      setPicture(URL.createObjectURL(e.target.files[0]));
+      setFile(e.target.files[0]);
+      setYtvideo("");
+    } else if (e.target.files[0].type.includes("video")) {
+      // If the uploaded file is a video
+      setVideo(URL.createObjectURL(e.target.files[0]));
+      setFile(e.target.files[0]);
+      setYtvideo("");
+    } else {
+      // If the uploaded file is not an image or video
+      setShowErrorFormatModal(true);
+    }
   };
 
   const cancelPost = () => {
     setText("");
     setPicture("");
+    setVideo("");
     setYtvideo("");
     setFile(null);
   };
@@ -107,7 +132,10 @@ export const NewPost: FC<NewPostProps> = () => {
         ></textarea>
       </div>
       <FlipMove className="newPostFlipMove">
-        {text || picture || ytvideo.length > 20 ? (
+        {!isEmpty(text) ||
+        !isEmpty(picture) ||
+        !isEmpty(video) ||
+        ytvideo.length > 20 ? (
           <div className="newPostCard">
             <div className="newPostCardLeft">
               <img
@@ -123,16 +151,18 @@ export const NewPost: FC<NewPostProps> = () => {
                 <span>{format(Date.now())}</span>
               </div>
               <div className="newPostCardContent">
-                <p>
-                  <Twemoji text={text} onlyEmojiClassName="makeEmojisLarge" />
-                </p>
-                {picture && (
+                {!isEmpty(text) && (
+                  <p>
+                    <Twemoji text={text} onlyEmojiClassName="makeEmojisLarge" />
+                  </p>
+                )}
+                {!isEmpty(picture) && (
                   <img
                     src={picture ? picture : TRANSPARENT}
                     alt={`Preview: ${text}`}
                   />
                 )}
-                {ytvideo && (
+                {!isEmpty(ytvideo) && (
                   <iframe
                     src={ytvideo}
                     frameBorder="0"
@@ -142,6 +172,7 @@ export const NewPost: FC<NewPostProps> = () => {
                     allowFullScreen
                   ></iframe>
                 )}
+                {!isEmpty(video) && <video src={video} controls></video>}
               </div>
             </div>
           </div>
@@ -155,18 +186,18 @@ export const NewPost: FC<NewPostProps> = () => {
                   className="newPostFooterIconsPicture"
                 >
                   <PhotoLibraryOutlined />
-                  Picture
+                  Media
                 </label>
                 <input
                   type="file"
                   name="file"
                   id={labelNames.upload}
                   className="hide"
-                  onChange={(e) => handlePicture(e)}
+                  onChange={(e) => handleMedia(e)}
                 />
               </>
             )}
-            {ytvideo && (
+            {!isEmpty(ytvideo) && (
               <>
                 <label
                   htmlFor={labelNames.delete}
@@ -183,7 +214,10 @@ export const NewPost: FC<NewPostProps> = () => {
                 ></button>
               </>
             )}
-            {text || picture || ytvideo.length > 20 ? (
+            {!isEmpty(text) ||
+            !isEmpty(picture) ||
+            !isEmpty(video) ||
+            ytvideo.length > 20 ? (
               <>
                 <label
                   htmlFor={labelNames.cancel}
@@ -218,6 +252,12 @@ export const NewPost: FC<NewPostProps> = () => {
         onClose={() => setShowErrorModal(false)}
       >
         You can not publish an empty post.
+      </ErrorModal>
+      <ErrorModal
+        open={showErrorFormatModal}
+        onClose={() => setShowErrorFormatModal(false)}
+      >
+        The format of the uploaded file is not supported.
       </ErrorModal>
       {/* {!isEmpty(error.format) && <p className="error">{error.format}</p>}
       {!isEmpty(error.maxSize) && <p className="error">{error.maxSize}</p>} */}
