@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -44,8 +44,20 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
   const [error, setError] = useState("");
   const [errorOpened, setErrorOpened] = useState(false);
 
-  const [login] = useLoginMutation();
+  const usernameOrEmailRef = useRef<HTMLInputElement>(null);
+
   const { dispatch } = useContext(AuthContext);
+
+  /*
+   * @example
+   * const [loginMutation, { data, loading, error }] = useLoginMutation({
+   *   variables: {
+   *      usernameOrEmail: // value for 'usernameOrEmail'
+   *      password: // value for 'password'
+   *   },
+   * });
+   */
+  const [login] = useLoginMutation();
 
   // the handleSubmit function is called when the user clicks the "Login" button
   const handleSubmit = async (e: any) => {
@@ -79,6 +91,12 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
         // Handle known errors and show them to the user
         setError(res.data.login.errors[0].message as string);
         setErrorOpened(true);
+        if (res.data.login.errors[0].field === "usernameOrEmail") {
+          setUsernameOrEmail("");
+          setPassword("");
+          usernameOrEmailRef.current?.focus();
+        }
+        if (res.data.login.errors[0].field === "password") setPassword("");
       } else if (res.errors) {
         // Handle unknown errors and show them to the user
         setError(
@@ -127,6 +145,7 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
           <input
             placeholder="Email address or username"
             type="text"
+            ref={usernameOrEmailRef}
             value={usernameOrEmail}
             onChange={(e) => setUsernameOrEmail(e.target.value)}
             required
