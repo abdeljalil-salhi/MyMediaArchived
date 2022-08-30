@@ -20,6 +20,17 @@ interface AstrologicalSignProps {
 }
 
 export const AstrologicalSign: FC<AstrologicalSignProps> = ({ date }) => {
+  // The AstrologicalSign component is used to display the user's astrological sign
+  // It is displayed on the profile page
+  //
+  // Props:
+  // date: the user's date of birth
+  //
+  // Notes:
+  // - The date is formatted as MM/DD/YYYY
+  // - The date is converted to a number and then substracted 1 to get the index of the sign
+  // - The index is then used to get the sign from the array of signs (signs)
+
   // List of all the astrological signs names
   const signs = [
     "Aries: The Ram",
