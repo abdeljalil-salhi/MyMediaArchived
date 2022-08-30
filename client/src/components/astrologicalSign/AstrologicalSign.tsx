@@ -18,6 +18,7 @@ interface AstrologicalSignProps {
 }
 
 export const AstrologicalSign: FC<AstrologicalSignProps> = ({ date }) => {
+  // List of all the astrological signs names
   const signs = [
     "Aries: The Ram",
     "Taurus: The Bull",
@@ -33,6 +34,8 @@ export const AstrologicalSign: FC<AstrologicalSignProps> = ({ date }) => {
     "Pisces: The Fish",
   ];
 
+  // Get the astrological sign from the date of birth,
+  // according to the persian calendar
   const sign =
     Number(
       new Intl.DateTimeFormat("fr-TN-u-ca-persian", {
@@ -40,8 +43,10 @@ export const AstrologicalSign: FC<AstrologicalSignProps> = ({ date }) => {
       }).format(new Date(date))
     ) - 1;
 
+  // Return the astrological sign name
   const signName = signs[sign].split(":")[0].toLowerCase();
 
+  // List of all the astrological signs SVG components
   const signsComponents: any = {
     capricorn: <Capricorn />,
     aquarius: <Aquarius />,
@@ -60,13 +65,16 @@ export const AstrologicalSign: FC<AstrologicalSignProps> = ({ date }) => {
   return (
     <div className="rightbarInfoItem">
       <span className="rightbarInfoItemKey ignoreMargins">
+        {/* Return the astrological sign SVG component */}
         {signsComponents[signName]}
       </span>
       <span className="rightbarInfoItemValue normalInfo">
         <span className="rightbarInfoItemValueAstrologicalSign">
+          {/* Return the astrological sign name */}
           {signs[sign].split(": ")[0]}
         </span>
         <span className="rightbarInfoItemValueAstrologicalTitle">
+          {/* Return the astrological sign title */}
           {signs[sign].split(": ")[1]}
         </span>
       </span>
