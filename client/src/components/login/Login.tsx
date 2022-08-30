@@ -27,6 +27,17 @@ interface LoginProps {
 }
 
 export const Login: FC<LoginProps> = ({ goToRegister }) => {
+  // the Login component is used to log into MyMedia
+  //
+  // Props:
+  // goToRegister: the function to go to the register page
+  //
+  // Notes:
+  // - The login form is displayed when the user is not logged in
+  // - The form is submitted when the user clicks the "Login" button
+  // - We will be redirecting the user to the home page when the login is successful
+  // - We will be opening the register page when the user clicks the "Register" button
+
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isFetching, setIsFetching] = useState(false);
@@ -36,13 +47,17 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
   const [login] = useLoginMutation();
   const { dispatch } = useContext(AuthContext);
 
+  // the handleSubmit function is called when the user clicks the "Login" button
   const handleSubmit = async (e: any) => {
+    // Prevent the form from submitting normally (which would refresh the page)
     e.preventDefault();
 
+    // Start the loading animation and clear any previous errors
     setIsFetching(true);
     setErrorOpened(false);
     setError("");
 
+    // To lowercase the username or email address before submitting it to the server
     let usernameOrEmailToLowerCase = usernameOrEmail.toLowerCase();
 
     // Start the login process by dispatching the loginStart action
@@ -77,6 +92,7 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
       // Dispatch the login failure by dispatching the loginFailure action
       dispatch(loginFailure());
     }
+    // Stop the loading animation
     setIsFetching(false);
   };
 
