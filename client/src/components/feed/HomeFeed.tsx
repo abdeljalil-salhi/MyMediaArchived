@@ -39,6 +39,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
         cursor: null as null | string,
       },
       notifyOnNetworkStatusChange: true,
+      // Pass the access token to the GraphQL context
       context: GraphQLAccessToken(user.accessToken),
     });
 
