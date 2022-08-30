@@ -11,17 +11,27 @@ interface FollowHandlerProps {
 }
 
 export const FollowHandler: FC<FollowHandlerProps> = ({ idToFollow, type }) => {
+  // the FollowHandler component is used to follow or unfollow a user
+  //
+  // Props:
+  // idToFollow: the ID of the user to follow or unfollow
+  // type: the type of button to display
+  //   - "profile": the button is being displayed in the profile page
+  //   - "username": the button is being displayed next to the username of the user
+
   const [isFollowed, setIsFollowed] = useState<Boolean>(false);
 
   const { user } = useContext(AuthContext);
 
+  // If the user is followed, set the isFollowed state to true
+  // Otherwise, set the isFollowed state to false
   useEffect(() => {
-    if (!isEmpty(user.following)) {
-      if (user.following.some((u: any) => u._id === idToFollow))
+    if (!isEmpty(user.followingObj)) {
+      if (user.followingObj.some((u: any) => u._id === idToFollow))
         setIsFollowed(true);
       else setIsFollowed(false);
     }
-  }, [idToFollow, user.following]);
+  }, [idToFollow, user.followingObj]);
 
   const handleFollow = () => {};
 
@@ -38,7 +48,7 @@ export const FollowHandler: FC<FollowHandlerProps> = ({ idToFollow, type }) => {
           )}
         </>
       )}
-      {isFollowed === false && (
+      {!isFollowed && (
         <>
           {type === "profile" && (
             <Button className="rightbarFollowButton" onClick={handleFollow}>
