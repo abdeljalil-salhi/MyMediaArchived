@@ -36,6 +36,17 @@ interface RegisterProps {
   goToLogin: () => void;
 }
 export const Register: FC<RegisterProps> = ({ goToLogin }) => {
+  // The Register component is used to register a new user.
+  //
+  // Props:
+  // goToLogin: the function to go to the login page
+  //
+  // Notes:
+  // - The register form is displayed when the user is not logged in
+  // - The form is submitted when the user clicks the "Register" button
+  // - We will be redirecting the user to the home page when the register is successful
+  // - We will be opening the login page when the user clicks the "Login" button
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState(0);
@@ -51,23 +62,47 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
   const [firstStep, setFirstStep] = useState(true);
   const [secondStep, setSecondStep] = useState(false);
 
-  const [register] = useRegisterMutation();
   const { dispatch } = useContext(AuthContext);
 
+  /*
+   * @example
+   * const [registerMutation, { data, loading, error }] = useRegisterMutation({
+   *   variables: {
+   *      firstName: // value for 'firstName'
+   *      middleName: // value for 'middleName'
+   *      lastName: // value for 'lastName'
+   *      fullName: // value for 'fullName'
+   *      username: // value for 'username'
+   *      gender: // value for 'gender'
+   *      email: // value for 'email'
+   *      password: // value for 'password'
+   *      birthday: // value for 'birthday'
+   *   },
+   * });
+   */
+  const [register] = useRegisterMutation();
+
+  // Go to the next step in the register form
   const nextStep = (e: any) => {
+    // Prevent the form from submitting normally (which would refresh the page)
     e.preventDefault();
 
+    // Switch the page to the next one
     setFirstStep(false);
     setSecondStep(true);
   };
 
+  // the handleSubmit function is called when the user clicks the "Register" button
   const handleSubmit = async (e: any) => {
+    // Prevent the form from submitting normally (which would refresh the page)
     e.preventDefault();
 
+    // Start the loading animation and clear any previous errors
     setIsFetching(true);
     setErrorOpened(false);
     setError("");
 
+    // Change the spaces in the name with points
     let firstNameTest = firstName
       .trim()
       .replace(/\s{2,}/g, " ")
@@ -77,6 +112,7 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
       .replace(/\s{2,}/g, " ")
       .replace(" ", ".");
 
+    // Create a the username based on the first name, last name and a random 4 digit number
     setFirstName(firstName.trim().replace(/\s{2,}/g, " "));
     setLastName(lastName.trim().replace(/\s{2,}/g, " "));
     setUsername(
@@ -136,6 +172,7 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
         dispatch(registerFailure());
       }
     }
+    // Stop the loading animation
     setIsFetching(false);
   };
 
