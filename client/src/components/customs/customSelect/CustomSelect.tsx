@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { ArrowDropDownRounded, ArrowDropUpRounded } from "@mui/icons-material";
 
 interface CustomSelectProps {
@@ -12,6 +12,19 @@ export const CustomSelect: FC<CustomSelectProps> = ({
   customState,
   setCustomState,
 }) => {
+  // The CustomSelect component is used to display my own formatted <select /> element
+  //
+  // Props:
+  // optionsList: the list of options to display in the select menu
+  // customState: the state of the select element (the index of the selected option)
+  // setCustomState: the function to call when the selection is changed
+  //
+  // Notes:
+  // - The options are displayed as <li role="option" /> elements
+  // - The selected option is highlighted
+  // - The options are displayed in a dropdown menu when the select button is clicked
+  // - The dropdown menu is closed when the select button is clicked again
+
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
 
   // Toggle display options for the select dropdown
@@ -67,10 +80,6 @@ export const CustomSelect: FC<CustomSelectProps> = ({
         break;
     }
   };
-
-  useEffect(() => {
-    console.log(customState);
-  }, [customState]);
 
   return (
     <div className="CustomSelectContainer">
