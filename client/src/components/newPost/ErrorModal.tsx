@@ -47,10 +47,12 @@ export const ErrorModal: FC<ErrorModalProps> = ({
     <>
       <div className="errorModalOverlay"></div>
       <div className="errorModal" ref={deleteModalRef}>
-        <div className="errorModalHeader">Huh ?!</div>
-        <div className="errorModalBody">{children}</div>
-        <div className="errorModalFooter">
-          <button onClick={onClose}>OK</button>
+        <div className="errorModalWrapper">
+          <div className="errorModalHeader">Huh ?!</div>
+          <div className="errorModalBody">{children}</div>
+          <div className="errorModalFooter">
+            <button onClick={onClose}>OK</button>
+          </div>
         </div>
       </div>
     </>,
