@@ -23,6 +23,11 @@ interface PostProps {
 }
 
 export const Post: FC<PostProps> = ({ post }) => {
+  // The Post component is used to display a post.
+  //
+  // Props:
+  // post: the post to display
+
   const { user } = useContext(AuthContext);
 
   const [reacted, setReacted] = useState(false as boolean);
@@ -46,20 +51,24 @@ export const Post: FC<PostProps> = ({ post }) => {
   const timerPostTextUpdateRef: any = useRef(null as any);
   const timerShowEmojiesRef: any = useRef(null as any);
 
+  // Toggle display of the show more button
   const toggleShowMore = () => {
     setShowMore(!showMore);
   };
 
+  // React to the post by the current user
   const react = () => {
     // TODO: react post
     setReacted(true);
   };
 
+  // Unreact to the post by the current user
   const unreact = () => {
     // TODO: unreact post
     setReacted(false);
   };
 
+  // Handle the comment to the post by the current user
   const handleComment = (e: any) => {
     e.preventDefault();
     if (text) {
@@ -67,12 +76,14 @@ export const Post: FC<PostProps> = ({ post }) => {
     }
   };
 
+  // Handle if the user chooses an emoji
   const handleEmoji = (emoji: any) => {
     setText(text + emoji.native);
     setShowEmojies(false);
     inputRef.current.focus();
   };
 
+  // Handle if the user updates the text of the post
   const updateText = () => {
     if (textUpdate) {
       // TODO: update post
@@ -81,6 +92,7 @@ export const Post: FC<PostProps> = ({ post }) => {
     // TODO: refresh posts
   };
 
+  // Handle if the user already reacted to the post
   useEffect(() => {
     // TODO: check if liked | DEPENDENCY: post.reactsObj
     if (!isEmpty(post.reacts))
@@ -88,15 +100,17 @@ export const Post: FC<PostProps> = ({ post }) => {
         setReacted(true);
   }, [post.reacts, user._id]);
 
+  // The show more element is closed if the user clicks outside the area
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
-        showMoreRef.current !== null &&
+        !isEmpty(showMoreRef.current) &&
         !showMoreRef.current.contains(e.target)
       )
         setShowMore(!showMore);
     };
 
+    // Add the event listener when the element is open
     if (showMore) {
       timerShowMoreRefRef.current = setTimeout(
         () => window.addEventListener("click", pageClickEvent),
@@ -104,18 +118,21 @@ export const Post: FC<PostProps> = ({ post }) => {
       );
     }
 
+    // Remove the event listener when the element is closed
     return () => window.removeEventListener("click", pageClickEvent);
   }, [showMore]);
 
+  // The update textarea is closed if the user clicks outside the area
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
-        postTextUpdateRef.current !== null &&
+        !isEmpty(postTextUpdateRef.current) &&
         !postTextUpdateRef.current.contains(e.target)
       )
         setIsUpdating(!isUpdating);
     };
 
+    // Add the event listener when the textarea is open
     if (isUpdating) {
       timerPostTextUpdateRef.current = setTimeout(
         () => window.addEventListener("click", pageClickEvent),
@@ -123,18 +140,21 @@ export const Post: FC<PostProps> = ({ post }) => {
       );
     }
 
+    // Remove the event listener when the textarea is closed
     return () => window.removeEventListener("click", pageClickEvent);
   }, [isUpdating]);
 
+  // The emojies element is closed if the user clicks outside the area
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
-        showEmojiesRef.current !== null &&
+        !isEmpty(showEmojiesRef.current) &&
         !showEmojiesRef.current.contains(e.target)
       )
         setShowEmojies(!showEmojies);
     };
 
+    // Add the event listener when the element is open
     if (showEmojies) {
       timerShowEmojiesRef.current = setTimeout(
         () => window.addEventListener("click", pageClickEvent),
@@ -142,18 +162,22 @@ export const Post: FC<PostProps> = ({ post }) => {
       );
     }
 
+    // Remove the event listener when the element is closed
     return () => window.removeEventListener("click", pageClickEvent);
   }, [showEmojies]);
 
+  // Clear the timer when the element is closed
   useEffect(() => {
     return () => clearTimeout(timerShowMoreRefRef.current);
   }, []);
 
+  // Clear the timer when the textarea is closed
   useEffect(() => {
     return () => clearTimeout(timerPostTextUpdateRef.current);
   }, []);
 
-  useEffect(() => {
+  // Clear the timer when the element is closed
+  useEffect(() => {  
     return () => clearTimeout(timerShowEmojiesRef.current);
   }, []);
 

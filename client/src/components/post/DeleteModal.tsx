@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { AuthContext } from "../../context/auth.context";
 import { GraphQLAccessToken } from "../../utils/_graphql";
 import { useDeletePostMutation } from "../../generated/graphql";
+import { isEmpty } from "../../utils/isEmpty";
 
 interface DeleteModalProps {
   open: Boolean;
@@ -18,6 +19,17 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   onClose,
   postId,
 }) => {
+  // The DeleteModal component is used to display a delete confirmation message.
+  //
+  // Props:
+  // open: whether the delete confirmation message is open
+  // children: the delete confirmation message
+  // onClose: the function to close the delete confirmation message
+  // postId: the ID of the post to delete
+  //
+  // Notes:
+  // - The delete confirmation message is displayed when the user clicks the delete button
+
   const timerRef: any = useRef(null as any);
   const deleteModalRef: any = useRef<HTMLDivElement>(
     null as unknown as HTMLDivElement
@@ -25,17 +37,28 @@ export const DeleteModal: FC<DeleteModalProps> = ({
 
   const { user } = useContext(AuthContext);
 
+  /*
+   * @example
+   * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
+   *   variables: {
+   *      userId: // value for 'userId'
+   *      postId: // value for 'postId'
+   *   },
+   * });
+   */
   const [deletePost] = useDeletePostMutation();
 
+  // The delete modal is closed if the user clicks outside the modal
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
-        deleteModalRef.current !== null &&
+        !isEmpty(deleteModalRef.current) &&
         !deleteModalRef.current.contains(e.target)
       )
         onClose();
     };
 
+    // Add the event listener when the modal is open
     if (onClose as any) {
       timerRef.current = setTimeout(
         () => window.addEventListener("click", pageClickEvent),
@@ -43,13 +66,16 @@ export const DeleteModal: FC<DeleteModalProps> = ({
       );
     }
 
+    // Remove the event listener when the modal is closed
     return () => window.removeEventListener("click", pageClickEvent);
   }, [onClose]);
 
+  // Clear the timer when the modal is closed
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
+  // Delete the post when the user confirms the delete
   const deletePostFn = () => {
     deletePost({
       variables: {
@@ -62,8 +88,10 @@ export const DeleteModal: FC<DeleteModalProps> = ({
     window.location.reload();
   };
 
+  // Return null if the modal is not open
   if (!open) return null;
 
+  // Create the portal to display the modal in the DOM
   return createPortal(
     <>
       <div className="postDeleteModalOverlay"></div>
