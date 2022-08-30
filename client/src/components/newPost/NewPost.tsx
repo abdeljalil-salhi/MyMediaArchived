@@ -20,6 +20,14 @@ import { GraphQLAccessToken } from "../../utils/_graphql";
 interface NewPostProps {}
 
 export const NewPost: FC<NewPostProps> = () => {
+  // the NewPost component is used to create a new post
+  //
+  // Notes:
+  // - The NewPost component is displayed when the user is logged in
+  // - The NewPost component shows a preview of the post when the user is typing
+  // - The NewPost component is submitted when the user clicks the "Send" button
+  // - The NewPost component is reset when the user clicks the "Cancel" button
+
   const [showErrorModal, setShowErrorModal] = useState<Boolean>(false);
   const [errorModalText, setErrorModalText] = useState("");
   const [text, setText] = useState("");
@@ -53,6 +61,7 @@ export const NewPost: FC<NewPostProps> = () => {
     send: "send-post",
   };
 
+  // We start looking for the youtube link when the user starts typing
   useEffect(() => {
     // Bootstrap the function to handle the youtube video detection
     const handleYtvideo = () => {
@@ -80,9 +89,11 @@ export const NewPost: FC<NewPostProps> = () => {
         }
       }
     };
+    // Call the bootstrapped function
     handleYtvideo();
   }, [text]);
 
+  // We handle the post creation when the user clicks the "Send" button
   const handlePost = async () => {
     if (
       !isEmpty(text.trim()) ||
@@ -112,6 +123,7 @@ export const NewPost: FC<NewPostProps> = () => {
     }
   };
 
+  // We handle the media preview when the user uploads a file
   const handleMedia = (e: any) => {
     if (e.target.files[0].type.includes("image")) {
       // If the uploaded file is an image
@@ -134,6 +146,7 @@ export const NewPost: FC<NewPostProps> = () => {
     }
   };
 
+  // We handle the reset when the user clicks the "Cancel" button
   const cancelPost = () => {
     // Reset the states
     setText("");

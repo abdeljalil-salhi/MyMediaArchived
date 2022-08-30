@@ -1,6 +1,8 @@
 import { FC, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
+import { isEmpty } from "../../utils/isEmpty";
+
 interface ErrorModalProps {
   open: Boolean;
   children: any;
@@ -12,37 +14,53 @@ export const ErrorModal: FC<ErrorModalProps> = ({
   children,
   onClose,
 }) => {
+  // the ErrorModal component is used to display an error message
+  //
+  // Props:
+  // open: whether the error message is open
+  // children: the error message
+  // onClose: the function to close the error message
+  //
+  // Notes:
+  // - The error message is displayed when the query has an error
+  // - The error message is not displayed if the query is loading
+  // - The error message is not displayed if the query is loaded successfully
+
   const timerRef: any = useRef(null as any);
   const deleteModalRef: any = useRef<HTMLDivElement>(
     null as unknown as HTMLDivElement
   );
 
+  // The error modal is closed if the user clicks outside the modal
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
-        deleteModalRef.current !== null &&
+        !isEmpty(deleteModalRef.current) &&
         !deleteModalRef.current.contains(e.target)
-      ) {
+      )
         onClose();
-      }
     };
 
-    if (onClose as any) {
+    // Add the event listener when the modal is open
+    if (onClose as any)
       timerRef.current = setTimeout(
         () => window.addEventListener("click", pageClickEvent),
         100
       );
-    }
 
+    // Remove the event listener when the modal is closed
     return () => window.removeEventListener("click", pageClickEvent);
   }, [onClose]);
 
+  // Clear the timer when the modal is closed
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
+  // Return null if the modal is not open
   if (!open) return null;
 
+  // Create the portal to display the modal in the DOM
   return createPortal(
     <>
       <div className="errorModalOverlay"></div>
