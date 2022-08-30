@@ -1,17 +1,19 @@
 import { FC } from "react";
 
-import Capricorn from "../../svgs/Capricorn";
-import Aquarius from "../../svgs/Aquarius";
-import Pisces from "../../svgs/Pisces";
-import Aries from "../../svgs/Aries";
-import Taurus from "../../svgs/Taurus";
-import Gemini from "../../svgs/Gemini";
-import Cancer from "../../svgs/Cancer";
-import Leo from "../../svgs/Leo";
-import Virgo from "../../svgs/Virgo";
-import Libra from "../../svgs/Libra";
-import Scorpio from "../../svgs/Scorpio";
-import Sagittarius from "../../svgs/Sagittarius";
+import {
+  Capricorn,
+  Aquarius,
+  Pisces,
+  Aries,
+  Taurus,
+  Gemini,
+  Cancer,
+  Leo,
+  Virgo,
+  Libra,
+  Scorpio,
+  Sagittarius,
+} from "../../svgs/AstrologicalSigns";
 
 interface AstrologicalSignProps {
   date: string;
