@@ -13,14 +13,14 @@ import {
   ReportGmailerrorred,
 } from "@mui/icons-material";
 
-import { USER } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { useLoginMutation } from "../../generated/graphql";
 import {
-  loginFailure,
   loginStart,
   loginSuccess,
+  loginFailure,
 } from "../../context/actions/auth.actions";
+import { updateLocalStorageUser } from "../../utils/localStorage";
 
 interface LoginProps {
   goToRegister: () => void;
@@ -86,7 +86,7 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
       if (res.data?.login.user) {
         // Dispatch the login response by dispatching the loginSuccess action
         dispatch(loginSuccess(res.data?.login.user));
-        localStorage.setItem(USER, JSON.stringify(res.data?.login.user));
+        updateLocalStorageUser(res.data?.login.user);
       } else if (res.data?.login.errors) {
         // Handle known errors and show them to the user
         setError(res.data.login.errors[0].message as string);
