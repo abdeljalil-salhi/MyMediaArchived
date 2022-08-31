@@ -17,10 +17,18 @@ import { AuthContext } from "../context/auth.context";
 import { Feed } from "../components/feed/Feed";
 import { Topbar } from "../components/topbar/Topbar";
 import { GraphQLAccessToken } from "../utils/_graphql";
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../context/actions/auth.actions";
+import { updateLocalStorageUser } from "../utils/localStorage";
 
 interface ProfileProps {}
 
 export const Profile: FC<ProfileProps> = () => {
+  // the Profile page is used to display the user's profile
+
   const [updatingBio, setUpdatingBio] = useState<Boolean>(false);
   const [userProfile, setUserProfile] = useState({} as any);
   const [bio, setBio] = useState(null as any);
@@ -30,7 +38,7 @@ export const Profile: FC<ProfileProps> = () => {
     null as unknown as HTMLDivElement
   );
 
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
   const params: any = useParams();
 
   const [updateUser] = useUpdateUserMutation();
@@ -62,7 +70,7 @@ export const Profile: FC<ProfileProps> = () => {
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
-        updateBioRef.current !== null &&
+        !isEmpty(updateBioRef.current) &&
         !updateBioRef.current.contains(e.target)
       ) {
         setUpdatingBio(!updatingBio);
@@ -83,19 +91,51 @@ export const Profile: FC<ProfileProps> = () => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
-  const handleUpdateBio = () => {
+  const handleUpdateBio = async () => {
     if (bio.trim()) {
-      updateUser({
-        variables: {
-          userId: user._id,
-          accessToken: user.accessToken,
-          bio,
-        },
-        context: GraphQLAccessToken(user.accessToken),
-      });
-      setUpdatingBio(false);
-      setBio(null as any);
-      window.location.reload();
+      // Start the updating process by dispatching the updateUserStart action
+      dispatch(updateUserStart());
+      try {
+        // Send the GraphQL updating request to the server
+        const res = await updateUser({
+          variables: {
+            userId: user._id,
+            accessToken: user.accessToken,
+            bio,
+          },
+          // Pass the access token to the GraphQL context
+          context: GraphQLAccessToken(user.accessToken),
+        });
+        if (!isEmpty(res.data?.updateUser.user)) {
+          // If the request was successful, dispatch the updateUserSuccess action
+          dispatch(updateUserSuccess(res.data!.updateUser.user));
+          updateLocalStorageUser(res.data?.updateUser.user);
+          setUpdatingBio(false);
+          setBio(null as any);
+          window.location.reload();
+        } else if (!isEmpty(res.data?.updateUser.errors)) {
+          // Handle known errors and show them to the user
+          // TODO: Show the errors to the user
+          //
+          // @example
+          // setError(res.data.login.errors[0].message as string);
+          // setErrorOpened(true);
+        } else if (!isEmpty(res.errors)) {
+          // Handle unknown errors and show them to the user
+          // TODO: Show the errors to the user
+          //
+          // @example
+          // setError(
+          //   `${
+          //     res.errors[0].message as string
+          //   }. Please report this error to the support.`
+          // );
+          // setErrorOpened(true);
+        }
+      } catch (err: unknown) {
+        // Dispatch the updating failure by dispatching the updateUserFailure action
+        dispatch(updateUserFailure());
+      }
     } else {
       setUpdatingBio(false);
       setBio(null as any);

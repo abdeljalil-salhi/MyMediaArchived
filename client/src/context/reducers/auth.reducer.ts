@@ -6,6 +6,9 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAILURE,
   LOGOUT,
+  UPDATE_USER_START,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_FAILURE,
 } from "../constants/auth.constants";
 
 type PeerState = Record<string, any>;
@@ -61,6 +64,24 @@ const AuthReducer = (state: PeerState, action: AuthAction) => {
         user: null,
         isFetching: false,
         error: false,
+      };
+    case UPDATE_USER_START:
+      return {
+        user: null,
+        isFetching: true,
+        error: false,
+      };
+    case UPDATE_USER_SUCCESS:
+      return {
+        user: action.payload,
+        isFetching: false,
+        error: false,
+      };
+    case UPDATE_USER_FAILURE:
+      return {
+        user: null,
+        isFetching: false,
+        error: true,
       };
     default:
       return {
