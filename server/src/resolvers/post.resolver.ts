@@ -94,10 +94,7 @@ export class PostResolver {
         const createReadStream = () => file.createReadStream();
 
         if (
-          mimetype != "image/jpg" &&
-          mimetype != "image/png" &&
-          mimetype != "image/jpeg" &&
-          mimetype != "image/gif" &&
+          mimetype.indexOf("image") === -1 &&
           mimetype != "video/mp4" &&
           mimetype != "application/zip" &&
           mimetype != "application/x-7z-compressed" &&
@@ -125,10 +122,7 @@ export class PostResolver {
         }
 
         input.picture =
-          mimetype == "image/jpg" ||
-          mimetype == "image/png" ||
-          mimetype == "image/jpeg" ||
-          mimetype == "image/gif"
+          mimetype.indexOf("image") !== -1
             ? `post/${context.user.id}/${fileName}`
             : "";
         input.video =
