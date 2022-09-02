@@ -4,6 +4,8 @@ import { Add, Remove } from "@mui/icons-material";
 
 import { isEmpty } from "../../utils/isEmpty";
 import { AuthContext } from "../../context/auth.context";
+import { useFollowUserMutation } from "../../generated/graphql";
+import { GraphQLAccessToken } from "../../utils/_graphql";
 
 interface FollowHandlerProps {
   idToFollow: string;
@@ -23,6 +25,17 @@ export const FollowHandler: FC<FollowHandlerProps> = ({ idToFollow, type }) => {
 
   const { user } = useContext(AuthContext);
 
+  /*
+   * @example
+   * const [followUserMutation, { data, loading, error }] = useFollowUserMutation({
+   *   variables: {
+   *      userId: // value for 'userId'
+   *      userIdToFollow: // value for 'userIdToFollow'
+   *   },
+   * });
+   */
+  const [followUser] = useFollowUserMutation();
+
   // If the user is followed, set the isFollowed state to true
   // Otherwise, set the isFollowed state to false
   useEffect(() => {
@@ -33,7 +46,18 @@ export const FollowHandler: FC<FollowHandlerProps> = ({ idToFollow, type }) => {
     }
   }, [idToFollow, user.followingObj]);
 
-  const handleFollow = () => {};
+  const handleFollow = () => {
+    // Send the GraphQL updating request to the server to follow the user
+    followUser({
+      variables: {
+        userId: user._id,
+        userIdToFollow: idToFollow,
+      },
+      // Pass the access token to the GraphQL context
+      context: GraphQLAccessToken(user.accessToken),
+    });
+    window.location.reload();
+  };
 
   const handleUnfollow = () => {};
 
