@@ -317,12 +317,10 @@ export class PostResolver {
           .limit(limit)
           .sort({ createdAt: -1 });
 
-        const hasMore = posts.length > hasMoreLimit ? true : false;
-
         return {
           errors: [],
           posts: posts.slice(0, realLimit),
-          hasMore,
+          hasMore: posts.length + 1 === hasMoreLimit,
         };
       } catch (err) {
         return {
@@ -382,7 +380,7 @@ export class PostResolver {
       return {
         errors: [],
         posts: posts.slice(0, realLimit),
-        hasMore: posts.length === hasMoreLimit,
+        hasMore: posts.length + 1 === hasMoreLimit,
       };
     } catch (err) {
       return {
