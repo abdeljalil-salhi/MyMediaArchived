@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+import { FRAGMENT_USER } from "../fragments/UserFragment";
+import { FRAGMENT_ERROR_RESPONSE } from "../fragments/ErrorFragment";
+
 export const QUERY_GET_PROFILE = gql`
   query GetProfile($username: String!) {
     getProfile(username: $username) {
@@ -23,4 +26,6 @@ export const QUERY_GET_PROFILE = gql`
       }
     }
   }
+  ${FRAGMENT_ERROR_RESPONSE}
+  ${FRAGMENT_USER}
 `;

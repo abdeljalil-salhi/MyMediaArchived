@@ -4,13 +4,11 @@ import { Twemoji } from "react-emoji-render";
 import { format } from "timeago.js";
 import { EditRounded } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { Dispatch } from "redux";
 
 import { PU, TRANSPARENT } from "../globals";
 import { Sidebar } from "../components/sidebar/Sidebar";
-import {
-  useGetProfileQuery,
-  useUpdateUserMutation,
-} from "../generated/graphql";
+import { useUpdateUserMutation } from "../generated/graphql";
 import { isEmpty } from "../utils/isEmpty";
 import { Rightbar } from "../components/rightbar/Rightbar";
 import { AuthContext } from "../context/auth.context";
@@ -23,15 +21,36 @@ import {
   updateUserFailure,
 } from "../context/actions/auth.actions";
 import { updateLocalStorageUser } from "../utils/localStorage";
+import getProfileService from "../store/services/getProfileService";
+import {
+  GetProfile,
+  GetProfile_getProfile,
+  GetProfile_getProfile_errors,
+  GetProfile_getProfile_user,
+} from "../generated/types/GetProfile";
+import { getProfile } from "../store/slices/getProfileSlice";
+import { useAppDispatch } from "../store/hooks";
 
 interface ProfileProps {}
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  getProfile: (profile: GetProfile["getProfile"] | null) =>
+    dispatch(getProfile(profile)),
+});
 
 export const Profile: FC<ProfileProps> = () => {
   // the Profile page is used to display the user's profile
 
-  const [updatingBio, setUpdatingBio] = useState<Boolean>(false);
-  const [userProfile, setUserProfile] = useState({} as any);
-  const [bio, setBio] = useState(null as any);
+  const [updatingBio, setUpdatingBio] = useState<boolean>(false);
+  const [getProfileData, setGetProfileData] = useState<GetProfile_getProfile>(
+    {} as GetProfile_getProfile
+  );
+  const [getProfileLoading, setGetProfileLoading] = useState<boolean>(false);
+  const [getProfileError, setGetProfileError] = useState<boolean>(false);
+  const [userProfile, setUserProfile] = useState<GetProfile_getProfile_user>(
+    {} as GetProfile_getProfile_user
+  );
+  const [bio, setBio] = useState<string>("");
 
   const timerRef: any = useRef(null as any);
   const updateBioRef: any = useRef<HTMLDivElement>(
@@ -39,15 +58,12 @@ export const Profile: FC<ProfileProps> = () => {
   );
 
   const { user, dispatch } = useContext(AuthContext);
+
   const params: any = useParams();
 
-  const [updateUser] = useUpdateUserMutation();
+  const { getProfile } = actionDispatch(useAppDispatch());
 
-  const { data, loading, error } = useGetProfileQuery({
-    variables: {
-      username: params.username as string,
-    },
-  });
+  const [updateUser] = useUpdateUserMutation();
 
   useEffect(() => {
     window.scrollTo({
@@ -58,23 +74,37 @@ export const Profile: FC<ProfileProps> = () => {
   }, [params.username]);
 
   useEffect(() => {
-    document.title = !isEmpty(data?.getProfile.user?.fullName)
-      ? `${data?.getProfile?.user?.fullName} - MyMedia`
-      : "MyMedia";
-  }, [data]);
+    const fetchProfile = async () => {
+      setGetProfileLoading(true);
+
+      const res: GetProfile_getProfile = (await getProfileService
+        .getProfile(params.username)
+        .catch((_: unknown) =>
+          setGetProfileError(true)
+        )) as GetProfile_getProfile;
+
+      setGetProfileData(res);
+      !isEmpty(res) && getProfile(res as GetProfile_getProfile);
+      !isEmpty(res.user) &&
+        setUserProfile(res.user as GetProfile_getProfile_user);
+      setGetProfileLoading(false);
+    };
+    fetchProfile();
+  }, [getProfile, params.username]);
 
   useEffect(() => {
-    !isEmpty(data?.getProfile.user) && setUserProfile(data?.getProfile.user);
-  }, [data]);
+    document.title = !isEmpty(userProfile.fullName)
+      ? `${userProfile.fullName} - MyMedia`
+      : "MyMedia";
+  }, [userProfile]);
 
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
         !isEmpty(updateBioRef.current) &&
         !updateBioRef.current.contains(e.target)
-      ) {
+      )
         setUpdatingBio(!updatingBio);
-      }
     };
 
     if (updatingBio) {
@@ -111,7 +141,7 @@ export const Profile: FC<ProfileProps> = () => {
           dispatch(updateUserSuccess(res.data!.updateUser.user));
           updateLocalStorageUser(res.data?.updateUser.user);
           setUpdatingBio(false);
-          setBio(null as any);
+          setBio("");
           window.location.reload();
         } else if (!isEmpty(res.data?.updateUser.errors)) {
           // Handle known errors and show them to the user
@@ -138,17 +168,19 @@ export const Profile: FC<ProfileProps> = () => {
       }
     } else {
       setUpdatingBio(false);
-      setBio(null as any);
+      setBio("");
     }
   };
 
-  if (!loading && !data) window.location.href = "/404?user=notfound";
+  if (!getProfileLoading && !getProfileData)
+    window.location.href = "/404?user=notfound";
 
-  if (error) window.location.href = "/404?user=notfound";
+  if (getProfileError) window.location.href = "/404?user=notfound";
 
   if (
-    !isEmpty(data?.getProfile.errors) &&
-    (data?.getProfile as any).errors[0].message === "User not found"
+    !isEmpty(getProfileData.errors) &&
+    (getProfileData.errors as GetProfile_getProfile_errors[])[0].message ===
+      "User not found"
   )
     window.location.href = "/404?user=notfound";
 
