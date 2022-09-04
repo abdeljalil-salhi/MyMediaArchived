@@ -10,7 +10,7 @@ import "./styles/index.scss";
 import { PA } from "./globals";
 import { store } from "./store";
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   link: createUploadLink({
     uri: `${PA as string}graphql`,
   }),
