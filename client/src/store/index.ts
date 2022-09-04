@@ -1,7 +1,16 @@
+import ReduxLogger from "redux-logger";
 import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 
+import getProfileReducer from "./slices/getProfileSlice";
+
+const middleware = (getDefaultMiddleware: any) =>
+  getDefaultMiddleware().concat(ReduxLogger);
+
 export const store = configureStore({
-  reducer: {},
+  middleware,
+  reducer: {
+    getProfile: getProfileReducer,
+  },
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
