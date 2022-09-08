@@ -2,9 +2,9 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { IRootState } from "../types";
 
-const selectGetProfile = (state: IRootState) => state.getProfile;
+const selectProfile = (state: IRootState) => state.profile;
 
-export const makeSelectGetProfileData = createSelector(
-  selectGetProfile,
-  (getProfile) => getProfile.profile
+export const makeSelectProfile = createSelector(
+  selectProfile,
+  (profile) => profile
 );
