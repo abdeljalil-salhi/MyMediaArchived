@@ -36,12 +36,12 @@ import {
 } from "../generated/types/GetProfile";
 import { setProfile } from "../store/slices/profileSlice";
 import { useAppDispatch } from "../store/hooks";
-import { IProfileState } from "../store/types/profileTypes";
+import { TProfile } from "../store/types/profileTypes";
 
 interface ProfileProps {}
 
 const actionDispatch = (dispatch: Dispatch) => ({
-  setProfile: (profile: IProfileState) => dispatch(setProfile(profile)),
+  setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
 });
 
 export const Profile: FC<ProfileProps> = () => {
@@ -93,7 +93,7 @@ export const Profile: FC<ProfileProps> = () => {
       setGetProfileLoading(false);
     };
     fetchProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.username]);
 
   useEffect(() => {
