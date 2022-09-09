@@ -28,7 +28,7 @@ import {
   updateUserFailure,
 } from "../context/actions/auth.actions";
 import { updateLocalStorageUser } from "../utils/localStorage";
-import getProfileService from "../store/services/getProfileService";
+import profileService from "../store/services/profileService";
 import {
   GetProfile_getProfile,
   GetProfile_getProfile_errors,
@@ -81,7 +81,7 @@ export const Profile: FC<ProfileProps> = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       setGetProfileLoading(true);
-      const res: GetProfile_getProfile = (await getProfileService
+      const res: GetProfile_getProfile = (await profileService
         .getProfile(params.username as string)
         .catch((_: unknown) =>
           setGetProfileError(true)
