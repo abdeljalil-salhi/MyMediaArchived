@@ -1,7 +1,7 @@
 import ReduxLogger from "redux-logger";
 import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 
-import getProfileReducer from "./slices/getProfileSlice";
+import profileReducer from "./slices/profileSlice";
 
 const middleware = (getDefaultMiddleware: any) =>
   getDefaultMiddleware().concat(ReduxLogger);
@@ -9,7 +9,7 @@ const middleware = (getDefaultMiddleware: any) =>
 export const store = configureStore({
   middleware,
   reducer: {
-    getProfile: getProfileReducer,
+    profile: profileReducer,
   },
 });
 
