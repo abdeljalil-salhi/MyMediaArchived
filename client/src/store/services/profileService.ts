@@ -6,7 +6,7 @@ import {
 import { QUERY_GET_PROFILE } from "../../graphql/queries/getProfile";
 import { isEmpty } from "../../utils/isEmpty";
 
-class getProfileService {
+class profileService {
   async getProfile(
     username: GetProfileVariables["username"]
   ): Promise<GetProfile["getProfile"]> {
@@ -25,4 +25,4 @@ class getProfileService {
   }
 }
 
-export default new getProfileService();
+export default new profileService();
