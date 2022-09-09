@@ -1,5 +1,5 @@
-import { IGetProfileState } from "./types/getProfileTypes";
+import { IProfileState } from "./types/profileTypes";
 
 export interface IRootState {
-  getProfile: IGetProfileState;
+  profile: IProfileState;
 }

@@ -2,18 +2,23 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { IProfileAction, IProfileState } from "../types/profileTypes";
 
-const initialState: IProfileState = null;
+const initialState: IProfileState = {
+  data: null,
+};
 
 const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    getProfile: (state: IProfileState, action: IProfileAction) => {
-      state = action.payload;
+    setProfile: (state: IProfileState, action: IProfileAction) => {
+      state.data = action.payload;
+    },
+    clearProfile: (state: IProfileState) => {
+      state.data = null;
     },
   },
 });
 
-export const { getProfile } = profileSlice.actions;
+export const { setProfile, clearProfile } = profileSlice.actions;
 
 export default profileSlice.reducer;

@@ -1,5 +1,12 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import {
+  FC,
+  MutableRefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Params, useParams } from "react-router-dom";
 import { Twemoji } from "react-emoji-render";
 import { format } from "timeago.js";
 import { EditRounded } from "@mui/icons-material";
@@ -23,19 +30,18 @@ import {
 import { updateLocalStorageUser } from "../utils/localStorage";
 import getProfileService from "../store/services/getProfileService";
 import {
-  GetProfile,
   GetProfile_getProfile,
   GetProfile_getProfile_errors,
   GetProfile_getProfile_user,
 } from "../generated/types/GetProfile";
-import { getProfile } from "../store/slices/getProfileSlice";
+import { setProfile } from "../store/slices/profileSlice";
 import { useAppDispatch } from "../store/hooks";
+import { TProfile } from "../store/types/profileTypes";
 
 interface ProfileProps {}
 
 const actionDispatch = (dispatch: Dispatch) => ({
-  getProfile: (profile: GetProfile["getProfile"] | null) =>
-    dispatch(getProfile(profile)),
+  setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
 });
 
 export const Profile: FC<ProfileProps> = () => {
@@ -50,18 +56,17 @@ export const Profile: FC<ProfileProps> = () => {
   const [userProfile, setUserProfile] = useState<GetProfile_getProfile_user>(
     {} as GetProfile_getProfile_user
   );
-  const [bio, setBio] = useState<string>("");
+  const [bio, setBio] = useState<string | null>(null);
 
-  const timerRef: any = useRef(null as any);
-  const updateBioRef: any = useRef<HTMLDivElement>(
-    null as unknown as HTMLDivElement
-  );
+  const timerRef: MutableRefObject<any> = useRef(null);
+  const updateBioRef: MutableRefObject<HTMLTextAreaElement | null> =
+    useRef<HTMLTextAreaElement | null>(null);
 
   const { user, dispatch } = useContext(AuthContext);
 
-  const params: any = useParams();
+  const params: Readonly<Params<string>> = useParams();
 
-  const { getProfile } = actionDispatch(useAppDispatch());
+  const { setProfile } = actionDispatch(useAppDispatch());
 
   const [updateUser] = useUpdateUserMutation();
 
@@ -76,21 +81,20 @@ export const Profile: FC<ProfileProps> = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       setGetProfileLoading(true);
-
       const res: GetProfile_getProfile = (await getProfileService
-        .getProfile(params.username)
+        .getProfile(params.username as string)
         .catch((_: unknown) =>
           setGetProfileError(true)
         )) as GetProfile_getProfile;
-
       setGetProfileData(res);
-      !isEmpty(res) && getProfile(res as GetProfile_getProfile);
+      setProfile(res as any);
       !isEmpty(res.user) &&
         setUserProfile(res.user as GetProfile_getProfile_user);
       setGetProfileLoading(false);
     };
     fetchProfile();
-  }, [getProfile, params.username]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.username]);
 
   useEffect(() => {
     document.title = !isEmpty(userProfile.fullName)
@@ -102,7 +106,7 @@ export const Profile: FC<ProfileProps> = () => {
     const pageClickEvent = (e: any) => {
       if (
         !isEmpty(updateBioRef.current) &&
-        !updateBioRef.current.contains(e.target)
+        !(updateBioRef.current as HTMLTextAreaElement).contains(e.target)
       )
         setUpdatingBio(!updatingBio);
     };
@@ -122,7 +126,7 @@ export const Profile: FC<ProfileProps> = () => {
   }, []);
 
   const handleUpdateBio = async () => {
-    if (bio.trim()) {
+    if (bio && bio.trim()) {
       // Start the updating process by dispatching the updateUserStart action
       dispatch(updateUserStart());
       try {
