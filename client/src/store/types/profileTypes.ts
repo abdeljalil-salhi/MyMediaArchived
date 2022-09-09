@@ -1,8 +1,15 @@
-import { IUser } from "./global/userTypes";
+import {
+  GetProfile,
+  GetProfile_getProfile,
+} from "../../generated/types/GetProfile";
 
-export type IProfileState = IUser | null;
+export type TProfile = GetProfile_getProfile;
+
+export interface IProfileState {
+  data: GetProfile["getProfile"] | null;
+}
 
 export interface IProfileAction {
   type: string;
-  payload: IProfileState;
+  payload: TProfile;
 }
