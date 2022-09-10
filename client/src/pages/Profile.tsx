@@ -12,6 +12,7 @@ import { Twemoji } from "react-emoji-render";
 import { format } from "timeago.js";
 import { EditRounded } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { createSelector } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 
 import { PU, TRANSPARENT } from "../globals";
@@ -21,23 +22,28 @@ import { Rightbar } from "../components/rightbar/Rightbar";
 import { AuthContext } from "../context/auth.context";
 import { Feed } from "../components/feed/Feed";
 import { Topbar } from "../components/topbar/Topbar";
-import profileService from "../store/services/profileService";
+import { LoadingBox } from "../components/loadingBox/LoadingBox";
+import { makeSelectProfile } from "../store/selectors/profileSelector";
 import {
+  GetProfile_getProfile_user,
   GetProfile_getProfile,
   GetProfile_getProfile_errors,
-  GetProfile_getProfile_user,
 } from "../generated/types/GetProfile";
 import {
   UpdateUserVariables,
   UpdateUser_updateUser,
   UpdateUser_updateUser_user,
 } from "../generated/types/UpdateUser";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import profileService from "../store/services/profileService";
 import { setProfile } from "../store/slices/profileSlice";
-import { useAppDispatch } from "../store/hooks";
 import { TProfile } from "../store/types/profileTypes";
-import { LoadingBox } from "../components/loadingBox/LoadingBox";
 
 interface ProfileProps {}
+
+const stateSelector = createSelector(makeSelectProfile, (profile) => ({
+  profile: profile?.user,
+}));
 
 const actionDispatch = (dispatch: Dispatch) => ({
   setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
@@ -75,6 +81,9 @@ export const Profile: FC<ProfileProps> = () => {
   const { user } = useContext(AuthContext);
 
   const params: Readonly<Params<string>> = useParams();
+
+  // The selector to get state informations from the store (Redux)
+  const { profile } = useAppSelector(stateSelector);
 
   // The dispatch function to update the profile state in the store (Redux)
   const { setProfile } = actionDispatch(useAppDispatch());
@@ -242,7 +251,9 @@ export const Profile: FC<ProfileProps> = () => {
             <div className="profileInfo">
               <h1 className="profileInfoName">{userProfile.fullName}</h1>
               {userProfile._id !== user._id ? (
-                user.followingObj.some(
+                profile &&
+                profile.followingObj &&
+                profile.followingObj.some(
                   (u: any) => u._id === userProfile._id
                 ) ? (
                   <h5>online {format(userProfile.online)}</h5>

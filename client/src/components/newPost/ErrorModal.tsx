@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, MutableRefObject, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { isEmpty } from "../../utils/isEmpty";
@@ -26,17 +26,16 @@ export const ErrorModal: FC<ErrorModalProps> = ({
   // - The error message is not displayed if the query is loading
   // - The error message is not displayed if the query is loaded successfully
 
-  const timerRef: any = useRef(null as any);
-  const deleteModalRef: any = useRef<HTMLDivElement>(
-    null as unknown as HTMLDivElement
-  );
+  const timerRef: MutableRefObject<any> = useRef(null);
+  const deleteModalRef: MutableRefObject<HTMLDivElement | null> =
+    useRef<HTMLDivElement | null>(null);
 
   // The error modal is closed if the user clicks outside the modal
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
         !isEmpty(deleteModalRef.current) &&
-        !deleteModalRef.current.contains(e.target)
+        !(deleteModalRef.current as HTMLDivElement).contains(e.target)
       )
         onClose();
     };

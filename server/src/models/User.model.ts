@@ -213,7 +213,7 @@ export class User {
   })
   @Field(() => String)
   @Property({
-    default: "Hello, I am new on OpenHub !",
+    default: "Hello, I am new on MyMedia !",
     type: Schema.Types.String,
   })
   public bio: string;

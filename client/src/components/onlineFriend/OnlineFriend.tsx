@@ -17,12 +17,12 @@ export const OnlineFriend: FC<OnlineFriendProps> = ({ user }) => {
   // - The user's profile picture is displayed in a circle with a border and a green dot if they are online.
 
   return (
-    <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
+    <Link to={user ? `/u/${user.username}` : ""} draggable={false}>
       <div className="onlineFriendContainer">
         <div className="onlineFriendProfile">
           <img
             src={user.profile ? `${PU}${user?.profile}` : TRANSPARENT}
-            alt={user.username}
+            alt={user ? user.username : ""}
             className="onlineFriendImage avatar skeleton"
             draggable={false}
           />
