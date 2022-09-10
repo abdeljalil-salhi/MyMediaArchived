@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Close,
@@ -6,25 +6,31 @@ import {
   FireplaceRounded,
   HomeWorkRounded,
 } from "@mui/icons-material";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { GEO } from "../../globals";
 import { isEmpty } from "../../utils/isEmpty";
-import { AuthContext } from "../../context/auth.context";
 import { CustomSelect } from "../customs/customSelect/CustomSelect";
 import { Backdrop } from "../backdrop/Backdrop";
+import { makeSelectProfile } from "../../store/selectors/profileSelector";
+import { useAppSelector } from "../../store/hooks";
 
 interface EditModalProps {
   open: boolean;
   onClose: () => void;
 }
 
+const stateSelector = createSelector(makeSelectProfile, (profile) => ({
+  profile: profile?.user,
+}));
+
 export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
-  const [city, setCity] = useState("");
-  const [hometown, setHometown] = useState("");
-  const [relationship, setRelationship] = useState(0);
+  const [city, setCity] = useState<string>("");
+  const [hometown, setHometown] = useState<string>("");
+  const [relationship, setRelationship] = useState<number>(0);
   const [localSuggestion, setLocalSuggestion] = useState({} as any);
 
-  const { user } = useContext(AuthContext);
+  const { profile } = useAppSelector(stateSelector);
 
   const customSelectOptions: string[] = [
     "Prefer not to say",
@@ -49,14 +55,15 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
 
   useEffect(() => {
     try {
-      setCity(user.city);
-      setHometown(user.hometown);
-      setRelationship(user.relationship);
-
+      if (profile) {
+        setCity(profile.city);
+        setHometown(profile.hometown);
+        setRelationship(profile.relationship);
+      }
       if (!isEmpty(localStorage.getItem(GEO)))
         setLocalSuggestion(JSON.parse(localStorage.getItem(GEO) as string));
-    } catch (e: any) {}
-  }, [user]);
+    } catch (_: unknown) {}
+  }, [profile]);
 
   if (!open) return null;
 
