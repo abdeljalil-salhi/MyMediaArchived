@@ -1,4 +1,12 @@
 import {
+  FollowUser,
+  FollowUser_followUser,
+} from "../../generated/types/FollowUser";
+import {
+  UnfollowUser,
+  UnfollowUser_unfollowUser,
+} from "../../generated/types/UnfollowUser";
+import {
   GetProfile,
   GetProfile_getProfile,
 } from "../../generated/types/GetProfile";
@@ -12,6 +20,8 @@ import {
 export type TProfile =
   | GetProfile_getProfile
   | UpdateUser_updateUser
+  | FollowUser_followUser
+  | UnfollowUser_unfollowUser
   | Login_login
   | Register_register;
 
@@ -19,6 +29,8 @@ export interface IProfileState {
   data:
     | GetProfile["getProfile"]
     | UpdateUser["updateUser"]
+    | FollowUser["followUser"]
+    | UnfollowUser["unfollowUser"]
     | Login["login"]
     | Register["register"]
     | null;
