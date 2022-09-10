@@ -11,16 +11,16 @@ export const CloseFriend: FC<CloseFriendProps> = ({ user }) => {
   // Close friend component for the close friend page of the app.
   // Displays the user's name and profile picture
   // Clicking on the user will take you to their profile page
-  // 
+  //
   // Props:
   // user: the user to display
 
   return (
-    <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
+    <Link to={user ? `/u/${user.username}` : ""} draggable={false}>
       <div className="closeFriendContainer">
         <img
           src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
-          alt={user.username}
+          alt={user ? user.username : ""}
           className="closeFriendImage avatar skeleton"
           draggable={false}
         />

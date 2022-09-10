@@ -29,7 +29,7 @@ export const Sidebar: FC<SidebarProps> = () => {
     <div className="sidebarContainer">
       <div className="sidebarWrapper">
         <div className="sidebarItems">
-          <Link to={`/u/${profile && profile.username}`} draggable={false}>
+          <Link to={profile ? `/u/${profile.username}` : ""} draggable={false}>
             <div className={`sidebarItem noneStyle`}>
               <img
                 src={
