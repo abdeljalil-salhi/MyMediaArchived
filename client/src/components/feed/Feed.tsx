@@ -7,10 +7,9 @@ import { ProfileFeed } from "./ProfileFeed";
 
 interface FeedProps {
   userId?: any;
-  notFound?: boolean;
 }
 
-export const Feed: FC<FeedProps> = ({ userId, notFound }) => {
+export const Feed: FC<FeedProps> = ({ userId }) => {
   // the Feed component is used to display the feed for the home page and the profile page
   //
   // Props:
@@ -24,13 +23,6 @@ export const Feed: FC<FeedProps> = ({ userId, notFound }) => {
   // - When userId prop is provided, the feed is displayed for the user with the given ID (profile page)
 
   const { user } = useContext(AuthContext);
-
-  if (notFound)
-    return (
-      <div className="feedContainer">
-        <div className="feedWrapper">User not found</div>
-      </div>
-    );
 
   return (
     <div className="feedContainer">
