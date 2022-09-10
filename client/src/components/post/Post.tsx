@@ -1,4 +1,11 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import {
+  FC,
+  MutableRefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Delete,
   Edit,
@@ -11,16 +18,23 @@ import {
 import { format } from "timeago.js";
 import { Link } from "react-router-dom";
 import { Twemoji } from "react-emoji-render";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { PU, TRANSPARENT } from "../../globals";
 import { dateParser } from "../../utils/parsers";
 import { AuthContext } from "../../context/auth.context";
 import { DeleteModal } from "./DeleteModal";
 import { isEmpty } from "../../utils/isEmpty";
+import { makeSelectProfile } from "../../store/selectors/profileSelector";
+import { useAppSelector } from "../../store/hooks";
 
 interface PostProps {
   post: any;
 }
+
+const stateSelector = createSelector(makeSelectProfile, (profile) => ({
+  profile: profile?.user,
+}));
 
 export const Post: FC<PostProps> = ({ post }) => {
   // The Post component is used to display a post.
@@ -28,28 +42,31 @@ export const Post: FC<PostProps> = ({ post }) => {
   // Props:
   // post: the post to display
 
-  const { user } = useContext(AuthContext);
+  const [reacted, setReacted] = useState<boolean>(false);
+  const [showComments, setShowComments] = useState<boolean>(false);
+  const [showMore, setShowMore] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showEmojies, setShowEmojies] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [textUpdate, setTextUpdate] = useState<string>("");
+  const [text, setText] = useState<string>("");
 
-  const [reacted, setReacted] = useState(false as boolean);
-  const [showComments, setShowComments] = useState(false as boolean);
-  const [showMore, setShowMore] = useState(false as boolean);
-  const [showDeleteModal, setShowDeleteModal] = useState(false as boolean);
-  const [showEmojies, setShowEmojies] = useState(false as boolean);
-  const [isUpdating, setIsUpdating] = useState(false as boolean);
-  const [textUpdate, setTextUpdate] = useState(null as any);
-  const [text, setText] = useState(null as any);
-
-  const showMoreRef = useRef<HTMLDivElement>(null as unknown as HTMLDivElement);
-  const inputRef = useRef<any>(null as any);
-  const showEmojiesRef = useRef<HTMLDivElement>(
-    null as unknown as HTMLDivElement
-  );
+  const showMoreRef: MutableRefObject<HTMLDivElement | null> =
+    useRef<HTMLDivElement | null>(null);
+  const inputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
+  const showEmojiesRef: MutableRefObject<HTMLDivElement | null> =
+    useRef<HTMLDivElement | null>(null);
   const postTextUpdateRef = useRef<HTMLDivElement>(
     null as unknown as HTMLDivElement
   );
-  const timerShowMoreRefRef: any = useRef(null as any);
-  const timerPostTextUpdateRef: any = useRef(null as any);
-  const timerShowEmojiesRef: any = useRef(null as any);
+  const timerShowMoreRefRef: MutableRefObject<any> = useRef(null);
+  const timerPostTextUpdateRef: MutableRefObject<any> = useRef(null);
+  const timerShowEmojiesRef: MutableRefObject<any> = useRef(null);
+
+  const { user } = useContext(AuthContext);
+
+  const { profile } = useAppSelector(stateSelector);
 
   // Toggle display of the show more button
   const toggleShowMore = () => {
@@ -77,10 +94,11 @@ export const Post: FC<PostProps> = ({ post }) => {
   };
 
   // Handle if the user chooses an emoji
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleEmoji = (emoji: any) => {
     setText(text + emoji.native);
     setShowEmojies(false);
-    inputRef.current.focus();
+    (inputRef.current as HTMLInputElement).focus();
   };
 
   // Handle if the user updates the text of the post
@@ -96,90 +114,67 @@ export const Post: FC<PostProps> = ({ post }) => {
   useEffect(() => {
     // TODO: check if liked | DEPENDENCY: post.reactsObj
     if (!isEmpty(post.reacts))
-      if (Object.values(post.reacts).includes(user._id as string))
-        setReacted(true);
+      if (Object.values(post.reacts).includes(user._id)) setReacted(true);
   }, [post.reacts, user._id]);
 
-  // The show more element is closed if the user clicks outside the area
   useEffect(() => {
-    const pageClickEvent = (e: any) => {
+    // showMore:
+    //  - The show more element is closed if the user clicks outside the area
+    // isUpdating:
+    //  - The update textarea is closed if the user clicks outside the area
+    // showEmojies:
+    //  - The emojies element is closed if the user clicks outside the area
+    const pageClickEvent__showMore = (e: any) => {
       if (
         !isEmpty(showMoreRef.current) &&
-        !showMoreRef.current.contains(e.target)
+        !(showMoreRef.current as HTMLDivElement).contains(e.target)
       )
         setShowMore(!showMore);
     };
-
-    // Add the event listener when the element is open
-    if (showMore) {
-      timerShowMoreRefRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
-        100
-      );
-    }
-
-    // Remove the event listener when the element is closed
-    return () => window.removeEventListener("click", pageClickEvent);
-  }, [showMore]);
-
-  // The update textarea is closed if the user clicks outside the area
-  useEffect(() => {
-    const pageClickEvent = (e: any) => {
+    const pageClickEvent__isUpdating = (e: any) => {
       if (
         !isEmpty(postTextUpdateRef.current) &&
         !postTextUpdateRef.current.contains(e.target)
       )
         setIsUpdating(!isUpdating);
     };
-
-    // Add the event listener when the textarea is open
-    if (isUpdating) {
-      timerPostTextUpdateRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
-        100
-      );
-    }
-
-    // Remove the event listener when the textarea is closed
-    return () => window.removeEventListener("click", pageClickEvent);
-  }, [isUpdating]);
-
-  // The emojies element is closed if the user clicks outside the area
-  useEffect(() => {
-    const pageClickEvent = (e: any) => {
+    const pageClickEvent__showEmojies = (e: any) => {
       if (
         !isEmpty(showEmojiesRef.current) &&
-        !showEmojiesRef.current.contains(e.target)
+        !(showEmojiesRef.current as HTMLDivElement).contains(e.target)
       )
         setShowEmojies(!showEmojies);
     };
 
     // Add the event listener when the element is open
-    if (showEmojies) {
-      timerShowEmojiesRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
+    if (showMore)
+      timerShowMoreRefRef.current = setTimeout(
+        () => window.addEventListener("click", pageClickEvent__showMore),
         100
       );
-    }
+    if (isUpdating)
+      timerPostTextUpdateRef.current = setTimeout(
+        () => window.addEventListener("click", pageClickEvent__isUpdating),
+        100
+      );
+    if (showEmojies)
+      timerShowEmojiesRef.current = setTimeout(
+        () => window.addEventListener("click", pageClickEvent__showEmojies),
+        100
+      );
 
     // Remove the event listener when the element is closed
-    return () => window.removeEventListener("click", pageClickEvent);
-  }, [showEmojies]);
+    const cleanup = () => {
+      window.removeEventListener("click", pageClickEvent__showMore);
+      window.removeEventListener("click", pageClickEvent__isUpdating);
+      window.removeEventListener("click", pageClickEvent__showEmojies);
+      clearTimeout(timerShowMoreRefRef.current);
+      clearTimeout(timerPostTextUpdateRef.current);
+      clearTimeout(timerShowEmojiesRef.current);
+    };
 
-  // Clear the timer when the element is closed
-  useEffect(() => {
-    return () => clearTimeout(timerShowMoreRefRef.current);
-  }, []);
-
-  // Clear the timer when the textarea is closed
-  useEffect(() => {
-    return () => clearTimeout(timerPostTextUpdateRef.current);
-  }, []);
-
-  // Clear the timer when the element is closed
-  useEffect(() => {  
-    return () => clearTimeout(timerShowEmojiesRef.current);
-  }, []);
+    return () => cleanup();
+  }, [showMore, isUpdating, showEmojies]);
 
   return (
     <div className="postContainer">
@@ -187,8 +182,7 @@ export const Post: FC<PostProps> = ({ post }) => {
         <div className="postTop">
           <div className="postTopLeft">
             <Link
-              to={`/u/${post.userObj.username}`}
-              state={{ user: post.userObj }}
+              to={post.userObj ? `/u/${post.userObj.username}` : ""}
               draggable={false}
             >
               <img
@@ -294,9 +288,7 @@ export const Post: FC<PostProps> = ({ post }) => {
               className="postCenterImage"
               src={`${PU}${post.picture}`}
               alt={post.text ? post.text : `${post.userObj.firstName}'s post`}
-              title={
-                `${post.userObj.fullName}` + (post.text ? ": " + post.text : "")
-              }
+              title={`${post.userObj.fullName}${post.text && `: ${post.text}`}`}
             />
           )}
           {post.ytvideo && (
@@ -314,9 +306,7 @@ export const Post: FC<PostProps> = ({ post }) => {
             <video
               className="postCenterVideo"
               src={`${PU}${post.video}`}
-              title={
-                `${post.userObj.fullName}` + (post.text ? ": " + post.text : "")
-              }
+              title={`${post.userObj.fullName}${post.text && `: ${post.text}`}`}
               controls
             ></video>
           )}
@@ -360,19 +350,24 @@ export const Post: FC<PostProps> = ({ post }) => {
               <div className="postCommentInputContainer">
                 <div className="postCommentInputWrapper">
                   <Link
-                    to={`/u/${user.username}`}
-                    state={{ user }}
+                    to={profile ? `/u/${profile.username}` : ""}
                     draggable={false}
                   >
                     <img
                       className="postCommentInputImage skeleton"
-                      src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
-                      alt={`${user.username}'s profile`}
+                      src={
+                        profile && profile.profile
+                          ? `${PU}${profile.profile}`
+                          : TRANSPARENT
+                      }
+                      alt={profile ? `${profile.firstName}'s profile` : ""}
                       draggable={false}
                     />
                   </Link>
                   <input
-                    placeholder={`${user.firstName}, write a comment...`}
+                    placeholder={`${
+                      profile ? profile.firstName : "Hi"
+                    }, write a comment...`}
                     className="postCommentInput"
                     onChange={(e) => setText(e.target.value)}
                     value={text}
