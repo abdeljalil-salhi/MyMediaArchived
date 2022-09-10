@@ -12,6 +12,7 @@ import {
   Password,
   ReportGmailerrorred,
 } from "@mui/icons-material";
+import { Dispatch } from "redux";
 
 import { AuthContext } from "../../context/auth.context";
 import { useLoginMutation } from "../../generated/graphql";
@@ -21,10 +22,18 @@ import {
   loginFailure,
 } from "../../context/actions/auth.actions";
 import { updateLocalStorageUser } from "../../utils/localStorage";
+import { Login_login } from "../../generated/types/Login";
+import { setProfile } from "../../store/slices/profileSlice";
+import { TProfile } from "../../store/types/profileTypes";
+import { useAppDispatch } from "../../store/hooks";
 
 interface LoginProps {
   goToRegister: () => void;
 }
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
+});
 
 export const Login: FC<LoginProps> = ({ goToRegister }) => {
   // the Login component is used to log into MyMedia
@@ -47,6 +56,9 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
   const usernameOrEmailRef = useRef<HTMLInputElement>(null);
 
   const { dispatch } = useContext(AuthContext);
+
+  // The dispatch function to update the profile state in the store (Redux)
+  const { setProfile } = actionDispatch(useAppDispatch());
 
   /*
    * @example
@@ -86,7 +98,13 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
       if (res.data?.login.user) {
         // Dispatch the login response by dispatching the loginSuccess action
         dispatch(loginSuccess(res.data?.login.user));
-        updateLocalStorageUser(res.data?.login.user);
+        setProfile(res.data?.login as Login_login);
+        // Store the logged user in local storage
+        updateLocalStorageUser({
+          _id: res.data?.login.user._id,
+          username: res.data?.login.user.username,
+          accessToken: res.data?.login.user.accessToken as string | null,
+        });
       } else if (res.data?.login.errors) {
         // Handle known errors and show them to the user
         setError(res.data.login.errors[0].message as string);
