@@ -23,7 +23,6 @@ import { AuthContext } from "../../context/auth.context";
 import profileService from "../../store/services/profileService";
 import { setProfile } from "../../store/slices/profileSlice";
 import { TProfile } from "../../store/types/profileTypes";
-import { LoadingBox } from "../loadingBox/LoadingBox";
 
 interface EditModalProps {
   open: boolean;
