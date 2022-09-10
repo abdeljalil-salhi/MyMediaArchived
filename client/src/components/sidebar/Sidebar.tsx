@@ -17,37 +17,41 @@ import { makeSelectProfile } from "../../store/selectors/profileSelector";
 interface SidebarProps {}
 
 const stateSelector = createSelector(makeSelectProfile, (profile) => ({
-  user: profile!.user!,
+  profile: profile?.user,
 }));
 
 export const Sidebar: FC<SidebarProps> = () => {
   const location = useLocation();
 
-  const { user } = useAppSelector(stateSelector);
+  const { profile } = useAppSelector(stateSelector);
 
   return (
     <div className="sidebarContainer">
       <div className="sidebarWrapper">
         <div className="sidebarItems">
-          <Link to={`/u/${user.username}`} draggable={false}>
+          <Link to={`/u/${profile && profile.username}`} draggable={false}>
             <div className={`sidebarItem noneStyle`}>
               <img
-                src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
+                src={
+                  profile && profile.profile
+                    ? `${PU}${profile.profile}`
+                    : TRANSPARENT
+                }
                 className="avatar skeleton"
-                alt={user.fullName && user.fullName}
+                alt={profile ? profile.fullName : ""}
                 draggable={false}
               />
               <span className="sidebarItemText sidebarProfileContainer">
                 <span>
-                  {user.fullName ? (
-                    user.fullName
+                  {profile ? (
+                    profile.fullName
                   ) : (
                     <div className="skeleton skeleton-text"></div>
                   )}
                 </span>
                 <small>
-                  {user.username ? (
-                    `@${user.username}`
+                  {profile ? (
+                    `@${profile.username}`
                   ) : (
                     <div className="skeleton skeleton-text"></div>
                   )}
@@ -108,9 +112,11 @@ export const Sidebar: FC<SidebarProps> = () => {
         </div>
         <div className="sidebarCloseFriends">
           <h4>Close Friends</h4>
-          {user.closeObj!.map((u: any, i: any) => (
-            <CloseFriend key={i} user={u} />
-          ))}
+          {profile &&
+            profile.closeObj &&
+            profile.closeObj.map((u: any, i: any) => (
+              <CloseFriend key={i} user={u} />
+            ))}
         </div>
       </div>
     </div>
