@@ -314,7 +314,10 @@ export const Profile: FC<ProfileProps> = () => {
           </div>
           <div className="profileBottom">
             <Feed userId={userProfile._id} />
-            <Rightbar isProfile profile={userProfile} />
+            <Rightbar
+              isProfile
+              profile={userProfile._id === user._id ? profile : userProfile}
+            />
           </div>
         </div>
       </div>
