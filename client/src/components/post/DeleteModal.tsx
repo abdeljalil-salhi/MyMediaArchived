@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef } from "react";
+import { FC, MutableRefObject, useContext, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { AuthContext } from "../../context/auth.context";
@@ -30,10 +30,9 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   // Notes:
   // - The delete confirmation message is displayed when the user clicks the delete button
 
-  const timerRef: any = useRef(null as any);
-  const deleteModalRef: any = useRef<HTMLDivElement>(
-    null as unknown as HTMLDivElement
-  );
+  const timerRef: MutableRefObject<any> = useRef(null);
+  const deleteModalRef: MutableRefObject<HTMLDivElement | null> =
+    useRef<HTMLDivElement | null>(null);
 
   const { user } = useContext(AuthContext);
 
@@ -53,7 +52,7 @@ export const DeleteModal: FC<DeleteModalProps> = ({
     const pageClickEvent = (e: any) => {
       if (
         !isEmpty(deleteModalRef.current) &&
-        !deleteModalRef.current.contains(e.target)
+        !(deleteModalRef.current as HTMLDivElement).contains(e.target)
       )
         onClose();
     };
