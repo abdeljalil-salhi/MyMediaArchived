@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Chat,
@@ -7,22 +7,29 @@ import {
   RssFeed,
   StoreRounded,
 } from "@mui/icons-material";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { PU, TRANSPARENT } from "../../globals";
-import { AuthContext } from "../../context/auth.context";
 import { CloseFriend } from "../closeFriend/CloseFriend";
+import { useAppSelector } from "../../store/hooks";
+import { makeSelectProfile } from "../../store/selectors/profileSelector";
 
 interface SidebarProps {}
 
+const stateSelector = createSelector(makeSelectProfile, (profile) => ({
+  user: profile!.user!,
+}));
+
 export const Sidebar: FC<SidebarProps> = () => {
-  const { user } = useContext(AuthContext);
   const location = useLocation();
+
+  const { user } = useAppSelector(stateSelector);
 
   return (
     <div className="sidebarContainer">
       <div className="sidebarWrapper">
         <div className="sidebarItems">
-          <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
+          <Link to={`/u/${user.username}`} draggable={false}>
             <div className={`sidebarItem noneStyle`}>
               <img
                 src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
@@ -101,7 +108,7 @@ export const Sidebar: FC<SidebarProps> = () => {
         </div>
         <div className="sidebarCloseFriends">
           <h4>Close Friends</h4>
-          {user.closeObj.map((u: any, i: any) => (
+          {user.closeObj!.map((u: any, i: any) => (
             <CloseFriend key={i} user={u} />
           ))}
         </div>
