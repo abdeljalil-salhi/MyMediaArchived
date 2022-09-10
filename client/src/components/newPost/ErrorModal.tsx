@@ -1,7 +1,7 @@
-import { FC, MutableRefObject, useEffect, useRef } from "react";
+import { FC } from "react";
 import { createPortal } from "react-dom";
 
-import { isEmpty } from "../../utils/isEmpty";
+import { Backdrop } from "../backdrop/Backdrop";
 
 interface ErrorModalProps {
   open: Boolean;
@@ -26,52 +26,23 @@ export const ErrorModal: FC<ErrorModalProps> = ({
   // - The error message is not displayed if the query is loading
   // - The error message is not displayed if the query is loaded successfully
 
-  const timerRef: MutableRefObject<any> = useRef(null);
-  const deleteModalRef: MutableRefObject<HTMLDivElement | null> =
-    useRef<HTMLDivElement | null>(null);
-
-  // The error modal is closed if the user clicks outside the modal
-  useEffect(() => {
-    const pageClickEvent = (e: any) => {
-      if (
-        !isEmpty(deleteModalRef.current) &&
-        !(deleteModalRef.current as HTMLDivElement).contains(e.target)
-      )
-        onClose();
-    };
-
-    // Add the event listener when the modal is open
-    if (onClose as any)
-      timerRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
-        100
-      );
-
-    // Remove the event listener when the modal is closed
-    return () => window.removeEventListener("click", pageClickEvent);
-  }, [onClose]);
-
-  // Clear the timer when the modal is closed
-  useEffect(() => {
-    return () => clearTimeout(timerRef.current);
-  }, []);
-
   // Return null if the modal is not open
   if (!open) return null;
 
   // Create the portal to display the modal in the DOM
   return createPortal(
     <>
-      <div className="errorModalOverlay"></div>
-      <div className="errorModal" ref={deleteModalRef}>
-        <div className="errorModalWrapper">
-          <div className="errorModalHeader">Huh ?!</div>
-          <div className="errorModalBody">{children}</div>
-          <div className="errorModalFooter">
-            <button onClick={onClose}>OK</button>
+      <Backdrop onClick={onClose}>
+        <div className="errorModal" onClick={(e: any) => e.stopPropagation()}>
+          <div className="errorModalWrapper">
+            <div className="errorModalHeader">Huh ?!</div>
+            <div className="errorModalBody">{children}</div>
+            <div className="errorModalFooter">
+              <button onClick={onClose}>OK</button>
+            </div>
           </div>
         </div>
-      </div>
+      </Backdrop>
     </>,
     document.getElementById("portal") as Element
   );

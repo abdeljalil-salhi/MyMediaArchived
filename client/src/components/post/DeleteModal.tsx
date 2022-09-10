@@ -1,10 +1,10 @@
-import { FC, MutableRefObject, useContext, useEffect, useRef } from "react";
+import { FC, useContext } from "react";
 import { createPortal } from "react-dom";
 
 import { AuthContext } from "../../context/auth.context";
 import { GraphQLAccessToken } from "../../utils/_graphql";
 import { useDeletePostMutation } from "../../generated/graphql";
-import { isEmpty } from "../../utils/isEmpty";
+import { Backdrop } from "../backdrop/Backdrop";
 
 interface DeleteModalProps {
   open: Boolean;
@@ -30,10 +30,6 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   // Notes:
   // - The delete confirmation message is displayed when the user clicks the delete button
 
-  const timerRef: MutableRefObject<any> = useRef(null);
-  const deleteModalRef: MutableRefObject<HTMLDivElement | null> =
-    useRef<HTMLDivElement | null>(null);
-
   const { user } = useContext(AuthContext);
 
   /*
@@ -46,33 +42,6 @@ export const DeleteModal: FC<DeleteModalProps> = ({
    * });
    */
   const [deletePost] = useDeletePostMutation();
-
-  // The delete modal is closed if the user clicks outside the modal
-  useEffect(() => {
-    const pageClickEvent = (e: any) => {
-      if (
-        !isEmpty(deleteModalRef.current) &&
-        !(deleteModalRef.current as HTMLDivElement).contains(e.target)
-      )
-        onClose();
-    };
-
-    // Add the event listener when the modal is open
-    if (onClose as any) {
-      timerRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
-        100
-      );
-    }
-
-    // Remove the event listener when the modal is closed
-    return () => window.removeEventListener("click", pageClickEvent);
-  }, [onClose]);
-
-  // Clear the timer when the modal is closed
-  useEffect(() => {
-    return () => clearTimeout(timerRef.current);
-  }, []);
 
   // Delete the post when the user confirms the delete
   const deletePostFn = () => {
@@ -93,17 +62,21 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   // Create the portal to display the modal in the DOM
   return createPortal(
     <>
-      <div className="postDeleteModalOverlay"></div>
-      <div className="postDeleteModal" ref={deleteModalRef}>
-        <div className="postDeleteModalWrapper">
-          <div className="postDeleteModalHeader">Delete confirmation</div>
-          <div className="postDeleteModalCenter">{children}</div>
-          <div className="postDeleteModalFooter">
-            <span onClick={onClose}>Cancel</span>
-            <button onClick={() => deletePostFn()}>Confirm</button>
+      <Backdrop onClick={onClose}>
+        <div
+          className="postDeleteModal"
+          onClick={(e: any) => e.stopPropagation()}
+        >
+          <div className="postDeleteModalWrapper">
+            <div className="postDeleteModalHeader">Delete confirmation</div>
+            <div className="postDeleteModalBody">{children}</div>
+            <div className="postDeleteModalFooter">
+              <span onClick={onClose}>Cancel</span>
+              <button onClick={() => deletePostFn()}>Confirm</button>
+            </div>
           </div>
         </div>
-      </div>
+      </Backdrop>
     </>,
     document.getElementById("portal") as Element
   );

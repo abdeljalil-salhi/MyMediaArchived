@@ -9,11 +9,20 @@ export const MUTATION_UNFOLLOW_USER = gql`
       errors {
         ...ErrorFragment
       }
-      unfollowing {
+      user {
         ...UserFragment
-      }
-      unfollowed {
-        ...UserFragment
+        followersObj {
+          ...UserFragment
+        }
+        followingObj {
+          ...UserFragment
+        }
+        closeObj {
+          ...UserFragment
+        }
+        likes
+        saved
+        highlights
       }
     }
   }

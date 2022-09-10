@@ -9,11 +9,20 @@ export const MUTATION_FOLLOW_USER = gql`
       errors {
         ...ErrorFragment
       }
-      following {
+      user {
         ...UserFragment
-      }
-      followed {
-        ...UserFragment
+        followersObj {
+          ...UserFragment
+        }
+        followingObj {
+          ...UserFragment
+        }
+        closeObj {
+          ...UserFragment
+        }
+        likes
+        saved
+        highlights
       }
     }
   }
