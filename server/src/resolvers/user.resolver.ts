@@ -32,12 +32,7 @@ import { v4 } from "uuid";
 
 import { MyContext } from "../types";
 import { User, UserModel } from "../models/User.model";
-import {
-  FollowResponse,
-  UnfollowResponse,
-  UserResponse,
-  UsersResponse,
-} from "./res/user.res";
+import { UserResponse, UsersResponse } from "./res/user.res";
 import { RegisterInput } from "../models/inputs/Register.input";
 import { registerValidation } from "../validations/register.validation";
 import { updateUserValidation } from "../validations/updateUser.validation";
@@ -488,9 +483,7 @@ export class UserResolver {
             user: null,
           };
 
-        if (input.password) {
-          input.password = await argon2.hash(input.password);
-        }
+        if (input.password) input.password = await argon2.hash(input.password);
 
         let user = await UserModel.findOneAndUpdate(
           { _id: userId },
@@ -503,7 +496,7 @@ export class UserResolver {
           }
         );
 
-        if (!user) {
+        if (!user)
           return {
             errors: [
               {
@@ -512,7 +505,6 @@ export class UserResolver {
               },
             ],
           };
-        }
 
         user = user.toObject();
         user.accessToken = accessToken;
@@ -615,13 +607,13 @@ export class UserResolver {
       };
   }
 
-  @Mutation(() => FollowResponse)
+  @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
   public async followUser(
     @Arg("userId") userId: string,
     @Arg("userIdToFollow") userIdToFollow: string,
     @Ctx() context: MyContext
-  ): Promise<FollowResponse> {
+  ): Promise<UserResponse> {
     if (!isValidID(userId) || !isValidID(userIdToFollow))
       return {
         errors: [
@@ -630,8 +622,7 @@ export class UserResolver {
             message: "Invalid ID",
           },
         ],
-        following: null,
-        followed: null,
+        user: null,
       };
 
     try {
@@ -644,11 +635,10 @@ export class UserResolver {
                 message: "Cannot follow yourself",
               },
             ],
-            following: null,
-            followed: null,
+            user: null,
           };
 
-        const following = await UserModel.findOneAndUpdate(
+        const user = await UserModel.findOneAndUpdate(
           { _id: userId },
           {
             $addToSet: {
@@ -658,7 +648,7 @@ export class UserResolver {
           { returnDocument: "after" }
         );
 
-        if (!following)
+        if (!user)
           return {
             errors: [
               {
@@ -666,8 +656,7 @@ export class UserResolver {
                 message: `Failed to follow ${userIdToFollow}`,
               },
             ],
-            following: null,
-            followed: null,
+            user: null,
           };
 
         const followed = await UserModel.findOneAndUpdate(
@@ -688,37 +677,33 @@ export class UserResolver {
                 message: `Failed to follow ${userIdToFollow}`,
               },
             ],
-            following: null,
-            followed: null,
+            user: null,
           };
 
         return {
           errors: [],
-          following,
-          followed,
+          user,
         };
       } else
         return {
           errors: unauthorizedError(),
-          following: null,
-          followed: null,
+          user: null,
         };
     } catch (err) {
       return {
         errors: unhandledError(err),
-        following: null,
-        followed: null,
+        user: null,
       };
     }
   }
 
-  @Mutation(() => UnfollowResponse)
+  @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
   public async unfollowUser(
     @Arg("userId") userId: string,
     @Arg("userIdToUnfollow") userIdToUnfollow: string,
     @Ctx() context: MyContext
-  ): Promise<UnfollowResponse> {
+  ): Promise<UserResponse> {
     if (!isValidID(userId) || !isValidID(userIdToUnfollow))
       return {
         errors: [
@@ -727,8 +712,7 @@ export class UserResolver {
             message: "Invalid ID",
           },
         ],
-        unfollowing: null,
-        unfollowed: null,
+        user: null,
       };
 
     try {
@@ -741,11 +725,10 @@ export class UserResolver {
                 message: "Cannot unfollow yourself",
               },
             ],
-            unfollowing: null,
-            unfollowed: null,
+            user: null,
           };
 
-        const unfollowing = await UserModel.findOneAndUpdate(
+        const user = await UserModel.findOneAndUpdate(
           { _id: userId },
           {
             $pull: {
@@ -755,7 +738,7 @@ export class UserResolver {
           { returnDocument: "after" }
         );
 
-        if (!unfollowing)
+        if (!user)
           return {
             errors: [
               {
@@ -763,8 +746,7 @@ export class UserResolver {
                 message: `Failed to unfollow ${userIdToUnfollow}`,
               },
             ],
-            unfollowing: null,
-            unfollowed: null,
+            user: null,
           };
 
         const unfollowed = await UserModel.findOneAndUpdate(
@@ -785,26 +767,22 @@ export class UserResolver {
                 message: `Failed to unfollow ${userIdToUnfollow}`,
               },
             ],
-            unfollowing: null,
-            unfollowed: null,
+            user: null,
           };
 
         return {
           errors: [],
-          unfollowing,
-          unfollowed,
+          user,
         };
       } else
         return {
           errors: unauthorizedError(),
-          unfollowing: null,
-          unfollowed: null,
+          user: null,
         };
     } catch (err) {
       return {
         errors: unhandledError(err),
-        unfollowing: null,
-        unfollowed: null,
+        user: null,
       };
     }
   }
