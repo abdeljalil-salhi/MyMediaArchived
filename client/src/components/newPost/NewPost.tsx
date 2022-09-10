@@ -9,6 +9,7 @@ import {
 } from "@mui/icons-material";
 import { Twemoji } from "react-emoji-render";
 import { format } from "timeago.js";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { PU, TRANSPARENT } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
@@ -16,8 +17,14 @@ import { isEmpty } from "../../utils/isEmpty";
 import { ErrorModal } from "./ErrorModal";
 import { useCreatePostMutation } from "../../generated/graphql";
 import { GraphQLAccessToken } from "../../utils/_graphql";
+import { makeSelectProfile } from "../../store/selectors/profileSelector";
+import { useAppSelector } from "../../store/hooks";
 
 interface NewPostProps {}
+
+const stateSelector = createSelector(makeSelectProfile, (profile) => ({
+  profile: profile?.user,
+}));
 
 export const NewPost: FC<NewPostProps> = () => {
   // the NewPost component is used to create a new post
@@ -37,6 +44,9 @@ export const NewPost: FC<NewPostProps> = () => {
   const [file, setFile] = useState(null as any);
 
   const { user } = useContext(AuthContext);
+
+  // The selector to get state informations from the store (Redux)
+  const { profile } = useAppSelector(stateSelector);
 
   /*
    * @example
@@ -160,10 +170,14 @@ export const NewPost: FC<NewPostProps> = () => {
   return (
     <div className="newPostContainer">
       <div className="newPostProfile">
-        <Link to={`/u/${user.username}`} state={{ user }} draggable={false}>
+        <Link to={profile ? `/u/${profile.username}` : ""} draggable={false}>
           <img
-            src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
-            alt={user.fullName ? user.fullName : "Your avatar"}
+            src={
+              profile && profile.profile
+                ? `${PU}${profile.profile}`
+                : TRANSPARENT
+            }
+            alt={profile && profile.fullName ? profile.fullName : "Your avatar"}
             className="newPostAvatar avatar skeleton"
             draggable={false}
           />
@@ -172,7 +186,7 @@ export const NewPost: FC<NewPostProps> = () => {
       </div>
       <div className="newPostForm">
         <textarea
-          placeholder={`Hi ${user.firstName}, any news ?`}
+          placeholder={`Hi ${profile ? profile.firstName : "User"}, any news ?`}
           value={text}
           onChange={(e) => setText(e.target.value)}
           maxLength={1000}
@@ -186,15 +200,19 @@ export const NewPost: FC<NewPostProps> = () => {
           <div className="newPostCard">
             <div className="newPostCardLeft">
               <img
-                src={user.profile ? `${PU}${user.profile}` : TRANSPARENT}
-                alt={user.firstName ? user.fullName : "Your avatar"}
+                src={
+                  profile && profile.profile
+                    ? `${PU}${profile.profile}`
+                    : TRANSPARENT
+                }
+                alt={profile ? profile.fullName : "Your avatar"}
                 className="avatar skeleton"
                 draggable={false}
               />
             </div>
             <div className="newPostCardRight">
               <div className="newPostCardHeader">
-                <h2>{user.firstName && user.fullName}</h2>
+                <h2>{profile && profile.fullName}</h2>
                 <span>{format(Date.now())}</span>
               </div>
               <div className="newPostCardContent">
