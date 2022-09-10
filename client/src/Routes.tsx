@@ -50,7 +50,7 @@ const Routes = () => {
       } catch (_: unknown) {}
     };
     isEmpty(profile) && fetchProfile();
-  }, [profile, setProfile, user.username]);
+  }, [profile, setProfile, user]);
 
   return (
     <Router>
