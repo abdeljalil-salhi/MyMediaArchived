@@ -103,13 +103,6 @@ export type Feeling = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type FollowResponse = {
-  __typename?: 'FollowResponse';
-  errors?: Maybe<Array<ErrorResponse>>;
-  followed?: Maybe<User>;
-  following?: Maybe<User>;
-};
-
 export type ForgotPasswordToken = {
   __typename?: 'ForgotPasswordToken';
   _id: Scalars['String'];
@@ -170,7 +163,7 @@ export type Mutation = {
   createPost: PostResponse;
   deletePost: DeletePostResponse;
   deleteUser: DeleteUserResponse;
-  followUser: FollowResponse;
+  followUser: UserResponse;
   forgotPassword: TokenResponse;
   login: UserResponse;
   postMedia: MediaResponse;
@@ -178,7 +171,7 @@ export type Mutation = {
   reactPost: PostResponse;
   register: UserResponse;
   removeCloseFriend: UserResponse;
-  unfollowUser: UnfollowResponse;
+  unfollowUser: UserResponse;
   unreactPost: PostResponse;
   updatePost: PostResponse;
   updateSocials: UserResponse;
@@ -630,13 +623,6 @@ export type TokenResponse = {
   token?: Maybe<ForgotPasswordToken>;
 };
 
-export type UnfollowResponse = {
-  __typename?: 'UnfollowResponse';
-  errors?: Maybe<Array<ErrorResponse>>;
-  unfollowed?: Maybe<User>;
-  unfollowing?: Maybe<User>;
-};
-
 export type UpdatePostInput = {
   isEdited?: InputMaybe<Scalars['Boolean']>;
   link?: InputMaybe<Scalars['String']>;
@@ -807,7 +793,7 @@ export type FollowUserMutationVariables = Exact<{
 }>;
 
 
-export type FollowUserMutation = { __typename?: 'Mutation', followUser: { __typename?: 'FollowResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, following?: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } | null, followed?: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } | null } };
+export type FollowUserMutation = { __typename?: 'Mutation', followUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } | null } };
 
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
@@ -838,7 +824,7 @@ export type UnfollowUserMutationVariables = Exact<{
 }>;
 
 
-export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'UnfollowResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, unfollowing?: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } | null, unfollowed?: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } | null } };
+export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } | null } };
 
 export type UpdateUserMutationVariables = Exact<{
   userId: Scalars['String'];
@@ -1092,10 +1078,7 @@ export const FollowUserDocument = gql`
     errors {
       ...ErrorFragment
     }
-    following {
-      ...UserFragment
-    }
-    followed {
+    user {
       ...UserFragment
     }
   }
@@ -1250,10 +1233,7 @@ export const UnfollowUserDocument = gql`
     errors {
       ...ErrorFragment
     }
-    unfollowing {
-      ...UserFragment
-    }
-    unfollowed {
+    user {
       ...UserFragment
     }
   }
