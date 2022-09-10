@@ -21,9 +21,9 @@ import {
   LockResetRounded,
   NavigateNextRounded,
 } from "@mui/icons-material";
+import { Dispatch } from "redux";
 import { Link } from "react-router-dom";
 
-import { USER } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { useRegisterMutation } from "../../generated/graphql";
 import {
@@ -31,10 +31,20 @@ import {
   registerStart,
   registerSuccess,
 } from "../../context/actions/auth.actions";
+import { updateLocalStorageUser } from "../../utils/localStorage";
+import { Register_register } from "../../generated/types/Register";
+import { setProfile } from "../../store/slices/profileSlice";
+import { TProfile } from "../../store/types/profileTypes";
+import { useAppDispatch } from "../../store/hooks";
 
 interface RegisterProps {
   goToLogin: () => void;
 }
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
+});
+
 export const Register: FC<RegisterProps> = ({ goToLogin }) => {
   // The Register component is used to register a new user.
   //
@@ -63,6 +73,9 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
   const [secondStep, setSecondStep] = useState(false);
 
   const { dispatch } = useContext(AuthContext);
+
+  // The dispatch function to update the profile state in the store (Redux)
+  const { setProfile } = actionDispatch(useAppDispatch());
 
   /*
    * @example
@@ -152,8 +165,13 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
         if (res.data?.register.user) {
           // Dispatch the register response by dispatching the registerSuccess action
           dispatch(registerSuccess(res.data?.register.user));
+          setProfile(res.data?.register as Register_register);
           // Store the registered user in local storage
-          localStorage.setItem(USER, JSON.stringify(res.data?.register.user));
+          updateLocalStorageUser({
+            _id: res.data?.register.user._id,
+            username: res.data?.register.user.username,
+            accessToken: res.data?.register.user.accessToken as string | null,
+          });
         } else if (res.data?.register.errors) {
           // Handle known errors and show them to the user
           setError(res.data.register.errors[0].message as string);

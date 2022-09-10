@@ -21,7 +21,6 @@ import { Rightbar } from "../components/rightbar/Rightbar";
 import { AuthContext } from "../context/auth.context";
 import { Feed } from "../components/feed/Feed";
 import { Topbar } from "../components/topbar/Topbar";
-import { updateLocalStorageUser } from "../utils/localStorage";
 import profileService from "../store/services/profileService";
 import {
   GetProfile_getProfile,
@@ -177,7 +176,6 @@ export const Profile: FC<ProfileProps> = () => {
           // If the request was successful, update the user's profile in the local storage
           setProfile(res);
           setUserProfile(res.user as UpdateUser_updateUser_user);
-          updateLocalStorageUser(res.user);
           setUpdatingBio(false);
           setBio("");
         } else if (!isEmpty(res.errors)) {
