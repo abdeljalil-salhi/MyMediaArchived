@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+import { FRAGMENT_ERROR_RESPONSE } from "../fragments/ErrorFragment";
+import { FRAGMENT_USER } from "../fragments/UserFragment";
+
 export const MUTATION_UPDATE_USER = gql`
   mutation UpdateUser(
     $userId: String!
@@ -68,4 +71,6 @@ export const MUTATION_UPDATE_USER = gql`
       }
     }
   }
+  ${FRAGMENT_ERROR_RESPONSE}
+  ${FRAGMENT_USER}
 `;

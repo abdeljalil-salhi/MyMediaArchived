@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+import { FRAGMENT_ERROR_RESPONSE } from "../fragments/ErrorFragment";
+import { FRAGMENT_USER } from "../fragments/UserFragment";
+
 export const MUTATION_CREATE_POST = gql`
   mutation CreatePost(
     $user: String!
@@ -32,4 +35,6 @@ export const MUTATION_CREATE_POST = gql`
       }
     }
   }
+  ${FRAGMENT_ERROR_RESPONSE}
+  ${FRAGMENT_USER}
 `;

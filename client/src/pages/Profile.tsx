@@ -1,4 +1,5 @@
 import {
+  ChangeEvent,
   FC,
   MutableRefObject,
   useContext,
@@ -15,18 +16,11 @@ import { Dispatch } from "redux";
 
 import { PU, TRANSPARENT } from "../globals";
 import { Sidebar } from "../components/sidebar/Sidebar";
-import { useUpdateUserMutation } from "../generated/graphql";
 import { isEmpty } from "../utils/isEmpty";
 import { Rightbar } from "../components/rightbar/Rightbar";
 import { AuthContext } from "../context/auth.context";
 import { Feed } from "../components/feed/Feed";
 import { Topbar } from "../components/topbar/Topbar";
-import { GraphQLAccessToken } from "../utils/_graphql";
-import {
-  updateUserStart,
-  updateUserSuccess,
-  updateUserFailure,
-} from "../context/actions/auth.actions";
 import { updateLocalStorageUser } from "../utils/localStorage";
 import profileService from "../store/services/profileService";
 import {
@@ -34,9 +28,15 @@ import {
   GetProfile_getProfile_errors,
   GetProfile_getProfile_user,
 } from "../generated/types/GetProfile";
+import {
+  UpdateUserVariables,
+  UpdateUser_updateUser,
+  UpdateUser_updateUser_user,
+} from "../generated/types/UpdateUser";
 import { setProfile } from "../store/slices/profileSlice";
 import { useAppDispatch } from "../store/hooks";
 import { TProfile } from "../store/types/profileTypes";
+import { LoadingBox } from "../components/loadingBox/LoadingBox";
 
 interface ProfileProps {}
 
@@ -46,30 +46,41 @@ const actionDispatch = (dispatch: Dispatch) => ({
 
 export const Profile: FC<ProfileProps> = () => {
   // the Profile page is used to display the user's profile
+  // and also to edit the user's profile informations
+  //
+  // Notes:
+  // - the user can edit his profile informations only if he is the owner of the profile
 
   const [updatingBio, setUpdatingBio] = useState<boolean>(false);
+  const [userProfile, setUserProfile] = useState<GetProfile_getProfile_user>(
+    {} as GetProfile_getProfile_user
+  );
+  const [bio, setBio] = useState<string>("");
+
+  // The states below are used by the getProfile() GraphQL query
   const [getProfileData, setGetProfileData] = useState<GetProfile_getProfile>(
     {} as GetProfile_getProfile
   );
   const [getProfileLoading, setGetProfileLoading] = useState<boolean>(false);
   const [getProfileError, setGetProfileError] = useState<boolean>(false);
-  const [userProfile, setUserProfile] = useState<GetProfile_getProfile_user>(
-    {} as GetProfile_getProfile_user
-  );
-  const [bio, setBio] = useState<string | null>(null);
+
+  // The states below are used by the updateProfile() GraphQL mutation
+  const [updateProfileLoading, setUpdateProfileLoading] =
+    useState<boolean>(false);
+  const [updateProfileError, setUpdateProfileError] = useState<boolean>(false);
 
   const timerRef: MutableRefObject<any> = useRef(null);
   const updateBioRef: MutableRefObject<HTMLTextAreaElement | null> =
     useRef<HTMLTextAreaElement | null>(null);
 
-  const { user, dispatch } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const params: Readonly<Params<string>> = useParams();
 
+  // The dispatch function to update the profile state in the store (Redux)
   const { setProfile } = actionDispatch(useAppDispatch());
 
-  const [updateUser] = useUpdateUserMutation();
-
+  // The useEffect hook below is used to scroll to the top of the page when the component is mounted
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -78,30 +89,46 @@ export const Profile: FC<ProfileProps> = () => {
     });
   }, [params.username]);
 
+  // The useEffect hook below is used to fetch the user's profile data
   useEffect(() => {
     const fetchProfile = async () => {
+      // Start the querying process by turning the loading state to true
       setGetProfileLoading(true);
-      const res: GetProfile_getProfile = (await profileService
-        .getProfile(params.username as string)
-        .catch((_: unknown) =>
-          setGetProfileError(true)
-        )) as GetProfile_getProfile;
-      setGetProfileData(res);
-      setProfile(res as any);
-      !isEmpty(res.user) &&
-        setUserProfile(res.user as GetProfile_getProfile_user);
+      try {
+        // Send the GraphQL getProfile request to the server
+        const res: GetProfile_getProfile = (await profileService
+          .getProfile(params.username as string)
+          .catch((_: unknown) =>
+            setGetProfileError(true)
+          )) as GetProfile_getProfile;
+        if (!isEmpty(res.user)) {
+          // If the request was successful, update the user's profile state
+          setGetProfileData(res);
+          setUserProfile(res.user as GetProfile_getProfile_user);
+          params.username === user.username && setProfile(res);
+        } else if (!isEmpty(res.errors)) {
+          // Redirect to the 404 page if the user's profile was not found
+          setGetProfileError(true);
+        }
+      } catch (_: unknown) {
+        // Redirect to the 404 page if the user's profile was not found
+        setGetProfileError(true);
+      }
+      // End the updating process by turning the loading state to false
       setGetProfileLoading(false);
     };
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.username]);
 
+  // The useEffect hook below is used to display the user's fullName in the document title
   useEffect(() => {
     document.title = !isEmpty(userProfile.fullName)
       ? `${userProfile.fullName} - MyMedia`
       : "MyMedia";
   }, [userProfile]);
 
+  // The updating textarea is shown if the user clicks outside the textarea
   useEffect(() => {
     const pageClickEvent = (e: any) => {
       if (
@@ -111,6 +138,7 @@ export const Profile: FC<ProfileProps> = () => {
         setUpdatingBio(!updatingBio);
     };
 
+    // Add the event listener when the textarea is shown
     if (updatingBio) {
       timerRef.current = setTimeout(
         () => window.addEventListener("click", pageClickEvent),
@@ -118,59 +146,57 @@ export const Profile: FC<ProfileProps> = () => {
       );
     }
 
+    // Remove the event listener when the textarea is hidden
     return () => window.removeEventListener("click", pageClickEvent);
   }, [updatingBio]);
 
+  // Clear the timer when the textarea is hidden to prevent memory leaks
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
   const handleUpdateBio = async () => {
     if (bio && bio.trim()) {
-      // Start the updating process by dispatching the updateUserStart action
-      dispatch(updateUserStart());
+      // Start the updating process by turning the loading state to true
+      setUpdateProfileLoading(true);
+      // Prepare the variables to be sent in the GraphQL mutation
+      const variables: UpdateUserVariables = {
+        userId: user._id,
+        accessToken: user.accessToken,
+        bio,
+      };
       try {
         // Send the GraphQL updating request to the server
-        const res = await updateUser({
-          variables: {
-            userId: user._id,
-            accessToken: user.accessToken,
-            bio,
-          },
-          // Pass the access token to the GraphQL context
-          context: GraphQLAccessToken(user.accessToken),
-        });
-        if (!isEmpty(res.data?.updateUser.user)) {
-          // If the request was successful, dispatch the updateUserSuccess action
-          dispatch(updateUserSuccess(res.data!.updateUser.user));
-          updateLocalStorageUser(res.data?.updateUser.user);
+        const res: UpdateUser_updateUser = (await profileService
+          .updateProfile(variables)
+          .catch((_: unknown) =>
+            setUpdateProfileError(true)
+          )) as UpdateUser_updateUser;
+
+        if (!isEmpty(res.user)) {
+          // If the request was successful, update the user's profile in the local storage
+          setProfile(res);
+          setUserProfile(res.user as UpdateUser_updateUser_user);
+          updateLocalStorageUser(res.user);
           setUpdatingBio(false);
           setBio("");
-          window.location.reload();
-        } else if (!isEmpty(res.data?.updateUser.errors)) {
+        } else if (!isEmpty(res.errors)) {
           // Handle known errors and show them to the user
+          setUpdateProfileError(true);
           // TODO: Show the errors to the user
           //
           // @example
           // setError(res.data.login.errors[0].message as string);
           // setErrorOpened(true);
-        } else if (!isEmpty(res.errors)) {
-          // Handle unknown errors and show them to the user
-          // TODO: Show the errors to the user
-          //
-          // @example
-          // setError(
-          //   `${
-          //     res.errors[0].message as string
-          //   }. Please report this error to the support.`
-          // );
-          // setErrorOpened(true);
         }
-      } catch (err: unknown) {
-        // Dispatch the updating failure by dispatching the updateUserFailure action
-        dispatch(updateUserFailure());
+      } catch (_: unknown) {
+        // Handle unknown errors and show them to the user
+        setUpdateProfileError(true);
       }
+      // End the updating process by turning the loading state to false
+      setUpdateProfileLoading(false);
     } else {
+      // Handle empty bio by cancelling the updating process
       setUpdatingBio(false);
       setBio("");
     }
@@ -226,11 +252,13 @@ export const Profile: FC<ProfileProps> = () => {
               ) : null}
               {!isEmpty(userProfile.bio) && (
                 <>
-                  {!updatingBio ? (
+                  {!updatingBio && !updateProfileLoading ? (
                     <>
                       <span className="profileInfoBio">
                         <Twemoji
-                          text={userProfile.bio ? userProfile.bio : ""}
+                          text={
+                            !isEmpty(userProfile.bio) ? userProfile.bio : ""
+                          }
                           onlyEmojiClassName="makeEmojisLarge"
                         />
                       </span>
@@ -244,18 +272,21 @@ export const Profile: FC<ProfileProps> = () => {
                         </Button>
                       )}
                     </>
-                  ) : (
+                  ) : updatingBio && !updateProfileLoading ? (
                     <>
                       <textarea
                         className="profileInfoBioTextarea"
-                        defaultValue={user.bio}
-                        onChange={(e) => setBio(e.target.value)}
+                        defaultValue={userProfile.bio}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                          setBio(e.target.value)
+                        }
                         maxLength={100}
                         ref={updateBioRef}
                       ></textarea>
                       <div className="profileInfoBioTextareaCounter">
                         <span className="profileInfoBioTextareaMax">
-                          {bio !== null ? bio.length : user.bio.length}/100
+                          {isEmpty(bio) ? userProfile.bio.length : bio.length}
+                          /100
                         </span>
                         <Button
                           className="profileInfoBioTextareaButton"
@@ -265,6 +296,8 @@ export const Profile: FC<ProfileProps> = () => {
                         </Button>
                       </div>
                     </>
+                  ) : (
+                    updateProfileLoading && <LoadingBox />
                   )}
                 </>
               )}

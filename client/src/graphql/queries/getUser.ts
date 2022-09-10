@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+import { FRAGMENT_ERROR_RESPONSE } from "../fragments/ErrorFragment";
+import { FRAGMENT_USER } from "../fragments/UserFragment";
+
 export const QUERY_GET_USER = gql`
   query GetUser($userId: String!) {
     getUser(userId: $userId) {
@@ -23,4 +26,6 @@ export const QUERY_GET_USER = gql`
       }
     }
   }
+  ${FRAGMENT_ERROR_RESPONSE}
+  ${FRAGMENT_USER}
 `;

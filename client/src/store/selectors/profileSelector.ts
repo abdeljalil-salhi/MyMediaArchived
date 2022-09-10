@@ -6,5 +6,5 @@ const selectProfile = (state: IRootState) => state.profile;
 
 export const makeSelectProfile = createSelector(
   selectProfile,
-  (profile) => profile
+  (profile) => profile.data
 );
