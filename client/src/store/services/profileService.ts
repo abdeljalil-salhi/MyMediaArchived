@@ -12,11 +12,10 @@ import {
   UpdateUser,
   UpdateUserVariables,
 } from "../../generated/types/UpdateUser";
-
-import { MUTATION_UPDATE_USER } from "../../graphql/mutations/updateUser";
-import { QUERY_GET_PROFILE } from "../../graphql/queries/getProfile";
-import { MUTATION_FOLLOW_USER } from "../../graphql/mutations/followUser";
-import { MUTATION_UNFOLLOW_USER } from "../../graphql/mutations/unfollowUser";
+import {
+  UpdateTags,
+  UpdateTagsVariables,
+} from "../../generated/types/UpdateTags";
 import {
   FollowUser,
   FollowUserVariables,
@@ -25,6 +24,12 @@ import {
   UnfollowUser,
   UnfollowUserVariables,
 } from "../../generated/types/UnfollowUser";
+
+import { QUERY_GET_PROFILE } from "../../graphql/queries/getProfile";
+import { MUTATION_UPDATE_USER } from "../../graphql/mutations/updateUser";
+import { MUTATION_UPDATE_TAGS } from "../../graphql/mutations/updateTags";
+import { MUTATION_FOLLOW_USER } from "../../graphql/mutations/followUser";
+import { MUTATION_UNFOLLOW_USER } from "../../graphql/mutations/unfollowUser";
 
 class profileService {
   async getProfile(
@@ -76,6 +81,34 @@ class profileService {
     } catch (err: unknown) {
       // Handle unknown errors from the server and throw them to the caller
       throw new Error("Error in getProfileService.updateProfile: " + err);
+    }
+  }
+
+  async updateTags(
+    variables: UpdateTagsVariables,
+    accessToken: string
+  ): Promise<UpdateTags["updateTags"]> {
+    try {
+      // Send the GraphQL updating request to the server
+      const res: FetchResult<
+        any,
+        Record<string, any>,
+        Record<string, any>
+      > = await client.mutate({
+        mutation: MUTATION_UPDATE_TAGS,
+        variables,
+        // Pass the access token to the GraphQL context
+        context: GraphQLAccessToken(accessToken),
+      });
+
+      // Handle known errors from the server and throw them as errors to the caller
+      if (isEmpty(res) || isEmpty(res.data)) throw new Error("No data");
+
+      // If the request was successful, return the value of the updated user
+      return res.data.updateTags;
+    } catch (err: unknown) {
+      // Handle unknown errors from the server and throw them to the caller
+      throw new Error("Error in getProfileService.updateTags: " + err);
     }
   }
 
