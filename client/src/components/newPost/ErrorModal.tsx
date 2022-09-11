@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import { Backdrop } from "../backdrop/Backdrop";
@@ -25,6 +25,15 @@ export const ErrorModal: FC<ErrorModalProps> = ({
   // - The error message is displayed when the query has an error
   // - The error message is not displayed if the query is loading
   // - The error message is not displayed if the query is loaded successfully
+
+  // Close the modal if the Esc key is pressed
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
 
   // Return null if the modal is not open
   if (!open) return null;

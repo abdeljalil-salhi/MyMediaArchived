@@ -12,6 +12,7 @@
 
   .CustomSelectWrapper {
     width: 100%;
+    position: relative;
 
     button {
       padding: 4px 10px 7px 10px;
@@ -54,6 +55,11 @@
     }
 
     .CustomSelectOptions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: calc(100% - 2px);
+      z-index: 10002;
       background-color: $background-primary;
       -webkit-box-shadow: $shadow-secondary;
       box-shadow: $shadow-secondary;
