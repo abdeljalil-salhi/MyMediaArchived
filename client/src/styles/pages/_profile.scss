@@ -12,23 +12,43 @@
 
     .profileTop {
       .profileCover {
-        height: 320px;
+        height: 350px;
         position: relative;
 
-        .profileCoverImage {
-          width: 100%;
-          height: 250px;
-          -o-object-fit: cover;
-          object-fit: cover;
+        .profileCoverWrapper {
+          position: relative;
+
+          .profileCoverImage {
+            width: 100%;
+            height: 250px;
+            -o-object-fit: cover;
+            object-fit: cover;
+          }
+
+          .profileCoverGradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            background-image: linear-gradient(
+              to top,
+              $background 10%,
+              rgba(0, 0, 0, 0) 100%,
+              transparent
+            );
+            width: 100%;
+            height: 20%;
+          }
         }
 
         .profileUserImage {
-          width: 150px;
-          height: 150px;
+          width: 170px;
+          height: 170px;
           position: absolute;
           left: 0;
           right: 0;
-          top: 150px;
+          z-index: 2;
+          top: 170px;
           margin: auto;
           border: 3px solid $background;
         }

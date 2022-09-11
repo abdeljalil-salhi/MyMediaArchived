@@ -229,14 +229,19 @@ export const Profile: FC<ProfileProps> = () => {
         <div className="profile">
           <div className="profileTop">
             <div className="profileCover">
-              <img
-                className="profileCoverImage skeleton"
-                src={
-                  userProfile.cover ? `${PU}${userProfile.cover}` : TRANSPARENT
-                }
-                alt={`${userProfile.firstName}'s cover`}
-                draggable={false}
-              />
+              <div className="profileCoverWrapper">
+                <img
+                  className="profileCoverImage skeleton"
+                  src={
+                    userProfile.cover
+                      ? `${PU}${userProfile.cover}`
+                      : TRANSPARENT
+                  }
+                  alt={`${userProfile.firstName}'s cover`}
+                  draggable={false}
+                />
+                <div className="profileCoverGradient"></div>
+              </div>
               <img
                 className="profileUserImage avatar skeleton"
                 src={
