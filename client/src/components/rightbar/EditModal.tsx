@@ -38,6 +38,17 @@ const actionDispatch = (dispatch: Dispatch) => ({
 });
 
 export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
+  // The EditModal component is responsible of showing the profile updating options on a modal
+  //
+  // Props:
+  // open: whether the modal is open
+  // onClose: the function to close the modal
+  //
+  // Notes:
+  // - The modal is displayed when the user clicks the edit button
+  // - The modal is closed when the user clicks the close button or the backdrop or presses Esc key
+  // - The modal is closed when the user clicks the Confirm button and saves the informations to the profile state
+
   const [city, setCity] = useState<string>("");
   const [hometown, setHometown] = useState<string>("");
   const [relationship, setRelationship] = useState<number>(0);
@@ -133,8 +144,19 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
     } catch (_: unknown) {}
   }, [profile]);
 
+  // Close the modal if the Esc key is pressed
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
+  // Return null if the modal is not open
   if (!open) return null;
 
+  // Create the portal to display the modal in the DOM
   return createPortal(
     <>
       <Backdrop onClick={onClose}>

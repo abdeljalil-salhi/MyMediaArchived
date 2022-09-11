@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, useContext, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import { AuthContext } from "../../context/auth.context";
@@ -19,7 +19,7 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   onClose,
   postId,
 }) => {
-  // The DeleteModal component is used to display a delete confirmation message.
+  // The DeleteModal component is used to display a delete confirmation message
   //
   // Props:
   // open: whether the delete confirmation message is open
@@ -30,6 +30,7 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   // Notes:
   // - The delete confirmation message is displayed when the user clicks the delete button
 
+  // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
 
   /*
@@ -55,6 +56,15 @@ export const DeleteModal: FC<DeleteModalProps> = ({
     onClose();
     window.location.reload();
   };
+
+  // Close the modal if the Esc key is pressed
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
 
   // Return null if the modal is not open
   if (!open) return null;
