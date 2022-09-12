@@ -21,11 +21,12 @@ import {
   loginSuccess,
   loginFailure,
 } from "../../context/actions/auth.actions";
-import { updateLocalStorageUser } from "../../utils/localStorage";
+import { updateLocalStorage } from "../../utils/localStorage";
 import { Login_login } from "../../generated/types/Login";
 import { setProfile } from "../../store/slices/profileSlice";
 import { TProfile } from "../../store/types/profileTypes";
 import { useAppDispatch } from "../../store/hooks";
+import { USER } from "../../globals";
 
 interface LoginProps {
   goToRegister: () => void;
@@ -100,7 +101,7 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
         dispatch(loginSuccess(res.data?.login.user));
         setProfile(res.data?.login as Login_login);
         // Store the logged user in local storage
-        updateLocalStorageUser({
+        updateLocalStorage(USER, {
           _id: res.data?.login.user._id,
           username: res.data?.login.user.username,
           accessToken: res.data?.login.user.accessToken as string | null,

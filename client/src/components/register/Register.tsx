@@ -31,11 +31,12 @@ import {
   registerStart,
   registerSuccess,
 } from "../../context/actions/auth.actions";
-import { updateLocalStorageUser } from "../../utils/localStorage";
 import { Register_register } from "../../generated/types/Register";
 import { setProfile } from "../../store/slices/profileSlice";
 import { TProfile } from "../../store/types/profileTypes";
 import { useAppDispatch } from "../../store/hooks";
+import { updateLocalStorage } from "../../utils/localStorage";
+import { USER } from "../../globals";
 
 interface RegisterProps {
   goToLogin: () => void;
@@ -167,7 +168,7 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
           dispatch(registerSuccess(res.data?.register.user));
           setProfile(res.data?.register as Register_register);
           // Store the registered user in local storage
-          updateLocalStorageUser({
+          updateLocalStorage(USER, {
             _id: res.data?.register.user._id,
             username: res.data?.register.user.username,
             accessToken: res.data?.register.user.accessToken as string | null,
