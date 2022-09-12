@@ -16,10 +16,15 @@ import {
   UpdateUser,
   UpdateUser_updateUser,
 } from "../../generated/types/UpdateUser";
+import {
+  UpdateTags,
+  UpdateTags_updateTags,
+} from "../../generated/types/UpdateTags";
 
 export type TProfile =
   | GetProfile_getProfile
   | UpdateUser_updateUser
+  | UpdateTags_updateTags
   | FollowUser_followUser
   | UnfollowUser_unfollowUser
   | Login_login
@@ -29,6 +34,7 @@ export interface IProfileState {
   data:
     | GetProfile["getProfile"]
     | UpdateUser["updateUser"]
+    | UpdateTags["updateTags"]
     | FollowUser["followUser"]
     | UnfollowUser["unfollowUser"]
     | Login["login"]
