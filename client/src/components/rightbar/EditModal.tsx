@@ -1,4 +1,11 @@
-import { FC, useContext, useEffect, useState } from "react";
+import {
+  FC,
+  KeyboardEvent as KeyboardEventReact,
+  MouseEvent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   Close,
@@ -10,7 +17,7 @@ import {
 import { createSelector } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 
-import { GEO } from "../../globals";
+import { GEO, GEO_API, GPS } from "../../globals";
 import { isEmpty } from "../../utils/isEmpty";
 import { CustomSelect } from "../customs/customSelect/CustomSelect";
 import { Backdrop } from "../backdrop/Backdrop";
@@ -29,6 +36,8 @@ import profileService from "../../store/services/profileService";
 import { setProfile } from "../../store/slices/profileSlice";
 import { TProfile } from "../../store/types/profileTypes";
 import { CustomTagEditor } from "../customs/customTagEditor/CustomTagEditor";
+import { updateLocalStorage } from "../../utils/localStorage";
+import { ILocalStorageGPS } from "../../utils/interfaces/IGPS";
 
 interface EditModalProps {
   open: boolean;
@@ -59,6 +68,7 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
   const [hometown, setHometown] = useState<string>("");
   const [relationship, setRelationship] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
+  const [GpsSupported, setGpsSupported] = useState<boolean>(false);
   const [localSuggestion, setLocalSuggestion] = useState({} as any);
 
   // The states below are used by the updateProfile() GraphQL mutation
@@ -68,6 +78,10 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
   // The states below are used by the updateProfile() GraphQL mutation
   const [updateTagsLoading, setUpdateTagsLoading] = useState<boolean>(false);
   const [updateTagsError, setUpdateTagsError] = useState<boolean>(false);
+  // The states below are used by the handleGPS() function
+  const [gpsLoading, setGpsLoading] = useState<boolean>(false);
+  const [gpsError, setGpsError] = useState<boolean>(false);
+  const [gpsErrorText, setGpsErrorText] = useState<string>("");
 
   // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
@@ -95,6 +109,101 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
   const handleSuggestion = () => {
     // Handle the suggested city and place it in the input
     setCity(localSuggestion.city);
+  };
+
+  const handleGPS = () => {
+    // Recheck if the browser supports the geolocation API
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(onGpsSuccess, onGpsError);
+    } else {
+      setGpsError(true);
+      setGpsErrorText("Your browser does not support the Geolocation API.");
+    }
+  };
+
+  const onGpsSuccess: PositionCallback = (position: GeolocationPosition) => {
+    const { latitude, longitude } = position.coords;
+
+    // Start the updating process by turning the loading state to true
+    setGpsLoading(true);
+    try {
+      fetch(`${GEO_API}&q=${encodeURIComponent(latitude + "," + longitude)}`)
+        .then((res: Response) => res.json())
+        .then((result: any) => {
+          if (result.status.code === 200) {
+            // If the request is successful, get the location data
+            const components: any = result.results[0].components;
+            const annotations: any = result.results[0].annotations;
+            const currency: any = annotations.currency;
+
+            // Format the received data to store it into the local storage
+            const formattedLocation: ILocalStorageGPS = {
+              components: {
+                continent: components.continent,
+                country: components.country,
+                country_code: components.country_code,
+                county: components.county,
+                postcode: components.postcode,
+                region: components.region,
+                city: components.state_district,
+              },
+              annotations: {
+                DMS: annotations.DMS,
+                callingCode: annotations.callingcode,
+                currency: {
+                  iso_code: currency.iso_code,
+                  name: currency.name,
+                  subunit: currency.subunit,
+                  subunit_to_unit: currency.subunit_to_unit,
+                  symbol: currency.symbol,
+                },
+                flag: annotations.flag,
+                qibla: annotations.qibla,
+                sun: annotations.sun,
+              },
+            };
+
+            // Store the formatted data in local storage
+            updateLocalStorage(GPS, formattedLocation);
+
+            // Place the location data in the localSuggestion state
+            setLocalSuggestion(formattedLocation.components);
+          } else if (result.status.code <= 500) {
+            // If the API is unable to retrieve the data, it will return a 400 or 500 errors
+            setGpsError(true);
+            setGpsErrorText("Our server is unable to geocode your location.");
+          } else {
+            // Handle any other unknown error codes
+            setGpsError(true);
+            setGpsErrorText("Something went wrong. Please try again later.");
+          }
+        });
+    } catch (_: unknown) {
+      // Handle any other unknown errors
+      setGpsError(true);
+      setGpsErrorText("Something went wrong. Please try again later.");
+    }
+    // End the updating process by turning the loading state to false
+    setGpsLoading(false);
+  };
+
+  // Handle geolocation errors
+  const onGpsError: PositionErrorCallback = (
+    error: GeolocationPositionError
+  ) => {
+    if (error.code === 1) {
+      // If the user denied the Geolocation API permission
+      setGpsError(true);
+      setGpsErrorText("You denied the location permission.");
+    } else if (error.code === 2) {
+      // If the user's location is not available
+      setGpsError(true);
+      setGpsErrorText("Your location is not recognized by our server.");
+    } else {
+      // Handle any other unknown error codes
+      setGpsError(true);
+      setGpsErrorText("Something went wrong. Please try again later.");
+    }
   };
 
   const handleConfirm = async () => {
@@ -194,6 +303,8 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
       // Handle suggested city if found in the localStorage
       if (!isEmpty(localStorage.getItem(GEO)))
         setLocalSuggestion(JSON.parse(localStorage.getItem(GEO) as string));
+      // Check if the browser supports the geolocation API
+      if (navigator.geolocation) setGpsSupported(true);
     } catch (_: unknown) {}
   }, [profile]);
 
@@ -213,7 +324,10 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
   return createPortal(
     <>
       <Backdrop onClick={onClose}>
-        <div className="editModal" onClick={(e: any) => e.stopPropagation()}>
+        <div
+          className="editModal"
+          onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+        >
           <div className="editModalHeader">
             <div></div>
             <h2>Edit Informations</h2>
@@ -232,16 +346,33 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
                 type="text"
                 placeholder="Where are you living?"
                 value={city}
-                onChange={(e: any) => setCity(e.target.value)}
+                onChange={(e: KeyboardEventReact<HTMLInputElement>) =>
+                  setCity(e.target.value)
+                }
               />
               <span className="editModalBodySuggests">
-                Suggestions:{" "}
-                <span
-                  className="editModalBodySuggestsName"
-                  onClick={handleSuggestion}
-                >
-                  {localSuggestion.city}
-                </span>
+                <div>
+                  Suggestions:{" "}
+                  <span
+                    className="editModalBodySuggestsName"
+                    onClick={handleSuggestion}
+                    title="The suggestions are based on your IP address."
+                  >
+                    {localSuggestion.city}
+                  </span>
+                </div>
+                {GpsSupported && (
+                  <div>
+                    The suggestions aren't accurate?{" "}
+                    <span
+                      className="editModalBodySuggestsName"
+                      onClick={() => (!gpsLoading ? handleGPS() : null)}
+                      title="The suggestions are based on your device's GPS."
+                    >
+                      Use GPS instead
+                    </span>
+                  </div>
+                )}
               </span>
             </div>
             <div className="editModalBodyElement">
@@ -254,7 +385,9 @@ export const EditModal: FC<EditModalProps> = ({ open, onClose }) => {
                 type="text"
                 placeholder="Where are you from?"
                 value={hometown}
-                onChange={(e) => setHometown(e.target.value)}
+                onChange={(e: KeyboardEventReact<HTMLInputElement>) =>
+                  setHometown(e.target.value)
+                }
               />
             </div>
             <div className="editModalBodyElement editModalBodyRelationship">
