@@ -1,15 +1,24 @@
 import ReduxLogger from "redux-logger";
-import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
+import {
+  Action,
+  AnyAction,
+  configureStore,
+  EnhancedStore,
+  ThunkAction,
+} from "@reduxjs/toolkit";
 
+import postsReducer from "./slices/postsSlice";
 import profileReducer from "./slices/profileSlice";
+import { IRootState } from "./types";
 
 const middleware = (getDefaultMiddleware: any) =>
   getDefaultMiddleware().concat(ReduxLogger);
 
-export const store = configureStore({
+export const store: EnhancedStore<IRootState, AnyAction, any> = configureStore({
   middleware,
   reducer: {
     profile: profileReducer,
+    posts: postsReducer,
   },
 });
 
