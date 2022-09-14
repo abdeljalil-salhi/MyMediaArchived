@@ -297,7 +297,7 @@ export class PostResolver {
                   },
                   {
                     createdAt: {
-                      $gt: cursor,
+                      $lt: cursor,
                     },
                   },
                 ],
@@ -361,7 +361,7 @@ export class PostResolver {
                 { user: userId },
                 {
                   createdAt: {
-                    $gt: cursor,
+                    $lt: cursor,
                   },
                 },
               ],
