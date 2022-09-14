@@ -27,9 +27,13 @@ import { DeleteModal } from "./DeleteModal";
 import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { useAppSelector } from "../../store/hooks";
+import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
+import { GetUserPosts_getUserPosts_posts } from "../../generated/types/GetUserPosts";
 
 interface PostProps {
-  post: any;
+  post:
+    | GetTimelinePosts_getTimelinePosts_posts
+    | GetUserPosts_getUserPosts_posts;
 }
 
 const stateSelector = createSelector(makeSelectProfile, (profile) => ({
