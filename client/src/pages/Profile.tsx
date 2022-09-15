@@ -38,6 +38,10 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import profileService from "../store/services/profileService";
 import { setProfile } from "../store/slices/profileSlice";
 import { TProfile } from "../store/types/profileTypes";
+import { TProfilePosts } from "../store/types/profilePostsTypes";
+import { setProfilePosts } from "../store/slices/profilePostsSlice";
+import { profilePostsInitialState } from "../store/initialStates";
+import { GetUserPosts_getUserPosts } from "../generated/types/GetUserPosts";
 
 interface ProfileProps {}
 
@@ -47,6 +51,7 @@ const stateSelector = createSelector(makeSelectProfile, (profile) => ({
 
 const actionDispatch = (dispatch: Dispatch) => ({
   setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
+  setProfilePosts: (posts: TProfilePosts) => dispatch(setProfilePosts(posts)),
 });
 
 export const Profile: FC<ProfileProps> = () => {
@@ -56,11 +61,13 @@ export const Profile: FC<ProfileProps> = () => {
   // Notes:
   // - the user can edit his profile informations only if he is the owner of the profile
 
+  const [bio, setBio] = useState<string>("");
   const [updatingBio, setUpdatingBio] = useState<boolean>(false);
+  const [firstQuery, setFirstQuery] = useState<boolean>(true);
+  const [loadPosts, setLoadPosts] = useState<boolean>(true);
   const [userProfile, setUserProfile] = useState<GetProfile_getProfile_user>(
     {} as GetProfile_getProfile_user
   );
-  const [bio, setBio] = useState<string>("");
 
   // The states below are used by the getProfile() GraphQL query
   const [getProfileData, setGetProfileData] = useState<GetProfile_getProfile>(
@@ -86,7 +93,7 @@ export const Profile: FC<ProfileProps> = () => {
   const { profile } = useAppSelector(stateSelector);
 
   // The dispatch function to update the profile state in the store (Redux)
-  const { setProfile } = actionDispatch(useAppDispatch());
+  const { setProfile, setProfilePosts } = actionDispatch(useAppDispatch());
 
   // The useEffect hook below is used to scroll to the top of the page when the component is mounted
   useEffect(() => {
@@ -114,6 +121,12 @@ export const Profile: FC<ProfileProps> = () => {
           setGetProfileData(res);
           setUserProfile(res.user as GetProfile_getProfile_user);
           params.username === user.username && setProfile(res);
+          // Reset the posts state to the initial state when the user changes
+          setProfilePosts(
+            profilePostsInitialState.data as GetUserPosts_getUserPosts
+          );
+          setFirstQuery(true);
+          setLoadPosts(true);
         } else if (!isEmpty(res.errors)) {
           // Redirect to the 404 page if the user's profile was not found
           setGetProfileError(true);
@@ -126,6 +139,8 @@ export const Profile: FC<ProfileProps> = () => {
       setGetProfileLoading(false);
     };
     fetchProfile();
+    setFirstQuery(true);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.username]);
 
@@ -318,7 +333,10 @@ export const Profile: FC<ProfileProps> = () => {
             </div>
           </div>
           <div className="profileBottom">
-            <Feed userId={userProfile._id} />
+            <Feed
+              userId={userProfile._id}
+              states={{ firstQuery, setFirstQuery, loadPosts, setLoadPosts }}
+            />
             <Rightbar
               isProfile
               profile={userProfile._id === user._id ? profile : userProfile}
