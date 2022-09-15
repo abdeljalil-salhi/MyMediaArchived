@@ -7,8 +7,9 @@ import {
   ThunkAction,
 } from "@reduxjs/toolkit";
 
-import postsReducer from "./slices/postsSlice";
 import profileReducer from "./slices/profileSlice";
+import homePostsReducer from "./slices/homePostsSlice";
+import profilePostsReducer from "./slices/profilePostsSlice";
 import { IRootState } from "./types";
 
 const middleware = (getDefaultMiddleware: any) =>
@@ -18,7 +19,8 @@ export const store: EnhancedStore<IRootState, AnyAction, any> = configureStore({
   middleware,
   reducer: {
     profile: profileReducer,
-    posts: postsReducer,
+    homePosts: homePostsReducer,
+    profilePosts: profilePostsReducer,
   },
 });
 
