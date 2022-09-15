@@ -1,17 +1,42 @@
-import { FC, useContext } from "react";
-import { Button } from "@mui/material";
+import { FC, useContext, useEffect, useState } from "react";
+import { createSelector } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 
 import { AuthContext } from "../../context/auth.context";
-import { GraphQLAccessToken } from "../../utils/_graphql";
-import { useGetUserPostsQuery } from "../../generated/graphql";
 import { LoadingBox } from "../loadingBox/LoadingBox";
 import { Post } from "../post/Post";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  GetUserPostsVariables,
+  GetUserPosts_getUserPosts,
+  GetUserPosts_getUserPosts_errors,
+  GetUserPosts_getUserPosts_posts,
+} from "../../generated/types/GetUserPosts";
+import postsService from "../../store/services/postsService";
+import { isEmpty } from "../../utils/isEmpty";
+import { makeSelectProfilePosts } from "../../store/selectors/profilePostsSelector";
+import { setProfilePosts } from "../../store/slices/profilePostsSlice";
+import { TProfilePosts } from "../../store/types/profilePostsTypes";
 
 interface ProfileFeedProps {
-  userId?: string;
+  userId: string;
+  states: {
+    firstQuery: boolean;
+    setFirstQuery: React.Dispatch<React.SetStateAction<boolean>>;
+    loadPosts: boolean;
+    setLoadPosts: React.Dispatch<React.SetStateAction<boolean>>;
+  };
 }
 
-export const ProfileFeed: FC<ProfileFeedProps> = ({ userId }) => {
+const stateSelector = createSelector(makeSelectProfilePosts, (posts) => ({
+  posts,
+}));
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  setProfilePosts: (posts: TProfilePosts) => dispatch(setProfilePosts(posts)),
+});
+
+export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   // the ProfileFeed component is used to display the feed for the profile page
   //
   // Props:
@@ -24,7 +49,19 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId }) => {
   // - The feed is loaded with the next 15 posts when the user clicks the "Load more" button
   // - The feed is not displayed if the user was not found
 
+  // The states below are used by the getUserPosts() GraphQL query
+  const [getUserPostsLoading, setGetUserPostsLoading] =
+    useState<boolean>(false);
+  const [getUserPostsError, setGetUserPostsError] = useState<boolean>(false);
+
+  // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
+
+  // The selector to get state informations from the store (Redux)
+  const { posts } = useAppSelector(stateSelector);
+
+  // The dispatch function to update the posts state in the store (Redux)
+  const { setProfilePosts } = actionDispatch(useAppDispatch());
 
   /*
    * @example
@@ -36,19 +73,81 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId }) => {
    *   },
    * });
    */
-  const { data, loading, error, fetchMore, variables } = useGetUserPostsQuery({
-    variables: {
-      userId: userId as string,
-      limit: 15,
-      cursor: null as null | string,
-    },
-    notifyOnNetworkStatusChange: true,
-    // Pass the access token to the GraphQL context
-    context: GraphQLAccessToken(user.accessToken),
-  });
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      // Start the querying process by turning the loading state to true
+      setGetUserPostsLoading(true);
+      // Prepare the variables to be sent in the GraphQL query
+      const variables: GetUserPostsVariables = {
+        userId,
+        limit: 10,
+        cursor: states.firstQuery
+          ? null
+          : posts &&
+            posts.posts &&
+            posts.posts[posts.posts.length - 1].createdAt,
+      };
+      try {
+        // Send the GraphQL getUserPosts request to the server
+        const res: GetUserPosts_getUserPosts = (await postsService
+          .getUserPosts(variables, user.accessToken)
+          .catch((_: unknown) =>
+            setGetUserPostsLoading(false)
+          )) as GetUserPosts_getUserPosts;
+
+        // If the request is successful, update the state with the response data
+        if (!isEmpty(res.posts)) {
+          setProfilePosts(
+            states.firstQuery
+              ? res
+              : {
+                  __typename: "PaginatedPostsResponse",
+                  errors: res.errors,
+                  posts: [
+                    ...((posts as GetUserPosts_getUserPosts)
+                      .posts as GetUserPosts_getUserPosts_posts[]),
+                    ...((res as GetUserPosts_getUserPosts)
+                      .posts as GetUserPosts_getUserPosts_posts[]),
+                  ],
+                  hasMore: res.hasMore,
+                }
+          );
+          states.firstQuery && states.setFirstQuery(false);
+        } else if (!isEmpty(res.errors)) {
+          // If the request is not successful, update the state with the response errors
+          setGetUserPostsError(true);
+        }
+      } catch (_: unknown) {
+        // If an error occurs, turn the error state to true
+        setGetUserPostsError(true);
+      }
+      // End the querying process by turning the loading state to false
+      setGetUserPostsLoading(false);
+      states.setLoadPosts(false);
+    };
+    if (states.loadPosts)
+      if ((posts as GetUserPosts_getUserPosts).hasMore) fetchPosts();
+
+    const loadMore = () => {
+      // Checks if the user is at the bottom of the page
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >
+          document.scrollingElement!.scrollHeight &&
+        !states.loadPosts
+      )
+        states.setLoadPosts(true);
+    };
+
+    // Add the event listener when the user is scrolling
+    window.addEventListener("scroll", loadMore);
+
+    // Remove the event listener when the user stops scrolling
+    return () => window.removeEventListener("scroll", loadMore);
+  }, [posts, setProfilePosts, user, userId, states]);
 
   // If the query has no posts, display a message
-  if (!loading && !data)
+  if (!getUserPostsLoading && !posts)
     return (
       <>
         <h3>Sorry, there are no posts to show here.</h3>
@@ -56,46 +155,43 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId }) => {
     );
 
   // If an error occurred, display an error message
-  if (error) return <p>{error.message}</p>;
+  if (!isEmpty((posts as GetUserPosts_getUserPosts).errors))
+    return (
+      <p>
+        {
+          (
+            (posts as GetUserPosts_getUserPosts)
+              .errors as GetUserPosts_getUserPosts_errors[]
+          )[0].message
+        }
+      </p>
+    );
 
   return (
     <>
-      {/* If the query is loading, display a loading box */}
-      {loading ? (
+      {!isEmpty(posts) &&
+        // If the query is loaded, display the posts sorted by date (newest first)
+        [...(posts!.posts as GetUserPosts_getUserPosts_posts[])]
+          .sort(
+            (
+              p1: GetUserPosts_getUserPosts_posts,
+              p2: GetUserPosts_getUserPosts_posts
+            ) => {
+              return (
+                new Date(p2.createdAt).valueOf() -
+                new Date(p1.createdAt).valueOf()
+              );
+            }
+          )
+          .map((post: GetUserPosts_getUserPosts_posts, index: number) =>
+            !post ? null : <Post key={index} post={post} />
+          )}
+      {getUserPostsLoading && (
+        // If the query is loading, display a loading box
         <>
           <LoadingBox />
         </>
-      ) : (
-        // If the query is loaded, display the posts sorted by date (newest first)
-        [...(data!.getUserPosts.posts as any)]
-          ?.sort((p1, p2) => {
-            return (
-              new Date(p2.createdAt).valueOf() -
-              new Date(p1.createdAt).valueOf()
-            );
-          })
-          .map((post, i) => (!post ? null : <Post key={i} post={post} />))
       )}
-      {/* If the last post is reached, then display the "Load more" button */}
-      {data ? (
-        data.getUserPosts.hasMore ? (
-          <Button
-            onClick={() => {
-              fetchMore({
-                variables: {
-                  limit: variables?.limit,
-                  cursor:
-                    data.getUserPosts.posts &&
-                    data.getUserPosts.posts[data.getUserPosts.posts.length - 1]
-                      .createdAt,
-                },
-              });
-            }}
-          >
-            Load more...
-          </Button>
-        ) : null
-      ) : null}
     </>
   );
 };
