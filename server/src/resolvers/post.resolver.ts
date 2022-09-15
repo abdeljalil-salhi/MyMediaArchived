@@ -308,13 +308,13 @@ export class PostResolver {
                 },
               }
         )
-          .limit(limit)
+          .limit(hasMoreLimit)
           .sort({ createdAt: -1 });
 
         return {
           errors: [],
           posts: posts.slice(0, realLimit),
-          hasMore: posts.length + 1 === hasMoreLimit,
+          hasMore: posts.length === hasMoreLimit,
         };
       } catch (err) {
         return {
@@ -368,13 +368,13 @@ export class PostResolver {
             }
           : { user: userId }
       )
-        .limit(limit)
+        .limit(hasMoreLimit)
         .sort({ createdAt: -1 });
 
       return {
         errors: [],
         posts: posts.slice(0, realLimit),
-        hasMore: posts.length + 1 === hasMoreLimit,
+        hasMore: posts.length === hasMoreLimit,
       };
     } catch (err) {
       return {

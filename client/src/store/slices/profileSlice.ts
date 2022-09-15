@@ -1,10 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { profileInitialState } from "../initialStates";
 import { IProfileAction, IProfileState } from "../types/profileTypes";
 
-const initialState: IProfileState = {
-  data: null,
-};
+const initialState: IProfileState = profileInitialState;
 
 const profileSlice = createSlice({
   name: "profile",

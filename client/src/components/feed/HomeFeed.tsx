@@ -5,9 +5,6 @@ import { Dispatch } from "redux";
 import { AuthContext } from "../../context/auth.context";
 import { LoadingBox } from "../loadingBox/LoadingBox";
 import { Post } from "../post/Post";
-import { makeSelectPosts } from "../../store/selectors/postsSelector";
-import { setPosts } from "../../store/slices/postsSlice";
-import { TPosts } from "../../store/types/postsTypes";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   GetTimelinePostsVariables,
@@ -17,15 +14,18 @@ import {
 } from "../../generated/types/GetTimelinePosts";
 import postsService from "../../store/services/postsService";
 import { isEmpty } from "../../utils/isEmpty";
+import { makeSelectHomePosts } from "../../store/selectors/homePostsSelector";
+import { setHomePosts } from "../../store/slices/homePostsSlice";
+import { THomePosts } from "../../store/types/homePostsTypes";
 
 interface HomeFeedProps {}
 
-const stateSelector = createSelector(makeSelectPosts, (posts) => ({
+const stateSelector = createSelector(makeSelectHomePosts, (posts) => ({
   posts,
 }));
 
 const actionDispatch = (dispatch: Dispatch) => ({
-  setPosts: (posts: TPosts) => dispatch(setPosts(posts)),
+  setHomePosts: (posts: THomePosts) => dispatch(setHomePosts(posts)),
 });
 
 export const HomeFeed: FC<HomeFeedProps> = () => {
@@ -54,7 +54,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
   const { posts } = useAppSelector(stateSelector);
 
   // The dispatch function to update the posts state in the store (Redux)
-  const { setPosts } = actionDispatch(useAppDispatch());
+  const { setHomePosts } = actionDispatch(useAppDispatch());
 
   /*
    * @example
@@ -91,7 +91,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
         // If the request is successful, update the state with the response data
         if (!isEmpty(res.posts)) {
-          setPosts(
+          setHomePosts(
             firstQuery
               ? res
               : {
@@ -137,7 +137,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
     // Remove the event listener when the user stops scrolling
     return () => window.removeEventListener("scroll", loadMore);
-  }, [firstQuery, loadPosts, posts, setPosts, user]);
+  }, [firstQuery, loadPosts, posts, setHomePosts, user]);
 
   // If the query has no posts, display a message
   if (!getTimelinePostsLoading && !posts)
@@ -162,7 +162,6 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
   return (
     <>
-      {/* If the query is loading, display a loading box */}
       {!isEmpty(posts) &&
         // If the query is loaded, display the posts sorted by date (newest first)
         [...(posts!.posts as GetTimelinePosts_getTimelinePosts_posts[])]
@@ -181,6 +180,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
             !post ? null : <Post key={index} post={post} />
           )}
       {getTimelinePostsLoading && (
+        // If the query is loading, display a loading box
         <>
           <LoadingBox />
         </>

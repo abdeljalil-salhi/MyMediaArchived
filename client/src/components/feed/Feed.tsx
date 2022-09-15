@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, SetStateAction, useContext } from "react";
 
 import { AuthContext } from "../../context/auth.context";
 import { NewPost } from "../newPost/NewPost";
@@ -6,10 +6,16 @@ import { HomeFeed } from "./HomeFeed";
 import { ProfileFeed } from "./ProfileFeed";
 
 interface FeedProps {
-  userId?: any;
+  userId?: string;
+  states?: {
+    firstQuery: boolean;
+    setFirstQuery: React.Dispatch<SetStateAction<boolean>>;
+    loadPosts: boolean;
+    setLoadPosts: React.Dispatch<React.SetStateAction<boolean>>;
+  };
 }
 
-export const Feed: FC<FeedProps> = ({ userId }) => {
+export const Feed: FC<FeedProps> = ({ userId, states }) => {
   // the Feed component is used to display the feed for the home page and the profile page
   //
   // Props:
@@ -22,13 +28,18 @@ export const Feed: FC<FeedProps> = ({ userId }) => {
   // - When userId prop is not provided, the feed is displayed for the current logged in user (home page)
   // - When userId prop is provided, the feed is displayed for the user with the given ID (profile page)
 
+  // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
 
   return (
     <div className="feedContainer">
       <div className="feedWrapper">
         {(!userId || userId === user._id) && <NewPost />}
-        {userId ? <ProfileFeed userId={userId} /> : <HomeFeed />}
+        {userId && states ? (
+          <ProfileFeed userId={userId} states={states} />
+        ) : (
+          <HomeFeed />
+        )}
       </div>
     </div>
   );

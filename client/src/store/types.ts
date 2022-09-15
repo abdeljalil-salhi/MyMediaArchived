@@ -1,7 +1,9 @@
-import { IPostsState } from "./types/postsTypes";
+import { IHomePostsState } from "./types/homePostsTypes";
+import { IProfilePostsState } from "./types/profilePostsTypes";
 import { IProfileState } from "./types/profileTypes";
 
 export interface IRootState {
   profile: IProfileState;
-  posts: IPostsState;
+  homePosts: IHomePostsState;
+  profilePosts: IProfilePostsState;
 }
