@@ -10,21 +10,38 @@ import {
 import { Twemoji } from "react-emoji-render";
 import { format } from "timeago.js";
 import { createSelector } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 
 import { PU, TRANSPARENT } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { isEmpty } from "../../utils/isEmpty";
 import { ErrorModal } from "./ErrorModal";
-import { useCreatePostMutation } from "../../generated/graphql";
-import { GraphQLAccessToken } from "../../utils/_graphql";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  CreatePostVariables,
+  CreatePost_createPost,
+  CreatePost_createPost_errors,
+} from "../../generated/types/CreatePost";
+import postsService from "../../store/services/postsService";
+import { THomePosts } from "../../store/types/homePostsTypes";
+import { setHomePosts } from "../../store/slices/homePostsSlice";
+import { setProfilePosts } from "../../store/slices/profilePostsSlice";
+import { TProfilePosts } from "../../store/types/profilePostsTypes";
+import { TNewPosts } from "../../store/types/newPostsTypes";
+import { addNewPost } from "../../store/slices/newPostsSlice";
 
 interface NewPostProps {}
 
-const stateSelector = createSelector(makeSelectProfile, (profile) => ({
+const profileStateSelector = createSelector(makeSelectProfile, (profile) => ({
   profile: profile?.user,
 }));
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  setHomePosts: (posts: THomePosts) => dispatch(setHomePosts(posts)),
+  setProfilePosts: (posts: TProfilePosts) => dispatch(setProfilePosts(posts)),
+  addNewPost: (post: TNewPosts) => dispatch(addNewPost(post)),
+});
 
 export const NewPost: FC<NewPostProps> = () => {
   // the NewPost component is used to create a new post
@@ -43,10 +60,18 @@ export const NewPost: FC<NewPostProps> = () => {
   const [ytvideo, setYtvideo] = useState("");
   const [file, setFile] = useState(null as any);
 
+  // The states below are used by the createPost() GraphQL mutation
+  const [createPostLoading, setCreatePostLoading] = useState<boolean>(false);
+  const [createPostError, setCreatePostError] = useState<boolean>(false);
+
+  // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
-  const { profile } = useAppSelector(stateSelector);
+  const { profile } = useAppSelector(profileStateSelector);
+
+  // The dispatch function to update the posts state in the store (Redux)
+  const { addNewPost } = actionDispatch(useAppDispatch());
 
   /*
    * @example
@@ -62,7 +87,6 @@ export const NewPost: FC<NewPostProps> = () => {
    *   },
    * });
    */
-  const [createPost] = useCreatePostMutation();
 
   const labelNames = {
     upload: "file-upload",
@@ -105,27 +129,56 @@ export const NewPost: FC<NewPostProps> = () => {
 
   // We handle the post creation when the user clicks the "Send" button
   const handlePost = async () => {
+    // If the user has submitted the form, then create a post
     if (
       !isEmpty(text.trim()) ||
       !isEmpty(picture) ||
       !isEmpty(video) ||
       !isEmpty(ytvideo)
     ) {
-      // If the user has submitted the form, then create a post
-      await createPost({
-        variables: {
-          user: user._id,
-          text,
-          ytvideo,
-          // If the user has uploaded a picture, then set the isMedia to true
-          isMedia: !isEmpty(picture),
-          file,
-        },
-        // Pass the access token to the GraphQL context
-        context: GraphQLAccessToken(user.accessToken),
-      });
-      // Refresh the page (temporary solution)
-      window.location.reload();
+      // Start the updating process by turning the loading state to true
+      setCreatePostLoading(true);
+      // Prepare the variables to be sent in the GraphQL mutation
+      const variables: CreatePostVariables = {
+        user: user._id,
+        text,
+        link: "",
+        ytvideo,
+        location: "",
+        isMedia: !isEmpty(picture) || !isEmpty(video),
+        file,
+      };
+      try {
+        // Send the GraphQL creating post request to the server
+        const res: CreatePost_createPost = (await postsService
+          .createPost(variables, user.accessToken)
+          .catch((_: unknown) =>
+            setCreatePostError(true)
+          )) as CreatePost_createPost;
+
+        if (!isEmpty(res.post)) {
+          // If the request was successful, add the created post to the new posts state in the redux reducer
+          addNewPost(res);
+        } else if (!isEmpty(res.errors)) {
+          setCreatePostError(true);
+          setErrorModalText(
+            (res.errors as CreatePost_createPost_errors[])[0].message as string
+          );
+          setShowErrorModal(true);
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setErrorModalText(err.message);
+          setShowErrorModal(true);
+        } else {
+          setErrorModalText("Something went wrong");
+          setShowErrorModal(true);
+        }
+      }
+      // Reset the states to their initial values
+      cancelPost();
+      // End the loading process by turning the loading state to false
+      setCreatePostLoading(false);
     } else {
       // If the post is empty, show an error modal
       setErrorModalText("You can not publish an empty post.");

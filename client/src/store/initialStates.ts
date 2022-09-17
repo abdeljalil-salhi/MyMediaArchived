@@ -1,4 +1,5 @@
 import { IHomePostsState } from "./types/homePostsTypes";
+import { INewPostsState } from "./types/newPostsTypes";
 import { IProfilePostsState } from "./types/profilePostsTypes";
 import { IProfileState } from "./types/profileTypes";
 
@@ -16,6 +17,15 @@ export const homePostsInitialState: IHomePostsState = {
     errors: [],
     posts: [],
     hasMore: true,
+  },
+};
+
+export const newPostsInitialState: INewPostsState = {
+  data: {
+    __typename: "PaginatedPostsResponse",
+    errors: [],
+    posts: [],
+    hasMore: false,
   },
 };
 
