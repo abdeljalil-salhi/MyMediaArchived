@@ -7,10 +7,11 @@ import {
   ThunkAction,
 } from "@reduxjs/toolkit";
 
+import { IRootState } from "./types";
 import profileReducer from "./slices/profileSlice";
 import homePostsReducer from "./slices/homePostsSlice";
 import profilePostsReducer from "./slices/profilePostsSlice";
-import { IRootState } from "./types";
+import newPostsReducer from "./slices/newPostsSlice";
 
 const middleware = (getDefaultMiddleware: any) =>
   getDefaultMiddleware().concat(ReduxLogger);
@@ -21,6 +22,7 @@ export const store: EnhancedStore<IRootState, AnyAction, any> = configureStore({
     profile: profileReducer,
     homePosts: homePostsReducer,
     profilePosts: profilePostsReducer,
+    newPosts: newPostsReducer,
   },
 });
 
