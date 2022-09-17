@@ -37,7 +37,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import profileService from "../store/services/profileService";
 import { setProfile } from "../store/slices/profileSlice";
-import { TProfile } from "../store/types/profileTypes";
+import { IProfileState, TProfile } from "../store/types/profileTypes";
 import { TProfilePosts } from "../store/types/profilePostsTypes";
 import { setProfilePosts } from "../store/slices/profilePostsSlice";
 import { profilePostsInitialState } from "../store/initialStates";
@@ -45,9 +45,12 @@ import { GetUserPosts_getUserPosts } from "../generated/types/GetUserPosts";
 
 interface ProfileProps {}
 
-const stateSelector = createSelector(makeSelectProfile, (profile) => ({
-  profile: profile?.user,
-}));
+const profileStateSelector = createSelector(
+  makeSelectProfile,
+  (profile: IProfileState["data"]) => ({
+    profile: profile?.user,
+  })
+);
 
 const actionDispatch = (dispatch: Dispatch) => ({
   setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
@@ -90,7 +93,7 @@ export const Profile: FC<ProfileProps> = () => {
   const params: Readonly<Params<string>> = useParams();
 
   // The selector to get state informations from the store (Redux)
-  const { profile } = useAppSelector(stateSelector);
+  const { profile } = useAppSelector(profileStateSelector);
 
   // The dispatch function to update the profile state in the store (Redux)
   const { setProfile, setProfilePosts } = actionDispatch(useAppDispatch());
@@ -139,7 +142,6 @@ export const Profile: FC<ProfileProps> = () => {
       setGetProfileLoading(false);
     };
     fetchProfile();
-    setFirstQuery(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.username]);
