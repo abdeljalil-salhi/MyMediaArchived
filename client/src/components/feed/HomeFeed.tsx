@@ -16,13 +16,25 @@ import postsService from "../../store/services/postsService";
 import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectHomePosts } from "../../store/selectors/homePostsSelector";
 import { setHomePosts } from "../../store/slices/homePostsSlice";
-import { THomePosts } from "../../store/types/homePostsTypes";
+import { IHomePostsState, THomePosts } from "../../store/types/homePostsTypes";
+import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
+import { INewPostsState } from "../../store/types/newPostsTypes";
 
 interface HomeFeedProps {}
 
-const stateSelector = createSelector(makeSelectHomePosts, (posts) => ({
-  posts,
-}));
+const homePostsStateSelector = createSelector(
+  makeSelectHomePosts,
+  (homePosts: IHomePostsState["data"]) => ({
+    homePosts,
+  })
+);
+
+const newPostsStateSelector = createSelector(
+  makeSelectNewPosts,
+  (newPosts: INewPostsState["data"]) => ({
+    newPosts,
+  })
+);
 
 const actionDispatch = (dispatch: Dispatch) => ({
   setHomePosts: (posts: THomePosts) => dispatch(setHomePosts(posts)),
@@ -51,7 +63,8 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
   const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
-  const { posts } = useAppSelector(stateSelector);
+  const { homePosts } = useAppSelector(homePostsStateSelector);
+  const { newPosts } = useAppSelector(newPostsStateSelector);
 
   // The dispatch function to update the posts state in the store (Redux)
   const { setHomePosts } = actionDispatch(useAppDispatch());
@@ -77,9 +90,9 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
         limit: 10,
         cursor: firstQuery
           ? null
-          : posts &&
-            posts.posts &&
-            posts.posts[posts.posts.length - 1].createdAt,
+          : homePosts &&
+            homePosts.posts &&
+            homePosts.posts[homePosts.posts.length - 1].createdAt,
       };
       try {
         // Send the GraphQL getTimelinePosts request to the server
@@ -98,7 +111,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
                   __typename: "PaginatedPostsResponse",
                   errors: res.errors,
                   posts: [
-                    ...((posts as GetTimelinePosts_getTimelinePosts)
+                    ...((homePosts as GetTimelinePosts_getTimelinePosts)
                       .posts as GetTimelinePosts_getTimelinePosts_posts[]),
                     ...((res as GetTimelinePosts_getTimelinePosts)
                       .posts as GetTimelinePosts_getTimelinePosts_posts[]),
@@ -120,7 +133,8 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
       setLoadPosts(false);
     };
     if (loadPosts)
-      if ((posts as GetTimelinePosts_getTimelinePosts).hasMore) fetchPosts();
+      if ((homePosts as GetTimelinePosts_getTimelinePosts).hasMore)
+        fetchPosts();
 
     const loadMore = () => {
       // Checks if the user is at the bottom of the page
@@ -137,10 +151,10 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
     // Remove the event listener when the user stops scrolling
     return () => window.removeEventListener("scroll", loadMore);
-  }, [firstQuery, loadPosts, posts, setHomePosts, user]);
+  }, [firstQuery, loadPosts, homePosts, setHomePosts, user]);
 
   // If the query has no posts, display a message
-  if (!getTimelinePostsLoading && !posts)
+  if (!getTimelinePostsLoading && !homePosts)
     return (
       <>
         <h3>Sorry, there are no posts to show here.</h3>
@@ -148,12 +162,12 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
     );
 
   // If an error occurred, display an error message
-  if (!isEmpty((posts as GetTimelinePosts_getTimelinePosts).errors))
+  if (!isEmpty((homePosts as GetTimelinePosts_getTimelinePosts).errors))
     return (
       <p>
         {
           (
-            (posts as GetTimelinePosts_getTimelinePosts)
+            (homePosts as GetTimelinePosts_getTimelinePosts)
               .errors as GetTimelinePosts_getTimelinePosts_errors[]
           )[0].message
         }
@@ -162,9 +176,12 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
   return (
     <>
-      {!isEmpty(posts) &&
+      {!isEmpty(homePosts) &&
         // If the query is loaded, display the posts sorted by date (newest first)
-        [...(posts!.posts as GetTimelinePosts_getTimelinePosts_posts[])]
+        [
+          ...(homePosts!.posts as GetTimelinePosts_getTimelinePosts_posts[]),
+          ...newPosts!.posts!,
+        ]
           .sort(
             (
               p1: GetTimelinePosts_getTimelinePosts_posts,

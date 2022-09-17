@@ -16,7 +16,12 @@ import postsService from "../../store/services/postsService";
 import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectProfilePosts } from "../../store/selectors/profilePostsSelector";
 import { setProfilePosts } from "../../store/slices/profilePostsSlice";
-import { TProfilePosts } from "../../store/types/profilePostsTypes";
+import {
+  IProfilePostsState,
+  TProfilePosts,
+} from "../../store/types/profilePostsTypes";
+import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
+import { INewPostsState } from "../../store/types/newPostsTypes";
 
 interface ProfileFeedProps {
   userId: string;
@@ -28,9 +33,19 @@ interface ProfileFeedProps {
   };
 }
 
-const stateSelector = createSelector(makeSelectProfilePosts, (posts) => ({
-  posts,
-}));
+const profilePostsStateSelector = createSelector(
+  makeSelectProfilePosts,
+  (profilePosts: IProfilePostsState["data"]) => ({
+    profilePosts,
+  })
+);
+
+const newPostsStateSelector = createSelector(
+  makeSelectNewPosts,
+  (newPosts: INewPostsState["data"]) => ({
+    newPosts,
+  })
+);
 
 const actionDispatch = (dispatch: Dispatch) => ({
   setProfilePosts: (posts: TProfilePosts) => dispatch(setProfilePosts(posts)),
@@ -49,6 +64,8 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   // - The feed is loaded with the next 15 posts when the user clicks the "Load more" button
   // - The feed is not displayed if the user was not found
 
+  const [posts, setPosts] = useState<GetUserPosts_getUserPosts_posts[]>([]);
+
   // The states below are used by the getUserPosts() GraphQL query
   const [getUserPostsLoading, setGetUserPostsLoading] =
     useState<boolean>(false);
@@ -58,7 +75,8 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
-  const { posts } = useAppSelector(stateSelector);
+  const { profilePosts } = useAppSelector(profilePostsStateSelector);
+  const { newPosts } = useAppSelector(newPostsStateSelector);
 
   // The dispatch function to update the posts state in the store (Redux)
   const { setProfilePosts } = actionDispatch(useAppDispatch());
@@ -84,9 +102,9 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
         limit: 10,
         cursor: states.firstQuery
           ? null
-          : posts &&
-            posts.posts &&
-            posts.posts[posts.posts.length - 1].createdAt,
+          : profilePosts &&
+            profilePosts.posts &&
+            profilePosts.posts[profilePosts.posts.length - 1].createdAt,
       };
       try {
         // Send the GraphQL getUserPosts request to the server
@@ -105,7 +123,7 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
                   __typename: "PaginatedPostsResponse",
                   errors: res.errors,
                   posts: [
-                    ...((posts as GetUserPosts_getUserPosts)
+                    ...((profilePosts as GetUserPosts_getUserPosts)
                       .posts as GetUserPosts_getUserPosts_posts[]),
                     ...((res as GetUserPosts_getUserPosts)
                       .posts as GetUserPosts_getUserPosts_posts[]),
@@ -127,7 +145,7 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
       states.setLoadPosts(false);
     };
     if (states.loadPosts)
-      if ((posts as GetUserPosts_getUserPosts).hasMore) fetchPosts();
+      if ((profilePosts as GetUserPosts_getUserPosts).hasMore) fetchPosts();
 
     const loadMore = () => {
       // Checks if the user is at the bottom of the page
@@ -144,10 +162,20 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
 
     // Remove the event listener when the user stops scrolling
     return () => window.removeEventListener("scroll", loadMore);
-  }, [posts, setProfilePosts, user, userId, states]);
+  }, [profilePosts, setProfilePosts, user, userId, states]);
+
+  useEffect(() => {
+    if (userId === user._id)
+      setPosts([
+        ...(profilePosts!.posts as GetUserPosts_getUserPosts_posts[]),
+        ...newPosts!.posts!,
+      ]);
+    else
+      setPosts([...(profilePosts!.posts as GetUserPosts_getUserPosts_posts[])]);
+  }, [newPosts, profilePosts, user, userId]);
 
   // If the query has no posts, display a message
-  if (!getUserPostsLoading && !posts)
+  if (!getUserPostsLoading && !profilePosts)
     return (
       <>
         <h3>Sorry, there are no posts to show here.</h3>
@@ -155,12 +183,12 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
     );
 
   // If an error occurred, display an error message
-  if (!isEmpty((posts as GetUserPosts_getUserPosts).errors))
+  if (!isEmpty((profilePosts as GetUserPosts_getUserPosts).errors))
     return (
       <p>
         {
           (
-            (posts as GetUserPosts_getUserPosts)
+            (profilePosts as GetUserPosts_getUserPosts)
               .errors as GetUserPosts_getUserPosts_errors[]
           )[0].message
         }
@@ -169,9 +197,9 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
 
   return (
     <>
-      {!isEmpty(posts) &&
+      {!isEmpty(profilePosts || newPosts) &&
         // If the query is loaded, display the posts sorted by date (newest first)
-        [...(posts!.posts as GetUserPosts_getUserPosts_posts[])]
+        posts
           .sort(
             (
               p1: GetUserPosts_getUserPosts_posts,
