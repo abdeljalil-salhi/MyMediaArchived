@@ -13,7 +13,7 @@ git checkout dev
 git add .
 git commit -m "%message%"
 git pull https://github.com/abdeljalil-salhi/MyMedia.git
-git push -u origin dev
+git push all
 ECHO ======================================================
 ECHO commited: %message%
 PAUSE
