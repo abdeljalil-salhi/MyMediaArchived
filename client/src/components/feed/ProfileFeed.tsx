@@ -4,7 +4,6 @@ import { Dispatch } from "redux";
 
 import { AuthContext } from "../../context/auth.context";
 import { LoadingBox } from "../loadingBox/LoadingBox";
-import { Post } from "../post/Post";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   GetUserPostsVariables,
@@ -22,6 +21,7 @@ import {
 } from "../../store/types/profilePostsTypes";
 import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
 import { INewPostsState } from "../../store/types/newPostsTypes";
+import { ShowPosts } from "./ShowPosts";
 
 interface ProfileFeedProps {
   userId: string;
@@ -63,8 +63,6 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   // - The feed is paginated with 15 posts per load (default)
   // - The feed is loaded with the next 15 posts when the user clicks the "Load more" button
   // - The feed is not displayed if the user was not found
-
-  const [posts, setPosts] = useState<GetUserPosts_getUserPosts_posts[]>([]);
 
   // The states below are used by the getUserPosts() GraphQL query
   const [getUserPostsLoading, setGetUserPostsLoading] =
@@ -164,16 +162,6 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
     return () => window.removeEventListener("scroll", loadMore);
   }, [profilePosts, setProfilePosts, user, userId, states]);
 
-  useEffect(() => {
-    if (userId === user._id)
-      setPosts([
-        ...(profilePosts!.posts as GetUserPosts_getUserPosts_posts[]),
-        ...newPosts!.posts!,
-      ]);
-    else
-      setPosts([...(profilePosts!.posts as GetUserPosts_getUserPosts_posts[])]);
-  }, [newPosts, profilePosts, user, userId]);
-
   // If the query has no posts, display a message
   if (!getUserPostsLoading && !profilePosts)
     return (
@@ -197,23 +185,12 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
 
   return (
     <>
-      {!isEmpty(profilePosts || newPosts) &&
-        // If the query is loaded, display the posts sorted by date (newest first)
-        posts
-          .sort(
-            (
-              p1: GetUserPosts_getUserPosts_posts,
-              p2: GetUserPosts_getUserPosts_posts
-            ) => {
-              return (
-                new Date(p2.createdAt).valueOf() -
-                new Date(p1.createdAt).valueOf()
-              );
-            }
-          )
-          .map((post: GetUserPosts_getUserPosts_posts, index: number) =>
-            !post ? null : <Post key={index} post={post} />
-          )}
+      {userId === user._id && !isEmpty(newPosts) && (
+        <ShowPosts posts={newPosts!.posts!} reducer={"newPosts"} />
+      )}
+      {!isEmpty(profilePosts) && (
+        <ShowPosts posts={profilePosts!.posts!} reducer={"profilePosts"} />
+      )}
       {getUserPostsLoading && (
         // If the query is loading, display a loading box
         <>

@@ -34,13 +34,14 @@ interface PostProps {
   post:
     | GetTimelinePosts_getTimelinePosts_posts
     | GetUserPosts_getUserPosts_posts;
+  reducer: string;
 }
 
 const stateSelector = createSelector(makeSelectProfile, (profile) => ({
   profile: profile?.user,
 }));
 
-export const Post: FC<PostProps> = ({ post }) => {
+export const Post: FC<PostProps> = ({ post, reducer }) => {
   // The Post component is used to display a post.
   //
   // Props:
@@ -256,6 +257,7 @@ export const Post: FC<PostProps> = ({ post }) => {
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 postId={post._id}
+                reducer={reducer}
               >
                 Are you sure you want to delete your post?
               </DeleteModal>

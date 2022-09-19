@@ -16,10 +16,15 @@ import {
   CreatePost,
   CreatePostVariables,
 } from "../../generated/types/CreatePost";
+import {
+  DeletePost,
+  DeletePostVariables,
+} from "../../generated/types/DeletePost";
 
 import { QUERY_GET_TIMELINE_POSTS } from "../../graphql/queries/getTimelinePosts";
 import { QUERY_GET_USER_POSTS } from "../../graphql/queries/getUserPosts";
 import { MUTATION_CREATE_POST } from "../../graphql/mutations/createPost";
+import { MUTATION_DELETE_POST } from "../../graphql/mutations/deletePost";
 
 class postsService {
   async getTimelinePosts(
@@ -103,6 +108,34 @@ class postsService {
     } catch (err: unknown) {
       // Handle unknown errors from the server and throw them to the caller
       throw new Error("Error in postsService.createPost: " + err);
+    }
+  }
+
+  async deletePost(
+    variables: DeletePostVariables,
+    accessToken: string
+  ): Promise<DeletePost["deletePost"]> {
+    try {
+      // Send the GraphQL mutation to the server
+      const res: FetchResult<
+        any,
+        Record<string, any>,
+        Record<string, any>
+      > = await client.mutate({
+        mutation: MUTATION_DELETE_POST,
+        variables,
+        // Pass the access token to the GraphQL context
+        context: GraphQLAccessToken(accessToken),
+      });
+
+      // Handle known errors from the server and throw them as errors to the caller
+      if (isEmpty(res) || isEmpty(res.data)) throw new Error("No data");
+
+      // If the request was successful, return the value of the posts
+      return res.data.deletePost;
+    } catch (err: unknown) {
+      // Handle unknown errors from the server and throw them to the caller
+      throw new Error("Error in postsService.deletePost: " + err);
     }
   }
 }

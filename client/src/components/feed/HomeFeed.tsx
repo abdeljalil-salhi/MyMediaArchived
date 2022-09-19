@@ -4,7 +4,6 @@ import { Dispatch } from "redux";
 
 import { AuthContext } from "../../context/auth.context";
 import { LoadingBox } from "../loadingBox/LoadingBox";
-import { Post } from "../post/Post";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   GetTimelinePostsVariables,
@@ -19,6 +18,7 @@ import { setHomePosts } from "../../store/slices/homePostsSlice";
 import { IHomePostsState, THomePosts } from "../../store/types/homePostsTypes";
 import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
 import { INewPostsState } from "../../store/types/newPostsTypes";
+import { ShowPosts } from "./ShowPosts";
 
 interface HomeFeedProps {}
 
@@ -176,26 +176,12 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
   return (
     <>
-      {!isEmpty(homePosts) &&
-        // If the query is loaded, display the posts sorted by date (newest first)
-        [
-          ...(homePosts!.posts as GetTimelinePosts_getTimelinePosts_posts[]),
-          ...newPosts!.posts!,
-        ]
-          .sort(
-            (
-              p1: GetTimelinePosts_getTimelinePosts_posts,
-              p2: GetTimelinePosts_getTimelinePosts_posts
-            ) => {
-              return (
-                new Date(p2.createdAt).valueOf() -
-                new Date(p1.createdAt).valueOf()
-              );
-            }
-          )
-          .map((post: GetTimelinePosts_getTimelinePosts_posts, index: number) =>
-            !post ? null : <Post key={index} post={post} />
-          )}
+      {!isEmpty(newPosts) && (
+        <ShowPosts posts={newPosts!.posts!} reducer={"newPosts"} />
+      )}
+      {!isEmpty(homePosts) && (
+        <ShowPosts posts={homePosts!.posts!} reducer={"homePosts"} />
+      )}
       {getTimelinePostsLoading && (
         // If the query is loading, display a loading box
         <>
