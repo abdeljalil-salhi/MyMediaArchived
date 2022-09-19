@@ -13,3 +13,7 @@ export interface IAddNewPostAction {
   type: string;
   payload: CreatePost_createPost;
 }
+export interface IDeleteNewPostAction {
+  type: string;
+  payload: string;
+}
