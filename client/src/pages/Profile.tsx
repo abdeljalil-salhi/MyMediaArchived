@@ -38,23 +38,20 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import profileService from "../store/services/profileService";
 import { setProfile } from "../store/slices/profileSlice";
 import { IProfileState, TProfile } from "../store/types/profileTypes";
-import { TProfilePosts } from "../store/types/profilePostsTypes";
-import { setProfilePosts } from "../store/slices/profilePostsSlice";
-import { profilePostsInitialState } from "../store/initialStates";
-import { GetUserPosts_getUserPosts } from "../generated/types/GetUserPosts";
+import { clearProfilePosts } from "../store/slices/postsSlice";
 
 interface ProfileProps {}
 
 const profileStateSelector = createSelector(
   makeSelectProfile,
   (profile: IProfileState["data"]) => ({
-    profile: profile?.user,
+    profile: profile.user,
   })
 );
 
 const actionDispatch = (dispatch: Dispatch) => ({
   setProfile: (profile: TProfile) => dispatch(setProfile(profile)),
-  setProfilePosts: (posts: TProfilePosts) => dispatch(setProfilePosts(posts)),
+  clearProfilePosts: () => dispatch(clearProfilePosts()),
 });
 
 export const Profile: FC<ProfileProps> = () => {
@@ -88,15 +85,17 @@ export const Profile: FC<ProfileProps> = () => {
   const updateBioRef: MutableRefObject<HTMLTextAreaElement | null> =
     useRef<HTMLTextAreaElement | null>(null);
 
-  const { user } = useContext(AuthContext);
-
+  // The selector to get the parameters from the URL
   const params: Readonly<Params<string>> = useParams();
+
+  // The selector to get user informations from the context (ContextAPI)
+  const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
   const { profile } = useAppSelector(profileStateSelector);
 
   // The dispatch function to update the profile state in the store (Redux)
-  const { setProfile, setProfilePosts } = actionDispatch(useAppDispatch());
+  const { setProfile, clearProfilePosts } = actionDispatch(useAppDispatch());
 
   // The useEffect hook below is used to scroll to the top of the page when the component is mounted
   useEffect(() => {
@@ -125,9 +124,7 @@ export const Profile: FC<ProfileProps> = () => {
           setUserProfile(res.user as GetProfile_getProfile_user);
           params.username === user.username && setProfile(res);
           // Reset the posts state to the initial state when the user changes
-          setProfilePosts(
-            profilePostsInitialState.data as GetUserPosts_getUserPosts
-          );
+          clearProfilePosts();
           setFirstQuery(true);
           setLoadPosts(true);
         } else if (!isEmpty(res.errors)) {
