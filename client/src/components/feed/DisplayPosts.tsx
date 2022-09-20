@@ -3,13 +3,13 @@ import { FC } from "react";
 import { Post } from "../post/Post";
 import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
 
-interface showPostsProps {
+interface displayPostsProps {
   posts: GetTimelinePosts_getTimelinePosts_posts[];
   reducer: string;
 }
 
 // Display the posts sorted by date (newest first)
-export const ShowPosts: FC<showPostsProps> = ({ posts, reducer }) => {
+export const DisplayPosts: FC<displayPostsProps> = ({ posts, reducer }) => {
   let postsSorted = [...posts];
 
   return (

@@ -21,7 +21,7 @@ import {
 } from "../../store/types/profilePostsTypes";
 import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
 import { INewPostsState } from "../../store/types/newPostsTypes";
-import { ShowPosts } from "./ShowPosts";
+import { DisplayPosts } from "./DisplayPosts";
 
 interface ProfileFeedProps {
   userId: string;
@@ -186,10 +186,10 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   return (
     <>
       {userId === user._id && !isEmpty(newPosts) && (
-        <ShowPosts posts={newPosts!.posts!} reducer={"newPosts"} />
+        <DisplayPosts posts={newPosts!.posts!} reducer={"newPosts"} />
       )}
       {!isEmpty(profilePosts) && (
-        <ShowPosts posts={profilePosts!.posts!} reducer={"profilePosts"} />
+        <DisplayPosts posts={profilePosts!.posts!} reducer={"profilePosts"} />
       )}
       {getUserPostsLoading && (
         // If the query is loading, display a loading box

@@ -18,7 +18,7 @@ import { setHomePosts } from "../../store/slices/homePostsSlice";
 import { IHomePostsState, THomePosts } from "../../store/types/homePostsTypes";
 import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
 import { INewPostsState } from "../../store/types/newPostsTypes";
-import { ShowPosts } from "./ShowPosts";
+import { DisplayPosts } from "./DisplayPosts";
 
 interface HomeFeedProps {}
 
@@ -177,10 +177,10 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
   return (
     <>
       {!isEmpty(newPosts) && (
-        <ShowPosts posts={newPosts!.posts!} reducer={"newPosts"} />
+        <DisplayPosts posts={newPosts!.posts!} reducer={"newPosts"} />
       )}
       {!isEmpty(homePosts) && (
-        <ShowPosts posts={homePosts!.posts!} reducer={"homePosts"} />
+        <DisplayPosts posts={homePosts!.posts!} reducer={"homePosts"} />
       )}
       {getTimelinePostsLoading && (
         // If the query is loading, display a loading box
