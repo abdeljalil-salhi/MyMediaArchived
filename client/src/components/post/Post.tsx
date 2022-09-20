@@ -29,19 +29,24 @@ import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { useAppSelector } from "../../store/hooks";
 import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
 import { GetUserPosts_getUserPosts_posts } from "../../generated/types/GetUserPosts";
+import { TProfile } from "../../store/types/profileTypes";
+
+export type TPost =
+  | GetTimelinePosts_getTimelinePosts_posts
+  | GetUserPosts_getUserPosts_posts;
 
 interface PostProps {
-  post:
-    | GetTimelinePosts_getTimelinePosts_posts
-    | GetUserPosts_getUserPosts_posts;
-  reducer: string;
+  post: TPost;
 }
 
-const stateSelector = createSelector(makeSelectProfile, (profile) => ({
-  profile: profile?.user,
-}));
+const stateSelector = createSelector(
+  makeSelectProfile,
+  (profile: TProfile) => ({
+    profile: profile.user,
+  })
+);
 
-export const Post: FC<PostProps> = ({ post, reducer }) => {
+export const Post: FC<PostProps> = ({ post }) => {
   // The Post component is used to display a post.
   //
   // Props:
@@ -257,7 +262,6 @@ export const Post: FC<PostProps> = ({ post, reducer }) => {
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 postId={post._id}
-                reducer={reducer}
               >
                 Are you sure you want to delete your post?
               </DeleteModal>

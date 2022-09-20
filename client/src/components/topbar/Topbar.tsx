@@ -27,12 +27,16 @@ import { logout as logOut } from "../../context/actions/auth.actions";
 import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { useAppSelector } from "../../store/hooks";
+import { IProfileState } from "../../store/types/profileTypes";
 
 interface TopbarProps {}
 
-const stateSelector = createSelector(makeSelectProfile, (profile) => ({
-  profile: profile?.user,
-}));
+const profileStateSelector = createSelector(
+  makeSelectProfile,
+  (profile: IProfileState["data"]) => ({
+    profile: profile.user,
+  })
+);
 
 export const Topbar: FC<TopbarProps> = () => {
   const [dropdown, setDropdown] = useState<boolean>(false);
@@ -43,7 +47,8 @@ export const Topbar: FC<TopbarProps> = () => {
 
   const { dispatch } = useContext(AuthContext);
 
-  const { profile } = useAppSelector(stateSelector);
+  // The selector to get state informations from the store (Redux)
+  const { profile } = useAppSelector(profileStateSelector);
 
   useEffect(() => {
     if (isEmpty(localStorage.getItem("localGeo"))) {

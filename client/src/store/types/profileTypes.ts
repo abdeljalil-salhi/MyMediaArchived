@@ -21,6 +21,7 @@ import {
   UpdateTags_updateTags,
 } from "../../generated/types/UpdateTags";
 
+// Type of the action that will be dispatched to the reducer
 export type TProfile =
   | GetProfile_getProfile
   | UpdateUser_updateUser
@@ -30,6 +31,7 @@ export type TProfile =
   | Login_login
   | Register_register;
 
+// Interface of the profile state in the store
 export interface IProfileState {
   data:
     | GetProfile["getProfile"]
@@ -38,11 +40,11 @@ export interface IProfileState {
     | FollowUser["followUser"]
     | UnfollowUser["unfollowUser"]
     | Login["login"]
-    | Register["register"]
-    | null;
+    | Register["register"];
 }
 
-export interface IProfileAction {
+// Interfaces for the profile actions
+export interface ISetProfileAction {
   type: string;
   payload: TProfile;
 }

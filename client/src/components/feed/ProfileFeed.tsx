@@ -13,15 +13,10 @@ import {
 } from "../../generated/types/GetUserPosts";
 import postsService from "../../store/services/postsService";
 import { isEmpty } from "../../utils/isEmpty";
-import { makeSelectProfilePosts } from "../../store/selectors/profilePostsSelector";
-import { setProfilePosts } from "../../store/slices/profilePostsSlice";
-import {
-  IProfilePostsState,
-  TProfilePosts,
-} from "../../store/types/profilePostsTypes";
-import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
-import { INewPostsState } from "../../store/types/newPostsTypes";
-import { ShowPosts } from "./ShowPosts";
+import { DisplayPosts } from "./DisplayPosts";
+import { makeSelectPosts } from "../../store/selectors/postsSelector";
+import { IPostsState, TProfilePosts } from "../../store/types/postsTypes";
+import { setProfilePosts } from "../../store/slices/postsSlice";
 
 interface ProfileFeedProps {
   userId: string;
@@ -33,17 +28,11 @@ interface ProfileFeedProps {
   };
 }
 
-const profilePostsStateSelector = createSelector(
-  makeSelectProfilePosts,
-  (profilePosts: IProfilePostsState["data"]) => ({
-    profilePosts,
-  })
-);
-
-const newPostsStateSelector = createSelector(
-  makeSelectNewPosts,
-  (newPosts: INewPostsState["data"]) => ({
-    newPosts,
+const postsStateSelector = createSelector(
+  makeSelectPosts,
+  (posts: IPostsState["data"]) => ({
+    newPosts: posts.newPosts,
+    profilePosts: posts.profilePosts,
   })
 );
 
@@ -73,8 +62,7 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
-  const { profilePosts } = useAppSelector(profilePostsStateSelector);
-  const { newPosts } = useAppSelector(newPostsStateSelector);
+  const { newPosts, profilePosts } = useAppSelector(postsStateSelector);
 
   // The dispatch function to update the posts state in the store (Redux)
   const { setProfilePosts } = actionDispatch(useAppDispatch());
@@ -186,11 +174,9 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   return (
     <>
       {userId === user._id && !isEmpty(newPosts) && (
-        <ShowPosts posts={newPosts!.posts!} reducer={"newPosts"} />
+        <DisplayPosts posts={newPosts.posts!} />
       )}
-      {!isEmpty(profilePosts) && (
-        <ShowPosts posts={profilePosts!.posts!} reducer={"profilePosts"} />
-      )}
+      {!isEmpty(profilePosts) && <DisplayPosts posts={profilePosts.posts!} />}
       {getUserPostsLoading && (
         // If the query is loading, display a loading box
         <>

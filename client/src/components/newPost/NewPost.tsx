@@ -24,22 +24,20 @@ import {
   CreatePost_createPost_errors,
 } from "../../generated/types/CreatePost";
 import postsService from "../../store/services/postsService";
-import { THomePosts } from "../../store/types/homePostsTypes";
-import { setHomePosts } from "../../store/slices/homePostsSlice";
-import { setProfilePosts } from "../../store/slices/profilePostsSlice";
-import { TProfilePosts } from "../../store/types/profilePostsTypes";
-import { TNewPosts } from "../../store/types/newPostsTypes";
-import { addNewPost } from "../../store/slices/newPostsSlice";
+import { addNewPost } from "../../store/slices/postsSlice";
+import { TNewPosts } from "../../store/types/postsTypes";
+import { IProfileState } from "../../store/types/profileTypes";
 
 interface NewPostProps {}
 
-const profileStateSelector = createSelector(makeSelectProfile, (profile) => ({
-  profile: profile?.user,
-}));
+const profileStateSelector = createSelector(
+  makeSelectProfile,
+  (profile: IProfileState["data"]) => ({
+    profile: profile.user,
+  })
+);
 
 const actionDispatch = (dispatch: Dispatch) => ({
-  setHomePosts: (posts: THomePosts) => dispatch(setHomePosts(posts)),
-  setProfilePosts: (posts: TProfilePosts) => dispatch(setProfilePosts(posts)),
   addNewPost: (post: TNewPosts) => dispatch(addNewPost(post)),
 });
 
@@ -361,6 +359,7 @@ export const NewPost: FC<NewPostProps> = () => {
               id={labelNames.send}
               className="hide"
               onClick={handlePost}
+              disabled={createPostLoading}
             ></button>
           </div>
         </div>

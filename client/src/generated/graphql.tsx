@@ -413,6 +413,7 @@ export type Query = {
   getFriends: UserResponse;
   getPost: PostResponse;
   getProfile: UserResponse;
+  getSuggestions: UsersResponse;
   getTimelinePosts: PaginatedPostsResponse;
   getUser: UserResponse;
   getUserPosts: PaginatedPostsResponse;
@@ -887,6 +888,11 @@ export type GetProfileQueryVariables = Exact<{
 
 
 export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null } | null } };
+
+export type GetSuggestionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSuggestionsQuery = { __typename?: 'Query', getSuggestions: { __typename?: 'UsersResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, users?: Array<{ __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null }> | null } };
 
 export type GetTimelinePostsQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -1655,6 +1661,58 @@ export function useGetProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
 export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
 export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
+export const GetSuggestionsDocument = gql`
+    query GetSuggestions {
+  getSuggestions {
+    errors {
+      ...ErrorFragment
+    }
+    users {
+      ...UserFragment
+      followersObj {
+        ...UserFragment
+      }
+      followingObj {
+        ...UserFragment
+      }
+      closeObj {
+        ...UserFragment
+      }
+      likes
+      saved
+      highlights
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}`;
+
+/**
+ * __useGetSuggestionsQuery__
+ *
+ * To run a query within a React component, call `useGetSuggestionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSuggestionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSuggestionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSuggestionsQuery(baseOptions?: Apollo.QueryHookOptions<GetSuggestionsQuery, GetSuggestionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSuggestionsQuery, GetSuggestionsQueryVariables>(GetSuggestionsDocument, options);
+      }
+export function useGetSuggestionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSuggestionsQuery, GetSuggestionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSuggestionsQuery, GetSuggestionsQueryVariables>(GetSuggestionsDocument, options);
+        }
+export type GetSuggestionsQueryHookResult = ReturnType<typeof useGetSuggestionsQuery>;
+export type GetSuggestionsLazyQueryHookResult = ReturnType<typeof useGetSuggestionsLazyQuery>;
+export type GetSuggestionsQueryResult = Apollo.QueryResult<GetSuggestionsQuery, GetSuggestionsQueryVariables>;
 export const GetTimelinePostsDocument = gql`
     query GetTimelinePosts($userId: String!, $limit: Int!, $cursor: String) {
   getTimelinePosts(userId: $userId, limit: $limit, cursor: $cursor) {
