@@ -13,26 +13,18 @@ import {
 } from "../../generated/types/GetTimelinePosts";
 import postsService from "../../store/services/postsService";
 import { isEmpty } from "../../utils/isEmpty";
-import { makeSelectHomePosts } from "../../store/selectors/homePostsSelector";
-import { setHomePosts } from "../../store/slices/homePostsSlice";
-import { IHomePostsState, THomePosts } from "../../store/types/homePostsTypes";
-import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
-import { INewPostsState } from "../../store/types/newPostsTypes";
 import { DisplayPosts } from "./DisplayPosts";
+import { makeSelectPosts } from "../../store/selectors/postsSelector";
+import { setHomePosts } from "../../store/slices/postsSlice";
+import { IPostsState, THomePosts } from "../../store/types/postsTypes";
 
 interface HomeFeedProps {}
 
-const homePostsStateSelector = createSelector(
-  makeSelectHomePosts,
-  (homePosts: IHomePostsState["data"]) => ({
-    homePosts,
-  })
-);
-
-const newPostsStateSelector = createSelector(
-  makeSelectNewPosts,
-  (newPosts: INewPostsState["data"]) => ({
-    newPosts,
+const postsStateSelector = createSelector(
+  makeSelectPosts,
+  (posts: IPostsState["data"]) => ({
+    newPosts: posts.newPosts,
+    homePosts: posts.homePosts,
   })
 );
 
@@ -63,8 +55,7 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
   const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
-  const { homePosts } = useAppSelector(homePostsStateSelector);
-  const { newPosts } = useAppSelector(newPostsStateSelector);
+  const { newPosts, homePosts } = useAppSelector(postsStateSelector);
 
   // The dispatch function to update the posts state in the store (Redux)
   const { setHomePosts } = actionDispatch(useAppDispatch());
@@ -176,12 +167,8 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
   return (
     <>
-      {!isEmpty(newPosts) && (
-        <DisplayPosts posts={newPosts!.posts!} reducer={"newPosts"} />
-      )}
-      {!isEmpty(homePosts) && (
-        <DisplayPosts posts={homePosts!.posts!} reducer={"homePosts"} />
-      )}
+      {!isEmpty(newPosts) && <DisplayPosts posts={newPosts.posts!} />}
+      {!isEmpty(homePosts) && <DisplayPosts posts={homePosts.posts!} />}
       {getTimelinePostsLoading && (
         // If the query is loading, display a loading box
         <>

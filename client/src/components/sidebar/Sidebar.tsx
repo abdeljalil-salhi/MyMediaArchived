@@ -13,17 +13,22 @@ import { PU, TRANSPARENT } from "../../globals";
 import { CloseFriend } from "../closeFriend/CloseFriend";
 import { useAppSelector } from "../../store/hooks";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
+import { IProfileState } from "../../store/types/profileTypes";
 
 interface SidebarProps {}
 
-const stateSelector = createSelector(makeSelectProfile, (profile) => ({
-  profile: profile?.user,
-}));
+const profileStateSelector = createSelector(
+  makeSelectProfile,
+  (profile: IProfileState["data"]) => ({
+    profile: profile.user,
+  })
+);
 
 export const Sidebar: FC<SidebarProps> = () => {
   const location = useLocation();
 
-  const { profile } = useAppSelector(stateSelector);
+  // The selector to get state informations from the store (Redux)
+  const { profile } = useAppSelector(profileStateSelector);
 
   return (
     <div className="sidebarContainer">
