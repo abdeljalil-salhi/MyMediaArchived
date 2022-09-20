@@ -343,6 +343,39 @@ export class UserResolver {
     }
   }
 
+  @Query(() => UsersResponse)
+  public async getSuggestions(): Promise<UsersResponse> {
+    try {
+      const users = await UserModel.aggregate([
+        {
+          $sample: {
+            size: 5,
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            result: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: { $first: "$result" },
+          },
+        },
+      ]);
+      return {
+        errors: [],
+        users,
+      };
+    } catch (err) {
+      return {
+        errors: unhandledError(err),
+        users: [],
+      };
+    }
+  }
+
   @Query(() => UserResponse)
   public async getUser(@Arg("userId") userId: string): Promise<UserResponse> {
     if (!isValidID(userId))
