@@ -1,7 +1,5 @@
 import { PaginatedPosts, User } from "./typenames";
-import { IHomePostsState } from "./types/homePostsTypes";
-import { INewPostsState } from "./types/newPostsTypes";
-import { IProfilePostsState } from "./types/profilePostsTypes";
+import { IPostsState } from "./types/postsTypes";
 import { IProfileState } from "./types/profileTypes";
 
 export const profileInitialState: IProfileState = {
@@ -12,29 +10,35 @@ export const profileInitialState: IProfileState = {
   },
 };
 
-export const homePostsInitialState: IHomePostsState = {
-  data: {
-    __typename: PaginatedPosts,
-    errors: [],
-    posts: [],
-    hasMore: true,
-  },
+export const newPostsInitialState: IPostsState["data"]["newPosts"] = {
+  __typename: PaginatedPosts,
+  errors: [],
+  posts: [],
+  hasMore: false,
 };
-
-export const newPostsInitialState: INewPostsState = {
-  data: {
-    __typename: PaginatedPosts,
-    errors: [],
-    posts: [],
-    hasMore: false,
-  },
+export const deletedPostsInitialState: IPostsState["data"]["deletedPosts"] = {
+  __typename: PaginatedPosts,
+  errors: [],
+  posts: [],
+  hasMore: false,
 };
-
-export const profilePostsInitialState: IProfilePostsState = {
+export const homePostsInitialState: IPostsState["data"]["homePosts"] = {
+  __typename: PaginatedPosts,
+  errors: [],
+  posts: [],
+  hasMore: true,
+};
+export const profilePostsInitialState: IPostsState["data"]["profilePosts"] = {
+  __typename: PaginatedPosts,
+  errors: [],
+  posts: [],
+  hasMore: true,
+};
+export const postsInitialState: IPostsState = {
   data: {
-    __typename: PaginatedPosts,
-    errors: [],
-    posts: [],
-    hasMore: true,
+    newPosts: newPostsInitialState,
+    deletedPosts: deletedPostsInitialState,
+    homePosts: homePostsInitialState,
+    profilePosts: profilePostsInitialState,
   },
 };
