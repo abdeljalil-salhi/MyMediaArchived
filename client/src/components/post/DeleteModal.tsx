@@ -1,62 +1,34 @@
-import { FC, useContext, useEffect, useState } from "react";
+import {
+  FC,
+  useContext,
+  useEffect,
+  useState,
+  MouseEvent as MouseEventReact,
+} from "react";
 import { createPortal } from "react-dom";
-import { createSelector } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 
 import { AuthContext } from "../../context/auth.context";
 import { Backdrop } from "../backdrop/Backdrop";
-import { deleteHomePost } from "../../store/slices/homePostsSlice";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks";
 import {
   DeletePostVariables,
   DeletePost_deletePost,
 } from "../../generated/types/DeletePost";
 import postsService from "../../store/services/postsService";
 import { isEmpty } from "../../utils/isEmpty";
-import { deleteNewPost } from "../../store/slices/newPostsSlice";
-import { deleteProfilePost } from "../../store/slices/profilePostsSlice";
-import { makeSelectHomePosts } from "../../store/selectors/homePostsSelector";
-import { IHomePostsState } from "../../store/types/homePostsTypes";
-import { makeSelectProfilePosts } from "../../store/selectors/profilePostsSelector";
-import { IProfilePostsState } from "../../store/types/profilePostsTypes";
-import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
-import { GetUserPosts_getUserPosts_posts } from "../../generated/types/GetUserPosts";
-import { makeSelectNewPosts } from "../../store/selectors/newPostsSelector";
-import { INewPostsState } from "../../store/types/newPostsTypes";
+import { TDeletedPosts } from "../../store/types/postsTypes";
+import { addDeletedPost } from "../../store/slices/postsSlice";
 
 interface DeleteModalProps {
   open: Boolean;
   children: any;
   onClose: () => void;
   postId: string;
-  reducer: string;
 }
 
-const newPostsStateSelector = createSelector(
-  makeSelectNewPosts,
-  (newPosts: INewPostsState["data"]) => ({
-    newPosts: newPosts!.posts!,
-  })
-);
-
-const homePostsStateSelector = createSelector(
-  makeSelectHomePosts,
-  (homePosts: IHomePostsState["data"]) => ({
-    homePosts: homePosts!.posts!,
-  })
-);
-
-const profilePostsStateSelector = createSelector(
-  makeSelectProfilePosts,
-  (profilePosts: IProfilePostsState["data"]) => ({
-    profilePosts: profilePosts!.posts!,
-  })
-);
-
 const actionDispatch = (dispatch: Dispatch) => ({
-  deleteNewPost: (postId: string) => dispatch(deleteNewPost(postId)),
-  deleteHomePost: (postId: string) => dispatch(deleteHomePost(postId)),
-  deleteProfilePost: (postId: string) => dispatch(deleteProfilePost(postId)),
+  addDeletedPost: (postId: TDeletedPosts) => dispatch(addDeletedPost(postId)),
 });
 
 export const DeleteModal: FC<DeleteModalProps> = ({
@@ -64,7 +36,6 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   children,
   onClose,
   postId,
-  reducer,
 }) => {
   // The DeleteModal component is used to display a delete confirmation message
   //
@@ -85,14 +56,10 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   const { user } = useContext(AuthContext);
 
   // The selector to get state informations from the store (Redux)
-  const { homePosts } = useAppSelector(homePostsStateSelector);
-  const { profilePosts } = useAppSelector(profilePostsStateSelector);
-  const { newPosts } = useAppSelector(newPostsStateSelector);
+  // None
 
   // The dispatch function to update the posts state in the store (Redux)
-  const { deleteNewPost, deleteHomePost, deleteProfilePost } = actionDispatch(
-    useAppDispatch()
-  );
+  const { addDeletedPost } = actionDispatch(useAppDispatch());
 
   /*
    * @example
@@ -124,16 +91,7 @@ export const DeleteModal: FC<DeleteModalProps> = ({
       // If the post was successfully deleted
       if (!isEmpty(res.deleted)) {
         // Delete the post from the store
-        newPosts.find(
-          (post: GetTimelinePosts_getTimelinePosts_posts) => post._id === postId
-        ) && deleteNewPost(postId);
-        homePosts.find(
-          (post: GetTimelinePosts_getTimelinePosts_posts) => post._id === postId
-        ) && deleteHomePost(postId);
-        profilePosts.find(
-          (post: GetUserPosts_getUserPosts_posts) => post._id === postId
-        ) && deleteProfilePost(postId);
-        console.log(postId, "deleted");
+        addDeletedPost(res);
       } else if (!isEmpty(res.errors)) {
         // If the post was not successfully deleted, display the errors
         setDeletePostError(true);
@@ -166,14 +124,16 @@ export const DeleteModal: FC<DeleteModalProps> = ({
       <Backdrop onClick={onClose}>
         <div
           className="postDeleteModal"
-          onClick={(e: any) => e.stopPropagation()}
+          onClick={(e: MouseEventReact<HTMLDivElement>) => e.stopPropagation()}
         >
           <div className="postDeleteModalWrapper">
             <div className="postDeleteModalHeader">Delete confirmation</div>
             <div className="postDeleteModalBody">{children}</div>
             <div className="postDeleteModalFooter">
               <span onClick={onClose}>Cancel</span>
-              <button onClick={deletePostFn}>Confirm</button>
+              <button onClick={deletePostFn} disabled={deletePostLoading}>
+                Confirm
+              </button>
             </div>
           </div>
         </div>
