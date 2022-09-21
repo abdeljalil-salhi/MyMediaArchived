@@ -21,8 +21,9 @@
   </tr>
 </table>
 
-| Codebase         |  Description   |
-| :--------------- | :------------: |
-| [Server](server) |   NodeJS API   |
-<!-- | [Admin](admin)   |  Admin Client  | -->
-<!-- | [Client](client) | ReactJS CLient | -->
+| Codebase                    |         Description         |
+| :-------------------------- | :-------------------------: |
+| [Server](server/)           |    TypeScript NodeJS API    |
+| [Client](client/)           |  TypeScript ReactJS CLient  |
+| [MongoExport](mongoexport/) |   Export MongoDB as JSON    |
+| [Scripts](scripts/)         | Helpful development Scripts |
