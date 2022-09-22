@@ -156,19 +156,47 @@ export const FollowHandler: FC<FollowHandlerProps> = ({ idToFollow, type }) => {
     <>
       {isFollowed && (
         <>
-          {type === "profile" && (
-            <Button className="rightbarFollowButton" onClick={handleUnfollow}>
+          {type === "profile" ? (
+            <Button
+              className="rightbarFollowButton"
+              onClick={handleUnfollow}
+              disabled={followUserLoading || unfollowUserLoading}
+            >
               <Remove /> Unfollow
             </Button>
+          ) : (
+            type === "rightbarSuggestions" && (
+              <Button
+                className="c-rightbar__suggestions-element-button"
+                onClick={handleUnfollow}
+                disabled={followUserLoading || unfollowUserLoading}
+              >
+                Unfollow
+              </Button>
+            )
           )}
         </>
       )}
       {!isFollowed && (
         <>
-          {type === "profile" && (
-            <Button className="rightbarFollowButton" onClick={handleFollow}>
+          {type === "profile" ? (
+            <Button
+              className="rightbarFollowButton"
+              onClick={handleFollow}
+              disabled={followUserLoading || unfollowUserLoading}
+            >
               <Add /> Follow
             </Button>
+          ) : (
+            type === "rightbarSuggestions" && (
+              <Button
+                className="c-rightbar__suggestions-element-button"
+                onClick={handleFollow}
+                disabled={followUserLoading || unfollowUserLoading}
+              >
+                Follow
+              </Button>
+            )
           )}
         </>
       )}
