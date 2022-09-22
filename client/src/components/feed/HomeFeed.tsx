@@ -167,7 +167,18 @@ export const HomeFeed: FC<HomeFeedProps> = () => {
 
   return (
     <>
-      {!isEmpty(newPosts) && <DisplayPosts posts={newPosts.posts!} />}
+      {!isEmpty(newPosts) && (
+        <DisplayPosts
+          posts={newPosts.posts!.filter(
+            (post: GetTimelinePosts_getTimelinePosts_posts) =>
+              homePosts.posts &&
+              !homePosts.posts.some(
+                (p: GetTimelinePosts_getTimelinePosts_posts) =>
+                  p._id === post._id
+              )
+          )}
+        />
+      )}
       {!isEmpty(homePosts) && <DisplayPosts posts={homePosts.posts!} />}
       {getTimelinePostsLoading && (
         // If the query is loading, display a loading box

@@ -174,7 +174,15 @@ export const ProfileFeed: FC<ProfileFeedProps> = ({ userId, states }) => {
   return (
     <>
       {userId === user._id && !isEmpty(newPosts) && (
-        <DisplayPosts posts={newPosts.posts!} />
+        <DisplayPosts
+          posts={newPosts.posts!.filter(
+            (post: GetUserPosts_getUserPosts_posts) =>
+              profilePosts.posts &&
+              !profilePosts.posts.some(
+                (p: GetUserPosts_getUserPosts_posts) => p._id === post._id
+              )
+          )}
+        />
       )}
       {!isEmpty(profilePosts) && <DisplayPosts posts={profilePosts.posts!} />}
       {getUserPostsLoading && (
