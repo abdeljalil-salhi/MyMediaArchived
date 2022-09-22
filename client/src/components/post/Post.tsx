@@ -29,7 +29,9 @@ import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { useAppSelector } from "../../store/hooks";
 import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
 import { GetUserPosts_getUserPosts_posts } from "../../generated/types/GetUserPosts";
-import { TProfile } from "../../store/types/profileTypes";
+import { IProfileState } from "../../store/types/profileTypes";
+import { SocketContext } from "../../context/socket.context";
+import { SocketUser } from "../../context/types/socket.types";
 
 export type TPost =
   | GetTimelinePosts_getTimelinePosts_posts
@@ -39,9 +41,9 @@ interface PostProps {
   post: TPost;
 }
 
-const stateSelector = createSelector(
+const profileStateSelector = createSelector(
   makeSelectProfile,
-  (profile: TProfile) => ({
+  (profile: IProfileState["data"]) => ({
     profile: profile.user,
   })
 );
@@ -52,6 +54,7 @@ export const Post: FC<PostProps> = ({ post }) => {
   // Props:
   // post: the post to display
 
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [reacted, setReacted] = useState<boolean>(false);
   const [showComments, setShowComments] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -74,9 +77,13 @@ export const Post: FC<PostProps> = ({ post }) => {
   const timerPostTextUpdateRef: MutableRefObject<any> = useRef(null);
   const timerShowEmojiesRef: MutableRefObject<any> = useRef(null);
 
+  // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
+  // The selector to get the online users from the context (ContextAPI)
+  const { users } = useContext(SocketContext);
 
-  const { profile } = useAppSelector(stateSelector);
+  // The selector to get state informations from the store (Redux)
+  const { profile } = useAppSelector(profileStateSelector);
 
   // Toggle display of the show more button
   const toggleShowMore = () => {
@@ -119,6 +126,16 @@ export const Post: FC<PostProps> = ({ post }) => {
     setIsUpdating(false);
     // TODO: refresh posts
   };
+
+  // The useEffect hook below is used to get the user's online friends
+  useEffect(() => {
+    if (!isEmpty(users) && profile)
+      setOnlineUsers(
+        profile.following!.filter((followingId: string) =>
+          users.some((u: SocketUser) => u.userId === followingId)
+        )
+      );
+  }, [profile, users]);
 
   // Handle if the user already reacted to the post
   useEffect(() => {
@@ -206,6 +223,16 @@ export const Post: FC<PostProps> = ({ post }) => {
                 alt={`${post.userObj.username}'s profile`}
                 draggable={false}
               />
+              {post.userObj._id === user._id ? (
+                <span className="onlineFriendStatus"></span>
+              ) : (
+                profile &&
+                profile.following &&
+                profile.following.includes(post.userObj._id) &&
+                onlineUsers.includes(post.userObj._id) && (
+                  <span className="onlineFriendStatus"></span>
+                )
+              )}
             </Link>
             <Link
               to={`/u/${post.userObj.username}`}

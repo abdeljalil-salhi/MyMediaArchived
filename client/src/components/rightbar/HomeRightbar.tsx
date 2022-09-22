@@ -1,26 +1,44 @@
 import { FC, useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { PC } from "../../globals";
-// import { AuthContext } from "../../context/auth.context";
+import { SocketContext } from "../../context/socket.context";
 import { OnlineFriend } from "../onlineFriend/OnlineFriend";
+import { RightbarSuggestions } from "./RightbarSuggestions";
+import { SocketUser } from "../../context/types/socket.types";
+import { useAppSelector } from "../../store/hooks";
+import { makeSelectProfile } from "../../store/selectors/profileSelector";
+import { IProfileState } from "../../store/types/profileTypes";
+import { GetProfile_getProfile_user_followingObj } from "../../generated/types/GetProfile";
+import { isEmpty } from "../../utils/isEmpty";
 
 interface HomeRightbarProps {}
 
+const profileStateSelector = createSelector(
+  makeSelectProfile,
+  (profile: IProfileState["data"]) => ({
+    profile: profile.user,
+  })
+);
+
 export const HomeRightbar: FC<HomeRightbarProps> = () => {
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
 
-  // const { user } = useContext(AuthContext);
+  // The selector to get the online users from the context (ContextAPI)
+  const { users } = useContext(SocketContext);
 
-  // useEffect(() => {
-  //   // let followingIds = user.followingObj.map((u: any) => u._id);
-  //   ws.on("get-users", (users: any) => {
-  //     console.log(users);
-  //     setOnlineUsers(
-  //       user.followingObj.filter((f: any) => users.some((u: any) => u.userId === f._id)) /* followingIds.filter((f: any) => users.some((u: any) => u.userId === f)) */
-  //     );
-  //   });
-  // }, [user.followingObj, ws]);
+  // The selector to get state informations from the store (Redux)
+  const { profile } = useAppSelector(profileStateSelector);
+
+  useEffect(() => {
+    if (!isEmpty(users) && profile)
+      setOnlineUsers(
+        profile.followingObj!.filter(
+          (f: GetProfile_getProfile_user_followingObj) =>
+            users.some((u: SocketUser) => u.userId === f._id)
+        )
+      );
+  }, [profile, users]);
 
   return (
     <>
@@ -35,17 +53,7 @@ export const HomeRightbar: FC<HomeRightbarProps> = () => {
           <b>Abdeljalil</b> and <b>2 other friends</b> have a birthday today.
         </span>
       </div>
-      <div className="rightbarAds">
-        <span className="rightbarAdText">Advertisement</span>
-        <Link to="/" draggable={false}>
-          <img
-            src={`${PC}assets/images/schema.png`}
-            alt="MyMedia Ads"
-            className="rightbarAdImage skeleton"
-            draggable={false}
-          />
-        </Link>
-      </div>
+      <RightbarSuggestions profile={profile} />
       <div className="rightbarOnline">
         <h4 className="rightbarOnlineTitle">Online Friends</h4>
         <div className="rightbarOnlineList">
