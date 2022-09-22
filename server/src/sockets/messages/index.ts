@@ -1,22 +1,39 @@
 import { Server, Socket } from "socket.io";
 
-import { getUser } from "../functions";
-import { TUser } from "../interfaces";
+import {
+  ClientToServerEvents,
+  IGetUserParams,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+  SocketUser,
+} from "../types";
 import { ISendMessageParams } from "./interfaces";
 
 export const messagesHandler = (
   socket: Socket,
-  io: Server<any, any, any, any>,
-  users: TUser[]
+  io: Server<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InterServerEvents,
+    SocketData
+  >,
+  users: SocketUser[]
 ) => {
+  // Get a user from the list of users
+  const getUser = ({ userId }: IGetUserParams): SocketUser | undefined => {
+    return users.find((user) => user.userId === userId);
+  };
+
   const sendMessage = ({
     senderId,
     receiverId,
     text,
     deleted,
   }: ISendMessageParams): void => {
-    const sender = getUser({ userId: senderId, users });
-    const receiver = getUser({ userId: receiverId, users });
+    const sender = getUser({ userId: senderId });
+    const receiver = getUser({ userId: receiverId });
+
     if (sender && receiver) {
       io.to(receiver.socketId).emit("get-message", {
         senderId,
