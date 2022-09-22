@@ -39,6 +39,8 @@ import profileService from "../store/services/profileService";
 import { setProfile } from "../store/slices/profileSlice";
 import { IProfileState, TProfile } from "../store/types/profileTypes";
 import { clearProfilePosts } from "../store/slices/postsSlice";
+import { SocketContext } from "../context/socket.context";
+import { SocketUser } from "../context/types/socket.types";
 
 interface ProfileProps {}
 
@@ -65,6 +67,7 @@ export const Profile: FC<ProfileProps> = () => {
   const [updatingBio, setUpdatingBio] = useState<boolean>(false);
   const [firstQuery, setFirstQuery] = useState<boolean>(true);
   const [loadPosts, setLoadPosts] = useState<boolean>(true);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [userProfile, setUserProfile] = useState<GetProfile_getProfile_user>(
     {} as GetProfile_getProfile_user
   );
@@ -90,6 +93,8 @@ export const Profile: FC<ProfileProps> = () => {
 
   // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
+  // The selector to get the online users from the context (ContextAPI)
+  const { users } = useContext(SocketContext);
 
   // The selector to get state informations from the store (Redux)
   const { profile } = useAppSelector(profileStateSelector);
@@ -105,6 +110,16 @@ export const Profile: FC<ProfileProps> = () => {
       behavior: "smooth",
     });
   }, [params.username]);
+
+  // The useEffect hook below is used to get the user's online friends
+  useEffect(() => {
+    if (!isEmpty(users) && profile)
+      setOnlineUsers(
+        profile.following!.filter((followingId: string) =>
+          users.some((u: SocketUser) => u.userId === followingId)
+        )
+      );
+  }, [profile, users]);
 
   // The useEffect hook below is used to fetch the user's profile data
   useEffect(() => {
@@ -266,16 +281,25 @@ export const Profile: FC<ProfileProps> = () => {
                 alt={`${userProfile.firstName}'s profile`}
                 draggable={false}
               />
+              {userProfile._id !== user._id &&
+                profile &&
+                profile.following &&
+                profile.following.includes(userProfile._id) &&
+                onlineUsers.includes(userProfile._id) && (
+                  <span className="onlineFriendStatus"></span>
+                )}
             </div>
             <div className="profileInfo">
               <h1 className="profileInfoName">{userProfile.fullName}</h1>
               {userProfile._id !== user._id ? (
                 profile &&
-                profile.followingObj &&
-                profile.followingObj.some(
-                  (u: any) => u._id === userProfile._id
-                ) ? (
-                  <h5>online {format(userProfile.online)}</h5>
+                profile.following &&
+                profile.following.includes(userProfile._id) ? (
+                  onlineUsers.includes(userProfile._id) ? (
+                    <h5>online now</h5>
+                  ) : (
+                    <h5>online {format(userProfile.online)}</h5>
+                  )
                 ) : null
               ) : null}
               {!isEmpty(userProfile.bio) && (

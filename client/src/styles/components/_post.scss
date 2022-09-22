@@ -34,6 +34,10 @@
         -ms-flex-align: center;
         align-items: center;
 
+        a {
+          position: relative;
+        }
+
         .postTopLeftProfileImg {
           width: 40px;
           height: 40px;
@@ -42,6 +46,19 @@
           -moz-border-radius: 999px;
           -o-object-fit: cover;
           object-fit: cover;
+        }
+
+        .onlineFriendStatus {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+          -moz-border-radius: 999px;
+          -webkit-border-radius: 999px;
+          background-color: limegreen;
+          position: absolute;
+          bottom: 1px;
+          right: 0;
+          border: 2px solid $background-primary;
         }
 
         .postTopLeftUsername {

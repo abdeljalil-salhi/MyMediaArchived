@@ -1,6 +1,7 @@
 export const PC: string = process.env.REACT_APP_CLIENT_URL;
 export const PU: string = process.env.REACT_APP_UPLOADS_URL;
 export const PA: string = process.env.REACT_APP_API_URL;
+export const WS: string = process.env.REACT_APP_SOCKET_URL;
 export const USER: string = "mymedia:user";
 export const GEO: string = "mymedia:lgeo";
 export const GPS: string = "mymedia:lgps";

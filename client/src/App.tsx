@@ -1,16 +1,20 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 import Routes from "./Routes";
-import { AuthContextProvider } from "./context/auth.context";
 import { combineContexts } from "./combineContexts";
+import { AuthContextProvider } from "./context/auth.context";
+import { SocketContextProvider } from "./context/socket.context";
 
 interface AppProps {}
 
 interface AppContextProviderProps {
-  children: any;
+  children: ReactNode;
 }
 
-const contextProviders: FC<any>[] = [AuthContextProvider];
+const contextProviders: FC<any>[] = [
+  AuthContextProvider,
+  SocketContextProvider,
+];
 
 export const AppContextProvider: FC<AppContextProviderProps> = combineContexts(
   ...contextProviders

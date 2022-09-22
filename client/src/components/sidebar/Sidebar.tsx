@@ -36,16 +36,19 @@ export const Sidebar: FC<SidebarProps> = () => {
         <div className="sidebarItems">
           <Link to={profile ? `/u/${profile.username}` : ""} draggable={false}>
             <div className={`sidebarItem noneStyle`}>
-              <img
-                src={
-                  profile && profile.profile
-                    ? `${PU}${profile.profile}`
-                    : TRANSPARENT
-                }
-                className="avatar skeleton"
-                alt={profile ? profile.fullName : ""}
-                draggable={false}
-              />
+              <span>
+                <img
+                  src={
+                    profile && profile.profile
+                      ? `${PU}${profile.profile}`
+                      : TRANSPARENT
+                  }
+                  className="avatar skeleton"
+                  alt={profile ? profile.fullName : ""}
+                  draggable={false}
+                />
+                <span className="onlineFriendStatus"></span>
+              </span>
               <span className="sidebarItemText sidebarProfileContainer">
                 <span>
                   {profile ? (
