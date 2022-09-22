@@ -349,7 +349,7 @@ export class UserResolver {
       const users = await UserModel.aggregate([
         {
           $sample: {
-            size: 5,
+            size: 30,
           },
         },
         {
