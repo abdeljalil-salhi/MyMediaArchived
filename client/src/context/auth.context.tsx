@@ -1,10 +1,10 @@
-import { createContext, FC, useReducer } from "react";
+import { createContext, FC, ReactNode, useReducer } from "react";
 
 import { USER } from "../globals";
 import AuthReducer from "./reducers/auth.reducer";
 
 interface RoomContextProps {
-  children: any;
+  children: ReactNode;
 }
 
 const INITIAL_STATE: any = {
