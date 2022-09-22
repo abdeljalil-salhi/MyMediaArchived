@@ -1,5 +1,5 @@
 import FlipMove from "react-flip-move";
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Backspace,
@@ -12,7 +12,7 @@ import { format } from "timeago.js";
 import { createSelector } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 
-import { PU, TRANSPARENT } from "../../globals";
+import { PC, PU, TRANSPARENT } from "../../globals";
 import { AuthContext } from "../../context/auth.context";
 import { isEmpty } from "../../utils/isEmpty";
 import { ErrorModal } from "./ErrorModal";
@@ -49,6 +49,11 @@ export const NewPost: FC<NewPostProps> = () => {
   // - The NewPost component shows a preview of the post when the user is typing
   // - The NewPost component is submitted when the user clicks the "Send" button
   // - The NewPost component is reset when the user clicks the "Cancel" button
+
+  const posted = useMemo<HTMLAudioElement>(
+    () => new Audio(PC + "assets/audios/posted.ogg"),
+    []
+  );
 
   const [showErrorModal, setShowErrorModal] = useState<Boolean>(false);
   const [errorModalText, setErrorModalText] = useState("");
@@ -157,6 +162,7 @@ export const NewPost: FC<NewPostProps> = () => {
         if (!isEmpty(res.post)) {
           // If the request was successful, add the created post to the new posts state in the redux reducer
           addNewPost(res);
+          posted.play();
         } else if (!isEmpty(res.errors)) {
           setCreatePostError(true);
           setErrorModalText(
