@@ -12,3 +12,12 @@ export const updateLocalStorage = (
   // Add the data to the local storage
   localStorage.setItem(element, JSON.stringify(data));
 };
+
+export const getLocalStorage = (element: string) => {
+  // Check if the data in the local storage exists
+  // If it does, return it
+  if (!isEmpty(localStorage.getItem(element)))
+    return JSON.parse(localStorage.getItem(element) as string);
+  // If it doesn't, return null
+  return null;
+};
