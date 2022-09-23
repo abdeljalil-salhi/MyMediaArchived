@@ -28,6 +28,8 @@ import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { useAppSelector } from "../../store/hooks";
 import { IProfileState } from "../../store/types/profileTypes";
+import { WidgetsContext } from "../../context/widgets.context";
+import { WeatherWidget } from "../widgets/WeatherWidget";
 
 interface TopbarProps {}
 
@@ -40,12 +42,14 @@ const profileStateSelector = createSelector(
 
 export const Topbar: FC<TopbarProps> = () => {
   const [dropdown, setDropdown] = useState<boolean>(false);
+  const [weatherWidget, setWeatherWidget] = useState<boolean>(false);
 
-  const timerRef: MutableRefObject<any> = useRef(null);
   const dropdownRef: MutableRefObject<HTMLDivElement | null> =
     useRef<HTMLDivElement | null>(null);
+  const timerDropdownRef: MutableRefObject<any> = useRef(null);
 
   const { dispatch } = useContext(AuthContext);
+  const { weather } = useContext(WidgetsContext);
 
   // The selector to get state informations from the store (Redux)
   const { profile } = useAppSelector(profileStateSelector);
@@ -70,7 +74,9 @@ export const Topbar: FC<TopbarProps> = () => {
   }, []);
 
   useEffect(() => {
-    const pageClickEvent = (e: any) => {
+    // dropdown:
+    //  - The dropdown is closed if the user clicks outside the area
+    const pageClickEvent__dropdown = (e: any) => {
       if (
         !isEmpty(dropdownRef.current) &&
         !(dropdownRef.current as HTMLDivElement).contains(e.target)
@@ -78,19 +84,21 @@ export const Topbar: FC<TopbarProps> = () => {
         setDropdown(!dropdown);
     };
 
-    if (dropdown) {
-      timerRef.current = setTimeout(
-        () => window.addEventListener("click", pageClickEvent),
+    // Add the event listener when the element is open
+    if (dropdown)
+      timerDropdownRef.current = setTimeout(
+        () => window.addEventListener("click", pageClickEvent__dropdown),
         100
       );
-    }
 
-    return () => window.removeEventListener("click", pageClickEvent);
+    // Remove the event listener when the element is closed
+    const cleanup = () => {
+      window.removeEventListener("click", pageClickEvent__dropdown);
+      clearTimeout(timerDropdownRef.current);
+    };
+
+    return () => cleanup();
   }, [dropdown]);
-
-  useEffect(() => {
-    return () => clearTimeout(timerRef.current);
-  }, []);
 
   const logout = () => {
     localStorage.removeItem(USER);
@@ -111,6 +119,27 @@ export const Topbar: FC<TopbarProps> = () => {
             <h1>MyMedia</h1>
           </span>
         </Link>
+        <div className="topbar__minified">
+          {weather.data ? (
+            <>
+              <div
+                className="topbar__minified-weather"
+                onClick={() => setWeatherWidget(!weatherWidget)}
+              >
+                <img src={weather.data.image} alt="MyWeather Icon" />
+                <span className="topbar__minified-weather-temp">
+                  {weather.data.temperature}°
+                  {weather.unit === "metric"
+                    ? "C"
+                    : weather.unit === "imperial"
+                    ? "F"
+                    : "K"}
+                </span>
+              </div>
+              {weatherWidget && <WeatherWidget />}
+            </>
+          ) : null}
+        </div>
       </div>
       <div className="topbarCenter">
         <div className="topbarSearchbar">
