@@ -172,13 +172,19 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
 
         if (res.data?.register.user) {
           // Dispatch the register response by dispatching the registerSuccess action
-          dispatch(registerSuccess(res.data?.register.user));
+          dispatch(
+            registerSuccess({
+              _id: res.data?.register.user._id,
+              username: res.data?.register.user.username,
+              accessToken: res.data?.register.user.accessToken as string,
+            })
+          );
           setProfile(res.data?.register as Register_register);
           // Store the registered user in local storage
           updateLocalStorage(USER, {
             _id: res.data?.register.user._id,
             username: res.data?.register.user.username,
-            accessToken: res.data?.register.user.accessToken as string | null,
+            accessToken: res.data?.register.user.accessToken as string,
           });
         } else if (res.data?.register.errors) {
           // Handle known errors and show them to the user

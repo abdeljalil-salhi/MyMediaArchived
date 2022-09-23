@@ -10,12 +10,13 @@ import {
   UPDATE_USER_SUCCESS,
   UPDATE_USER_FAILURE,
 } from "../constants/auth.constants";
+import { IAuth } from "../types/auth.types";
 
 export const loginStart = () => ({
   type: LOGIN_START,
 });
 
-export const loginSuccess = (user: any) => ({
+export const loginSuccess = (user: IAuth["user"]) => ({
   type: LOGIN_SUCCESS,
   payload: user,
 });
@@ -28,7 +29,7 @@ export const registerStart = () => ({
   type: REGISTER_START,
 });
 
-export const registerSuccess = (user: any) => ({
+export const registerSuccess = (user: IAuth["user"]) => ({
   type: REGISTER_SUCCESS,
   payload: user,
 });
@@ -45,7 +46,7 @@ export const updateUserStart = () => ({
   type: UPDATE_USER_START,
 });
 
-export const updateUserSuccess = (user: any) => ({
+export const updateUserSuccess = (user: IAuth["user"]) => ({
   type: UPDATE_USER_SUCCESS,
   payload: user,
 });

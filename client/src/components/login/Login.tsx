@@ -98,13 +98,19 @@ export const Login: FC<LoginProps> = ({ goToRegister }) => {
 
       if (res.data?.login.user) {
         // Dispatch the login response by dispatching the loginSuccess action
-        dispatch(loginSuccess(res.data?.login.user));
+        dispatch(
+          loginSuccess({
+            _id: res.data?.login.user._id,
+            username: res.data?.login.user.username,
+            accessToken: res.data?.login.user.accessToken as string,
+          })
+        );
         setProfile(res.data?.login as Login_login);
         // Store the logged user in local storage
         updateLocalStorage(USER, {
           _id: res.data?.login.user._id,
           username: res.data?.login.user.username,
-          accessToken: res.data?.login.user.accessToken as string | null,
+          accessToken: res.data?.login.user.accessToken as string,
         });
       } else if (res.data?.login.errors) {
         // Handle known errors and show them to the user

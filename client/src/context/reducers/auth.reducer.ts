@@ -1,3 +1,4 @@
+import { ILocalStorageUser } from "../../utils/interfaces/IUser";
 import {
   LOGIN_START,
   LOGIN_SUCCESS,
@@ -11,17 +12,13 @@ import {
   UPDATE_USER_FAILURE,
 } from "../constants/auth.constants";
 
-type PeerState = Record<string, any>;
-type AuthAction = {
+type AuthState = Record<string, any>;
+export type AuthAction = {
   type: string;
-  payload: {
-    user: any;
-    isFetching: boolean;
-    error: boolean;
-  };
+  payload?: ILocalStorageUser;
 };
 
-const AuthReducer = (state: PeerState, action: AuthAction) => {
+const AuthReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case LOGIN_START:
       return {
