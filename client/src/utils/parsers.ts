@@ -14,3 +14,7 @@ export const dateParser = (timestamp: any) => {
 
   return newDate.toString();
 };
+
+export const compactNumber = Intl.NumberFormat(null as any, {
+  notation: "compact",
+}).format;
