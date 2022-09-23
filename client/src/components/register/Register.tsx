@@ -129,10 +129,17 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
     // Create a the username based on the first name, last name and a random 4 digit number
     setFirstName(firstName.trim().replace(/\s{2,}/g, " "));
     setLastName(lastName.trim().replace(/\s{2,}/g, " "));
+
+    let randomNumber;
+    do {
+      randomNumber = window.crypto
+        .getRandomValues(new Uint32Array(1))[0]
+        .toString();
+    } while (randomNumber.length < 4);
+    randomNumber = randomNumber.substring(0, 4);
+
     setUsername(
-      `${firstNameTest.toLowerCase()}.${lastNameTest.toLowerCase()}_${Math.floor(
-        1000 + Math.random() * 9000
-      )}`
+      `${firstNameTest.toLowerCase()}.${lastNameTest.toLowerCase()}_${randomNumber}`
     );
 
     // Check if password and confirm password match or terms are checked
