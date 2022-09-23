@@ -28,7 +28,198 @@
   }
 
   .sidebarWrapper {
+    .sidebar__widgets {
+      .widget__weather {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        background: $background-primary;
+        box-shadow: $shadow-secondary;
+        border-radius: 10px;
+        margin: 10px 0 10px 10px;
+        padding: 10px 15px 15px 15px;
+        cursor: pointer;
+        width: calc(100% - 100px);
+        transition: all 0.3s ease;
+
+        &:hover {
+          scale: 1.03;
+        }
+
+        h3 {
+          font-weight: 500;
+          margin-bottom: 10px;
+        }
+
+        .widget__weather-section {
+          display: flex;
+          align-items: center;
+          justify-content: space-evenly;
+          width: 100%;
+          gap: 15px;
+
+          .widget__weather-section-flex {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            flex-direction: column;
+
+            img {
+              width: 80px;
+              height: 80px;
+            }
+
+            .widget__weather-section-temp {
+              font-size: 1.5rem;
+              font-weight: 400;
+            }
+
+            .widget__weather-section-desc {
+              font-size: 0.8rem;
+              font-weight: 400;
+              color: gray;
+            }
+
+            .widget__weather-section-location {
+              display: flex;
+              align-items: center;
+              margin-left: 4px;
+              color: $color-primary;
+
+              .MuiSvgIcon-root {
+                font-size: 1rem;
+                margin-bottom: 4px;
+                margin-right: 2px;
+              }
+
+              span {
+                font-size: 0.8rem;
+                font-weight: 400;
+              }
+            }
+
+            .widget__weather-section-details {
+              display: flex;
+              flex-direction: column;
+
+              .widget__weather-section-details-flex {
+                display: flex;
+                align-items: center;
+
+                .MuiSvgIcon-root {
+                  font-size: 24px;
+                  color: $color-primary;
+                  margin-right: 5px;
+                }
+
+                div {
+                  span {
+                    font-size: 0.9rem;
+                    font-weight: 300;
+                  }
+
+                  p {
+                    font-size: 0.8rem;
+                    color: gray;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .widget__weather-input {
+          width: 100%;
+
+          .widget__weather-input-info {
+            font-size: 14px;
+            font-weight: 300;
+            white-space: pre-line;
+          }
+
+          .widget__weather-input-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            input {
+              width: calc(100% - 10px * 2);
+              padding: 5px 10px;
+              background-color: $background-input;
+              color: $color-secondary;
+              border-radius: 5px;
+              font-weight: 400;
+              font-size: 15px;
+              border: none;
+            }
+
+            .widget__weather-input-separator {
+              margin: 5px 0;
+              font-size: 14px;
+              color: gray;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+
+              &::before,
+              &::after {
+                content: "";
+                display: block;
+                height: 0.09em;
+                width: 100%;
+              }
+
+              &::before {
+                background: linear-gradient(
+                  to right,
+                  $background-primary,
+                  $background-input
+                );
+                margin-right: 5px;
+              }
+
+              &::after {
+                background: linear-gradient(
+                  to left,
+                  $background-primary,
+                  $background-input
+                );
+                margin-left: 5px;
+              }
+            }
+
+            button {
+              font-family: $font-primary !important;
+              text-transform: none !important;
+              border: none;
+              background-color: $color-primary;
+              padding: 0 5px !important;
+              margin: 0px 10px;
+              border-radius: 5px !important;
+              cursor: pointer;
+              font-weight: 500;
+              color: $color-secondary;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+
     .sidebarItems {
+      border-top: 1px solid $border-color;
+      -o-border-image: -o-linear-gradient(left, $border-color, $background);
+      border-image: -webkit-gradient(
+        linear,
+        left top,
+        right top,
+        from($border-color),
+        to($background)
+      );
+      border-image: linear-gradient(to right, $border-color, $background);
+      border-image-slice: 1;
+
       .sidebarItem {
         display: -webkit-box;
         display: -ms-flexbox;
