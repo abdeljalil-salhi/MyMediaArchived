@@ -1,21 +1,18 @@
 import { createContext, FC, ReactNode, useReducer } from "react";
 
-import { USER } from "../globals";
 import AuthReducer from "./reducers/auth.reducer";
+import { IAuth } from "./types/auth.types";
+import { authInitialState } from "./initialStates/auth.initialState";
 
-interface RoomContextProps {
+interface AuthContextProps {
   children: ReactNode;
 }
 
-const INITIAL_STATE: any = {
-  user: JSON.parse(localStorage.getItem(USER) as string) || null,
-  isFetching: false,
-  error: false,
-};
+const INITIAL_STATE: IAuth = authInitialState;
 
-export const AuthContext = createContext<null | any>(INITIAL_STATE);
+export const AuthContext = createContext<IAuth>(INITIAL_STATE);
 
-export const AuthContextProvider: FC<RoomContextProps> = ({ children }) => {
+export const AuthContextProvider: FC<AuthContextProps> = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
   return (

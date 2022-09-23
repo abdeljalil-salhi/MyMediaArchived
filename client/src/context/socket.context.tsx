@@ -14,22 +14,22 @@ import {
   ServerToClientEvents,
   ClientToServerEvents,
   SocketUser,
+  ISocket,
 } from "./types/socket.types";
 import { AuthContext } from "./auth.context";
 import { isEmpty } from "../utils/isEmpty";
 import { setUsers } from "./actions/socket.actions";
+import { socketInitialState } from "./initialStates/socket.initialState";
 
 interface SocketContextProps {
   children: ReactNode;
 }
 
-const INITIAL_STATE: any = {
-  users: [],
-};
+const INITIAL_STATE: ISocket = socketInitialState;
 
-const ws: Socket<ServerToClientEvents, ClientToServerEvents> = io(WS);
+export const ws: Socket<ServerToClientEvents, ClientToServerEvents> = io(WS);
 
-export const SocketContext = createContext<null | any>(INITIAL_STATE);
+export const SocketContext = createContext<ISocket>(INITIAL_STATE);
 
 export const SocketContextProvider: FC<SocketContextProps> = ({ children }) => {
   const [state, dispatch] = useReducer(SocketReducer, INITIAL_STATE);

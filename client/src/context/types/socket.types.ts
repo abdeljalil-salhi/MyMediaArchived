@@ -1,3 +1,8 @@
+import { Dispatch } from "react";
+import { Socket } from "socket.io-client";
+
+import { SocketAction } from "../reducers/socket.reducer";
+
 // Interfaces for the sockets events
 export interface ServerToClientEvents {
   "get-users": (users: SocketUser[]) => void;
@@ -43,4 +48,14 @@ export interface IRemoveUserParams {
 
 export interface IGetUserParams {
   userId: string;
+}
+
+// Interfaces for the contextAPI
+export interface ISocket {
+  // Socket.io client instance
+  ws: Socket<ServerToClientEvents, ClientToServerEvents> | null;
+  // List of users connected to the socket server (including the current user)
+  users: SocketUser[];
+  // Dispatch function to update the state
+  dispatch: Dispatch<SocketAction>;
 }

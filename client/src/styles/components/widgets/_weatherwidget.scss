@@ -1,0 +1,273 @@
+.widget__weather {
+  position: absolute;
+  z-index: 99999;
+  top: 45px;
+  left: 100px;
+  width: 250px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  background: $background-primary;
+  -webkit-box-shadow: $shadow-secondary;
+  box-shadow: $shadow-secondary;
+  border: 1px solid $background-input;
+  border-radius: 10px;
+  margin: 10px 0 10px 10px;
+  padding: 10px 15px 15px 15px;
+  cursor: pointer;
+  -webkit-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+
+  &:hover {
+    scale: 1.03;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent $background-primary transparent;
+  }
+
+  &::after:hover {
+    border-color: transparent transparent transparent transparent;
+  }
+
+  h3 {
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .widget__weather-section {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: space-evenly;
+    -ms-flex-pack: space-evenly;
+    justify-content: space-evenly;
+    width: 100%;
+    gap: 15px;
+
+    .widget__weather-section-flex {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: start;
+      -ms-flex-align: start;
+      align-items: flex-start;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+
+      img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .widget__weather-section-temp {
+        font-size: 1.5rem;
+        font-weight: 400;
+      }
+
+      .widget__weather-section-desc {
+        font-size: 0.8rem;
+        font-weight: 400;
+        color: gray;
+      }
+
+      .widget__weather-section-location {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        margin-left: 4px;
+        color: $color-primary;
+
+        .MuiSvgIcon-root {
+          font-size: 1rem;
+          margin-bottom: 4px;
+          margin-right: 2px;
+        }
+
+        span {
+          font-size: 0.8rem;
+          font-weight: 400;
+        }
+      }
+
+      .widget__weather-section-details {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+
+        .widget__weather-section-details-flex {
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-align: center;
+          -ms-flex-align: center;
+          align-items: center;
+
+          .MuiSvgIcon-root {
+            font-size: 24px;
+            color: $color-primary;
+            margin-right: 5px;
+          }
+
+          div {
+            span {
+              font-size: 0.9rem;
+              font-weight: 300;
+            }
+
+            p {
+              font-size: 0.8rem;
+              color: gray;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .widget__weather-input {
+    width: 100%;
+
+    .widget__weather-input-info {
+      font-size: 14px;
+      font-weight: 300;
+      white-space: pre-line;
+    }
+
+    .widget__weather-input-content {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+
+      input {
+        width: calc(100% - 10px * 2);
+        padding: 5px 10px;
+        background-color: $background-input;
+        color: $color-secondary;
+        border-radius: 5px;
+        font-weight: 400;
+        font-size: 15px;
+        border: none;
+      }
+
+      .widget__weather-input-separator {
+        margin: 5px 0;
+        font-size: 14px;
+        color: gray;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+
+        &::before,
+        &::after {
+          content: "";
+          display: block;
+          height: 0.09em;
+          width: 100%;
+        }
+
+        &::before {
+          background: -o-linear-gradient(
+            left,
+            $background-primary,
+            $background-input
+          );
+          background: -webkit-gradient(
+            linear,
+            left top,
+            right top,
+            from($background-primary),
+            to($background-input)
+          );
+          background: linear-gradient(
+            to right,
+            $background-primary,
+            $background-input
+          );
+          margin-right: 5px;
+        }
+
+        &::after {
+          background: -o-linear-gradient(
+            right,
+            $background-primary,
+            $background-input
+          );
+          background: -webkit-gradient(
+            linear,
+            right top,
+            left top,
+            from($background-primary),
+            to($background-input)
+          );
+          background: linear-gradient(
+            to left,
+            $background-primary,
+            $background-input
+          );
+          margin-left: 5px;
+        }
+      }
+
+      button {
+        font-family: $font-primary !important;
+        text-transform: none !important;
+        border: none;
+        background-color: $color-primary;
+        padding: 0 5px !important;
+        margin: 0px 10px;
+        border-radius: 5px !important;
+        cursor: pointer;
+        font-weight: 500;
+        color: $color-secondary;
+        font-size: 14px;
+      }
+    }
+  }
+}

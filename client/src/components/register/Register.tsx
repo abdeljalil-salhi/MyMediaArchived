@@ -129,10 +129,17 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
     // Create a the username based on the first name, last name and a random 4 digit number
     setFirstName(firstName.trim().replace(/\s{2,}/g, " "));
     setLastName(lastName.trim().replace(/\s{2,}/g, " "));
+
+    let randomNumber;
+    do {
+      randomNumber = window.crypto
+        .getRandomValues(new Uint32Array(1))[0]
+        .toString();
+    } while (randomNumber.length < 4);
+    randomNumber = randomNumber.substring(0, 4);
+
     setUsername(
-      `${firstNameTest.toLowerCase()}.${lastNameTest.toLowerCase()}_${Math.floor(
-        1000 + Math.random() * 9000
-      )}`
+      `${firstNameTest.toLowerCase()}.${lastNameTest.toLowerCase()}_${randomNumber}`
     );
 
     // Check if password and confirm password match or terms are checked
@@ -165,13 +172,19 @@ export const Register: FC<RegisterProps> = ({ goToLogin }) => {
 
         if (res.data?.register.user) {
           // Dispatch the register response by dispatching the registerSuccess action
-          dispatch(registerSuccess(res.data?.register.user));
+          dispatch(
+            registerSuccess({
+              _id: res.data?.register.user._id,
+              username: res.data?.register.user.username,
+              accessToken: res.data?.register.user.accessToken as string,
+            })
+          );
           setProfile(res.data?.register as Register_register);
           // Store the registered user in local storage
           updateLocalStorage(USER, {
             _id: res.data?.register.user._id,
             username: res.data?.register.user.username,
-            accessToken: res.data?.register.user.accessToken as string | null,
+            accessToken: res.data?.register.user.accessToken as string,
           });
         } else if (res.data?.register.errors) {
           // Handle known errors and show them to the user
