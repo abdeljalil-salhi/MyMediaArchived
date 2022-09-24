@@ -128,7 +128,7 @@ export const Topbar: FC<TopbarProps> = () => {
               >
                 <img src={weather.data.image} alt="MyWeather Icon" />
                 <span className="topbar__minified-weather-temp">
-                  {weather.data.temperature}°
+                  {Math.floor(weather.data.temperature)}°
                   {weather.unit === "metric"
                     ? "C"
                     : weather.unit === "imperial"
