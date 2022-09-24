@@ -8,10 +8,12 @@ import {
 import {
   IAddDeletedPostAction,
   IAddNewPostAction,
+  IAddUpdatedPostAction,
   IPostsState,
   ISetHomePostsAction,
   ISetProfilePostsAction,
 } from "../types/postsTypes";
+import { UpdatePost_updatePost_post } from "../../generated/types/UpdatePost";
 
 const initialState: IPostsState = postsInitialState;
 
@@ -44,12 +46,29 @@ const postsSlice = createSlice({
         ...state.data.deletedPosts.posts!,
       ];
     },
+    addUpdatedPost: (state: IPostsState, action: IAddUpdatedPostAction) => {
+      // Check if post is alreay in updatedPosts, if so, replace it, else add it
+      const updatedPost = action.payload.post;
+      const alreadyUpdatedPosts = state.data.updatedPosts.posts;
+      const updatedPostIndex = alreadyUpdatedPosts?.findIndex(
+        (post: UpdatePost_updatePost_post | null) =>
+          post?._id === updatedPost?._id
+      );
+      if (updatedPostIndex !== undefined && updatedPostIndex !== -1)
+        alreadyUpdatedPosts![updatedPostIndex] = updatedPost;
+      else
+        state.data.updatedPosts.posts = [
+          updatedPost,
+          ...state.data.updatedPosts.posts!,
+        ];
+    },
   },
 });
 
 export const {
   addNewPost,
   addDeletedPost,
+  addUpdatedPost,
   setHomePosts,
   clearHomePosts,
   setProfilePosts,
