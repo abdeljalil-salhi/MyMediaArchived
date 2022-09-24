@@ -813,6 +813,15 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, accessToken?: string | null, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null } | null } };
 
+export type ReactPostMutationVariables = Exact<{
+  userId: Scalars['String'];
+  postId: Scalars['String'];
+  react: Scalars['Int'];
+}>;
+
+
+export type ReactPostMutation = { __typename?: 'Mutation', reactPost: { __typename?: 'PostResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, post?: { __typename?: 'Post', _id: string, user: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, feeling?: string | null, tags: Array<string>, mentions: Array<string>, location?: string | null, reacts: Array<string>, comments: Array<string>, shares: Array<string>, isShared: boolean, originalPost?: string | null, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any, userObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } } | null } };
+
 export type RegisterMutationVariables = Exact<{
   firstName: Scalars['String'];
   middleName?: InputMaybe<Scalars['String']>;
@@ -835,6 +844,27 @@ export type UnfollowUserMutationVariables = Exact<{
 
 
 export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null } | null } };
+
+export type UnreactPostMutationVariables = Exact<{
+  userId: Scalars['String'];
+  postId: Scalars['String'];
+  reactId: Scalars['String'];
+}>;
+
+
+export type UnreactPostMutation = { __typename?: 'Mutation', unreactPost: { __typename?: 'PostResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, post?: { __typename?: 'Post', _id: string, user: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, feeling?: string | null, tags: Array<string>, mentions: Array<string>, location?: string | null, reacts: Array<string>, comments: Array<string>, shares: Array<string>, isShared: boolean, originalPost?: string | null, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any, userObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } } | null } };
+
+export type UpdatePostMutationVariables = Exact<{
+  postId: Scalars['String'];
+  userId: Scalars['String'];
+  text?: InputMaybe<Scalars['String']>;
+  link?: InputMaybe<Scalars['String']>;
+  ytvideo?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'PostResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, post?: { __typename?: 'Post', _id: string, user: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, feeling?: string | null, tags: Array<string>, mentions: Array<string>, location?: string | null, reacts: Array<string>, comments: Array<string>, shares: Array<string>, isShared: boolean, originalPost?: string | null, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any, userObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } } | null } };
 
 export type UpdateTagsMutationVariables = Exact<{
   userId: Scalars['String'];
@@ -1266,6 +1296,51 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const ReactPostDocument = gql`
+    mutation ReactPost($userId: String!, $postId: String!, $react: Int!) {
+  reactPost(userId: $userId, postId: $postId, input: {react: $react}) {
+    errors {
+      ...ErrorFragment
+    }
+    post {
+      userObj {
+        ...UserFragment
+      }
+      ...PostFragment
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}
+${PostFragmentFragmentDoc}`;
+export type ReactPostMutationFn = Apollo.MutationFunction<ReactPostMutation, ReactPostMutationVariables>;
+
+/**
+ * __useReactPostMutation__
+ *
+ * To run a mutation, you first call `useReactPostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReactPostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reactPostMutation, { data, loading, error }] = useReactPostMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      postId: // value for 'postId'
+ *      react: // value for 'react'
+ *   },
+ * });
+ */
+export function useReactPostMutation(baseOptions?: Apollo.MutationHookOptions<ReactPostMutation, ReactPostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReactPostMutation, ReactPostMutationVariables>(ReactPostDocument, options);
+      }
+export type ReactPostMutationHookResult = ReturnType<typeof useReactPostMutation>;
+export type ReactPostMutationResult = Apollo.MutationResult<ReactPostMutation>;
+export type ReactPostMutationOptions = Apollo.BaseMutationOptions<ReactPostMutation, ReactPostMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($firstName: String!, $middleName: String, $lastName: String!, $fullName: String!, $username: String!, $gender: Int!, $email: String!, $password: String!, $birthday: String!) {
   register(
@@ -1380,6 +1455,103 @@ export function useUnfollowUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type UnfollowUserMutationHookResult = ReturnType<typeof useUnfollowUserMutation>;
 export type UnfollowUserMutationResult = Apollo.MutationResult<UnfollowUserMutation>;
 export type UnfollowUserMutationOptions = Apollo.BaseMutationOptions<UnfollowUserMutation, UnfollowUserMutationVariables>;
+export const UnreactPostDocument = gql`
+    mutation UnreactPost($userId: String!, $postId: String!, $reactId: String!) {
+  unreactPost(userId: $userId, postId: $postId, reactId: $reactId) {
+    errors {
+      field
+      message
+    }
+    post {
+      userObj {
+        ...UserFragment
+      }
+      ...PostFragment
+    }
+  }
+}
+    ${UserFragmentFragmentDoc}
+${PostFragmentFragmentDoc}`;
+export type UnreactPostMutationFn = Apollo.MutationFunction<UnreactPostMutation, UnreactPostMutationVariables>;
+
+/**
+ * __useUnreactPostMutation__
+ *
+ * To run a mutation, you first call `useUnreactPostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnreactPostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unreactPostMutation, { data, loading, error }] = useUnreactPostMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      postId: // value for 'postId'
+ *      reactId: // value for 'reactId'
+ *   },
+ * });
+ */
+export function useUnreactPostMutation(baseOptions?: Apollo.MutationHookOptions<UnreactPostMutation, UnreactPostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnreactPostMutation, UnreactPostMutationVariables>(UnreactPostDocument, options);
+      }
+export type UnreactPostMutationHookResult = ReturnType<typeof useUnreactPostMutation>;
+export type UnreactPostMutationResult = Apollo.MutationResult<UnreactPostMutation>;
+export type UnreactPostMutationOptions = Apollo.BaseMutationOptions<UnreactPostMutation, UnreactPostMutationVariables>;
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($postId: String!, $userId: String!, $text: String, $link: String, $ytvideo: String, $location: String) {
+  updatePost(
+    userId: $userId
+    postId: $postId
+    input: {text: $text, link: $link, ytvideo: $ytvideo, location: $location}
+  ) {
+    errors {
+      ...ErrorFragment
+    }
+    post {
+      userObj {
+        ...UserFragment
+      }
+      ...PostFragment
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}
+${PostFragmentFragmentDoc}`;
+export type UpdatePostMutationFn = Apollo.MutationFunction<UpdatePostMutation, UpdatePostMutationVariables>;
+
+/**
+ * __useUpdatePostMutation__
+ *
+ * To run a mutation, you first call `useUpdatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *      userId: // value for 'userId'
+ *      text: // value for 'text'
+ *      link: // value for 'link'
+ *      ytvideo: // value for 'ytvideo'
+ *      location: // value for 'location'
+ *   },
+ * });
+ */
+export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePostMutation, UpdatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument, options);
+      }
+export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
+export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
+export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
 export const UpdateTagsDocument = gql`
     mutation UpdateTags($userId: String!, $tags: [String!]!) {
   updateTags(input: {userId: $userId, tags: $tags}) {

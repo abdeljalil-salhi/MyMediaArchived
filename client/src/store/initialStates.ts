@@ -22,6 +22,12 @@ export const deletedPostsInitialState: IPostsState["data"]["deletedPosts"] = {
   posts: [],
   hasMore: false,
 };
+export const updatedPostsInitialState: IPostsState["data"]["updatedPosts"] = {
+  __typename: PaginatedPosts,
+  errors: [],
+  posts: [],
+  hasMore: false,
+};
 export const homePostsInitialState: IPostsState["data"]["homePosts"] = {
   __typename: PaginatedPosts,
   errors: [],
@@ -38,6 +44,7 @@ export const postsInitialState: IPostsState = {
   data: {
     newPosts: newPostsInitialState,
     deletedPosts: deletedPostsInitialState,
+    updatedPosts: updatedPostsInitialState,
     homePosts: homePostsInitialState,
     profilePosts: profilePostsInitialState,
   },

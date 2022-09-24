@@ -8,12 +8,14 @@ import {
   GetUserPosts,
   GetUserPosts_getUserPosts,
 } from "../../generated/types/GetUserPosts";
+import { UpdatePost_updatePost } from "../../generated/types/UpdatePost";
 import { PaginatedPostsType } from "../typenames";
 
 // Type of the action that will be dispatched to the reducer
 export type TPosts = GetTimelinePosts_getTimelinePosts;
 export type TNewPosts = CreatePost_createPost;
 export type TDeletedPosts = DeletePost_deletePost;
+export type TUpdatedPosts = UpdatePost_updatePost;
 export type THomePosts = GetTimelinePosts_getTimelinePosts;
 export type TProfilePosts = GetUserPosts_getUserPosts;
 
@@ -29,6 +31,12 @@ export interface IPostsState {
       posts: TDeletedPosts["deleted"][];
       hasMore: boolean;
     };
+    updatedPosts: {
+      __typename: PaginatedPostsType;
+      errors: TUpdatedPosts["errors"][];
+      posts: TUpdatedPosts["post"][];
+      hasMore: boolean;
+    };
     homePosts: GetTimelinePosts["getTimelinePosts"];
     profilePosts: GetUserPosts["getUserPosts"];
   };
@@ -42,6 +50,10 @@ export interface IAddNewPostAction {
 export interface IAddDeletedPostAction {
   type: string;
   payload: TDeletedPosts;
+}
+export interface IAddUpdatedPostAction {
+  type: string;
+  payload: TUpdatedPosts;
 }
 export interface ISetHomePostsAction {
   type: string;

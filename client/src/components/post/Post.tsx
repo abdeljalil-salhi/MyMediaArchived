@@ -19,6 +19,7 @@ import { format } from "timeago.js";
 import { Link } from "react-router-dom";
 import { Twemoji } from "react-emoji-render";
 import { createSelector } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 
 import { PU, TRANSPARENT } from "../../globals";
 import { dateParser } from "../../utils/parsers";
@@ -26,12 +27,19 @@ import { AuthContext } from "../../context/auth.context";
 import { DeleteModal } from "./DeleteModal";
 import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
 import { GetUserPosts_getUserPosts_posts } from "../../generated/types/GetUserPosts";
 import { IProfileState } from "../../store/types/profileTypes";
 import { SocketContext } from "../../context/socket.context";
 import { SocketUser } from "../../context/types/socket.types";
+import { TUpdatedPosts } from "../../store/types/postsTypes";
+import { addUpdatedPost } from "../../store/slices/postsSlice";
+import {
+  UpdatePostVariables,
+  UpdatePost_updatePost,
+} from "../../generated/types/UpdatePost";
+import postsService from "../../store/services/postsService";
 
 export type TPost =
   | GetTimelinePosts_getTimelinePosts_posts
@@ -47,6 +55,10 @@ const profileStateSelector = createSelector(
     profile: profile.user,
   })
 );
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  addUpdatedPost: (post: TUpdatedPosts) => dispatch(addUpdatedPost(post)),
+});
 
 export const Post: FC<PostProps> = ({ post }) => {
   // The Post component is used to display a post.
@@ -77,6 +89,10 @@ export const Post: FC<PostProps> = ({ post }) => {
   const timerPostTextUpdateRef: MutableRefObject<any> = useRef(null);
   const timerShowEmojiesRef: MutableRefObject<any> = useRef(null);
 
+  // The states below are used by the updatePost() GraphQL mutation
+  const [updatePostLoading, setUpdatePostLoading] = useState<boolean>(false);
+  const [updatePostError, setUpdatePostError] = useState<boolean>(false);
+
   // The selector to get user informations from the context (ContextAPI)
   const { user } = useContext(AuthContext);
   // The selector to get the online users from the context (ContextAPI)
@@ -84,6 +100,9 @@ export const Post: FC<PostProps> = ({ post }) => {
 
   // The selector to get state informations from the store (Redux)
   const { profile } = useAppSelector(profileStateSelector);
+
+  // The dispatch function to update the posts state in the store (Redux)
+  const { addUpdatedPost } = actionDispatch(useAppDispatch());
 
   // Toggle display of the show more button
   const toggleShowMore = () => {
@@ -118,10 +137,41 @@ export const Post: FC<PostProps> = ({ post }) => {
     (inputRef.current as HTMLInputElement).focus();
   };
 
-  // Handle if the user updates the text of the post
-  const updateText = () => {
-    if (textUpdate) {
-      // TODO: update post
+  // We handle the post updating when the user clicks the "Update" button
+  const editPost = async () => {
+    if (!isEmpty(textUpdate.trim())) {
+      // Start the updating process by turning the loading state to true
+      setUpdatePostLoading(true);
+      // Prepare the variables to be sent in the GraphQL mutation
+      const variables: UpdatePostVariables = {
+        postId: post._id,
+        userId: user._id,
+        text: textUpdate.trim(),
+      };
+      try {
+        // Send the GraphQL updating post request to the server
+        const res: UpdatePost_updatePost = (await postsService
+          .updatePost(variables, user.accessToken)
+          .catch((_: unknown) =>
+            setUpdatePostError(true)
+          )) as UpdatePost_updatePost;
+
+        if (!isEmpty(res.post)) {
+          // If the request was successful, add the updated post to the updated posts state in the redux reducer
+          addUpdatedPost(res);
+        } else if (!isEmpty(res.errors)) {
+          // Handle known errors and show them to the user
+          setUpdatePostError(true);
+          // TODO: Show the errors to the user
+          //
+          // @example
+          // setError(res.data.updatePost.errors[0].message as string);
+          // setErrorOpened(true);
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error) setUpdatePostError(true);
+        else setUpdatePostError(true);
+      }
     }
     setIsUpdating(false);
     // TODO: refresh posts
@@ -314,7 +364,9 @@ export const Post: FC<PostProps> = ({ post }) => {
                   ></textarea>
                   <div className="postCenterTextUpdateButton">
                     <span onClick={() => setIsUpdating(false)}>Cancel</span>
-                    <button onClick={updateText}>Update</button>
+                    <button onClick={editPost} disabled={updatePostLoading}>
+                      Update
+                    </button>
                   </div>
                 </div>
               )}
