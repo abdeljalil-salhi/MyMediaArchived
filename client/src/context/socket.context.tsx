@@ -27,7 +27,25 @@ interface SocketContextProps {
 
 const INITIAL_STATE: ISocket = socketInitialState;
 
-export const ws: Socket<ServerToClientEvents, ClientToServerEvents> = io(WS);
+export const ws: Socket<ServerToClientEvents, ClientToServerEvents> = io(WS, {
+  // Use WebSocket first, if available
+  transports: ["websocket", "polling"],
+  // Upgrade from HTTP to WebSocket
+  upgrade: true,
+  // Path to socket.io server
+  path: "/socket.io/",
+  // Add a timestamp to every request
+  timestampRequests: true,
+  // Connect automatically after initialization
+  autoConnect: true,
+});
+
+ws.on("connect_error", () => {
+  // If websocket transport is not supported,
+  // revert to classic polling
+  // HTTP long-polling: successive HTTP requests (POST for writing, GET for reading)
+  ws.io.opts.transports = ["polling", "websocket"];
+});
 
 export const SocketContext = createContext<ISocket>(INITIAL_STATE);
 

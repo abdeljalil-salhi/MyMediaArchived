@@ -1,5 +1,5 @@
 @ECHO OFF
-TITLE OpenHub Client GQL
+TITLE MyMedia Client GQL
 COLOR 07
 CD scripts
 client_gengql.bat
