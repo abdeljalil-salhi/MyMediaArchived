@@ -1,0 +1,24 @@
+config:
+  target: "http://localhost:5000/"
+  ensure:
+    max: 500 # Fail if max response time exceeds 500ms
+    maxErrorRate: 1 # Fail if error rate exceeds 1%
+  socketio:
+    transports: ["websocket"]
+  phases:
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 50
+      name: "Warm up the app"
+    - duration: 600
+      arrivalRate: 50
+      name: "Sustained max load"
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: My scenario
+    engine: socketio-v3
+    flow:
+      - emit: ["add-user", "{{ $randomString() }}"] # Emit an event with a random string as payload
+      - think: 100 # Wait 100 second

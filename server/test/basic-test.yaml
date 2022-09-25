@@ -1,0 +1,16 @@
+config:
+  target: "http://localhost:5000/"
+  phases:
+    - duration: 10 # Run scenario for 10 seconds
+      arrivalRate: 20 # Create 20 virtual users per scenario
+      rampTo: 100 # Ramp up to 100 virtual users over 10 seconds
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: My sample scenario
+    engine: socketio-v3
+    flow:
+      - emit: ["add-user", "{{ $randomString() }}"] # Emit an event with a random string as payload
+      - think: 1 # Wait 1 second
+
