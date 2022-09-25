@@ -5,6 +5,7 @@ export const __prod__ = process.env.NODE_ENV === "production";
 // Global environment variables
 export const PORT = process.env.PORT;
 export const CLIENT_URL = process.env.CLIENT_URL;
+export const SOCKET_URL = process.env.SOCKET_URL;
 
 // MongoDB constants
 export const PROD_DB_USER_PASS = process.env.PROD_DB_USER_PASS;

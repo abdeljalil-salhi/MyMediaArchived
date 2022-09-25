@@ -1,8 +1,9 @@
 import { Server as HttpServer } from "http";
 import { Server, Socket } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 
 import logger from "../utils/logger";
-import { CLIENT_URL, PORT } from "../constants";
+import { CLIENT_URL, PORT, SOCKET_URL } from "../constants";
 import { messagesHandler } from "./messages";
 import {
   ClientToServerEvents,
@@ -23,9 +24,19 @@ export const connectToSocketsServer = (server: HttpServer) => {
       SocketData
     >(server, {
       cors: {
-        origin: CLIENT_URL,
+        origin: [CLIENT_URL, SOCKET_URL],
         methods: ["GET", "POST"],
       },
+    });
+
+    // Socket.io Admin UI credentials
+    instrument(io, {
+      auth: {
+        type: "basic",
+        username: process.env.SOCKET_ADMIN_USER,
+        password: process.env.SOCKET_ADMIN_PASS,
+      },
+      namespaceName: "/admin",
     });
 
     // Websocket connection established
