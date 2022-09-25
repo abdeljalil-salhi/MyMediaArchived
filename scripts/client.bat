@@ -1,5 +1,5 @@
 @ECHO OFF
-TITLE OpenHub Client [DEV]
+TITLE MyMedia Client [DEV]
 COLOR 07
 CD ../client
 CLEAR || CLS
