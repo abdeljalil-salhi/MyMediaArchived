@@ -30,6 +30,13 @@ export class Conversation {
 
   @Field(() => String)
   @Property({
+    default: "text",
+    type: Schema.Types.String,
+  })
+  public lastMessageType: String;
+
+  @Field(() => String)
+  @Property({
     ref: "User",
     type: Schema.Types.ObjectId,
   })
