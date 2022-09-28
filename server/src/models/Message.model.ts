@@ -11,15 +11,17 @@ export class Message {
   @Field(() => String)
   readonly _id: string;
 
-  @Field(() => String)
+  @Field(() => [String])
   @Property({
     ref: "Conversation",
+    default: [],
     type: Schema.Types.ObjectId,
   })
-  public conversationId: Ref<Conversation>;
+  public conversations: Ref<Conversation>[];
 
   @Field(() => String)
   @Property({
+    required: [true, "Sender is required"],
     ref: "User",
     type: Schema.Types.ObjectId,
   })
@@ -27,54 +29,110 @@ export class Message {
   @Field(() => User)
   public senderObj: User;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Property({
     trim: true,
     type: Schema.Types.String,
   })
   public text?: String;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
+  public textSnippet?: string;
+
+  @Field(() => String, { nullable: true })
   @Property({
     trim: true,
     type: Schema.Types.String,
   })
   public picture?: String;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Property({
     trim: true,
     type: Schema.Types.String,
   })
   public video?: String;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
+  @Property({
+    trim: true,
+    type: Schema.Types.String,
+  })
+  public audio?: String;
+
+  @Field(() => String, { nullable: true })
   @Property({
     trim: true,
     type: Schema.Types.String,
   })
   public file?: String;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Property({
     trim: true,
     type: Schema.Types.String,
   })
   public link?: String;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Property({
     trim: true,
     type: Schema.Types.String,
   })
   public ytvideo?: String;
 
+  @Field(() => String, { nullable: true })
+  @Property({
+    trim: true,
+    type: Schema.Types.String,
+  })
+  public location?: String;
+
+  @Field(() => String, { nullable: true })
+  @Property({
+    trim: true,
+    type: Schema.Types.String,
+  })
+  public GIF?: String;
+
+  @Field(() => String, { nullable: true })
+  @Property({
+    trim: true,
+    type: Schema.Types.String,
+  })
+  public sticker?: String;
+
+  @Field(() => String, { nullable: true })
+  @Property({
+    ref: "User",
+    type: Schema.Types.ObjectId,
+  })
+  public profile?: Ref<User>;
+  @Field(() => User, { nullable: true })
+  public profileObj?: User;
+
   @Field(() => Boolean)
   @Property({
     default: false,
     type: Schema.Types.Boolean,
   })
-  public isDeleted: boolean;
+  public isRemoved: boolean;
+
+  @Field(() => [String])
+  @Property({
+    ref: "User",
+    default: [],
+    type: Schema.Types.ObjectId,
+  })
+  public deletedBy: Ref<User>[];
+
+  @Field(() => [String])
+  @Property({
+    ref: "User",
+    default: [],
+    type: Schema.Types.ObjectId,
+  })
+  public seenBy: Ref<User>[];
 
   @Field(() => [String])
   @Property({
