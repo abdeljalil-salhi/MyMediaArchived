@@ -3,11 +3,22 @@ import { Schema } from "mongoose";
 import { Field, ObjectType } from "type-graphql";
 
 import { User } from "./User.model";
+import { Message } from "./Message.model";
 
 @ObjectType()
 export class Conversation {
   @Field(() => String)
   readonly _id: string;
+
+  @Field(() => String)
+  @Property({
+    required: [true, "User is required"],
+    ref: "User",
+    type: Schema.Types.ObjectId,
+  })
+  public owner: Ref<User>;
+  @Field(() => User)
+  public ownerObj: User;
 
   @Field(() => [String])
   @Property({
@@ -21,19 +32,14 @@ export class Conversation {
   })
   public membersObj: User[];
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Property({
-    default: "",
-    type: Schema.Types.String,
+    ref: "Message",
+    type: Schema.Types.ObjectId,
   })
-  public lastMessage: String;
-
-  @Field(() => String)
-  @Property({
-    default: "text",
-    type: Schema.Types.String,
-  })
-  public lastMessageType: String;
+  public lastMessage?: Ref<Message>;
+  @Field(() => Message, { nullable: true })
+  public lastMessageObj?: Message;
 
   @Field(() => String)
   @Property({
@@ -44,16 +50,9 @@ export class Conversation {
   @Field(() => User)
   public lastSenderObj: User;
 
-  @Field(() => Boolean)
-  @Property({
-    default: false,
-    type: Schema.Types.Boolean,
-  })
-  public isRead: boolean;
-
   @Field(() => Number)
   @Property({
-    default: 0,
+    default: Date.now(),
     type: Schema.Types.Number,
   })
   public timestamp: number;
