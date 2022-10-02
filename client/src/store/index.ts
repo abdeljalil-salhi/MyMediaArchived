@@ -11,6 +11,7 @@ import {
 import { IRootState } from "./types";
 import profileReducer from "./slices/profileSlice";
 import postsReducer from "./slices/postsSlice";
+import conversationsReducer from "./slices/conversationsSlice";
 
 const middleware = (getDefaultMiddleware: any) =>
   getDefaultMiddleware().concat(ReduxLogger);
@@ -20,6 +21,7 @@ export const store: EnhancedStore<IRootState, AnyAction, any> = configureStore({
   reducer: {
     profile: profileReducer as Reducer<IRootState["profile"], AnyAction>,
     posts: postsReducer as Reducer<IRootState["posts"], AnyAction>,
+    conversations: conversationsReducer as Reducer<IRootState["conversations"], AnyAction>,
   },
 });
 

@@ -3,10 +3,12 @@ import { DeletePost_deletePost } from "../../generated/types/DeletePost";
 import {
   GetTimelinePosts,
   GetTimelinePosts_getTimelinePosts,
+  GetTimelinePosts_getTimelinePosts_posts,
 } from "../../generated/types/GetTimelinePosts";
 import {
   GetUserPosts,
   GetUserPosts_getUserPosts,
+  GetUserPosts_getUserPosts_posts,
 } from "../../generated/types/GetUserPosts";
 import { UpdatePost_updatePost } from "../../generated/types/UpdatePost";
 import { PaginatedPostsType } from "../typenames";
@@ -18,6 +20,11 @@ export type TDeletedPosts = DeletePost_deletePost;
 export type TUpdatedPosts = UpdatePost_updatePost;
 export type THomePosts = GetTimelinePosts_getTimelinePosts;
 export type TProfilePosts = GetUserPosts_getUserPosts;
+
+// Global component type
+export type TPost =
+  | GetTimelinePosts_getTimelinePosts_posts
+  | GetUserPosts_getUserPosts_posts;
 
 // Interface of the posts state in the store
 export interface IPostsState {
