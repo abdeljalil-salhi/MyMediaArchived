@@ -1,0 +1,22 @@
+.p-direct {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: calc(100vh - 51px);
+
+  .p-direct__conversation {
+    -webkit-box-flex: 5.5;
+    -ms-flex: 5.5;
+    flex: 5.5;
+    padding: 10px 10px 2px 10px;
+    border-left: 1px solid $background-input;
+    border-right: 1px solid $background-input;
+  }
+
+  .p-direct__details {
+    -webkit-box-flex: 3;
+    -ms-flex: 3;
+    flex: 3;
+    padding: 0 0;
+  }
+}

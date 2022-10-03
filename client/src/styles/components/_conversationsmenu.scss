@@ -1,0 +1,56 @@
+.c-conversations-menu {
+  flex: 3.5;
+  padding: 10px 0;
+  position: relative;
+
+  .c-conversations-menu__header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 10px;
+
+    .c-conversations-menu__header__title {
+      margin-left: 5px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .c-conversations-menu__header__search {
+      width: 100%;
+      height: 40px;
+      background-color: $background-input;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .MuiSvgIcon-root {
+        font-size: 20px !important;
+        color: $color-secondary;
+        margin-left: 10px;
+        margin-right: 5px;
+      }
+
+      input {
+        border: none;
+        flex-grow: 1;
+        margin-right: 15px;
+        outline-width: 0;
+        background-color: transparent;
+        color: $color-secondary;
+      }
+    }
+  }
+
+  .c-conversations-menu__no-conversations {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 10px;
+    color: gray;
+  }
+}
