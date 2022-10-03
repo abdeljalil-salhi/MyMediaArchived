@@ -5,6 +5,7 @@
 @import "./pages/home";
 @import "./pages/profile";
 @import "./pages/notfound404";
+@import "./pages/direct";
 
 @import "./components/login";
 @import "./components/register";
@@ -20,6 +21,10 @@
 @import "./components/onlinefriend";
 @import "./components/editmodal";
 @import "./components/backdrop";
+@import "./components/conversationsmenu";
+@import "./components/conversation";
+@import "./components/conversationdetails";
+@import "./components/conversationitem";
 
 @import "./components/customs/customselect";
 @import "./components/customs/customtageditor";
