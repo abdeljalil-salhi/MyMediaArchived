@@ -1,6 +1,7 @@
 import "dotenv-safe/config";
 
 export const __prod__ = process.env.NODE_ENV === "production";
+export const __local__ = !(process.env.LOCAL_DB_NAME === "0");
 
 // Global environment variables
 export const PORT = process.env.PORT;
@@ -8,6 +9,7 @@ export const CLIENT_URL = process.env.CLIENT_URL;
 export const SOCKET_URL = process.env.SOCKET_URL;
 
 // MongoDB constants
+export const LOCAL_DB_NAME = process.env.LOCAL_DB_NAME;
 export const PROD_DB_USER_PASS = process.env.PROD_DB_USER_PASS;
 export const PROD_DB_CLUSTER_ID = process.env.PROD_DB_CLUSTER_ID;
 export const PROD_DB_NAME = process.env.PROD_DB_NAME;

@@ -5,6 +5,7 @@ declare global {
       SOCKET_URL: string;
       SOCKET_ADMIN_USER: string;
       SOCKET_ADMIN_PASS: string;
+      LOCAL_DB_NAME: string;
       PROD_DB_USER_PASS: string;
       PROD_DB_CLUSTER_ID: string;
       PROD_DB_NAME: string;

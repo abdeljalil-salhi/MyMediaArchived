@@ -14,7 +14,6 @@ import { CloseFriend } from "../closeFriend/CloseFriend";
 import { useAppSelector } from "../../store/hooks";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { IProfileState } from "../../store/types/profileTypes";
-import { WeatherWidget } from "../widgets/WeatherWidget";
 
 interface SidebarProps {}
 
@@ -84,10 +83,10 @@ export const Sidebar: FC<SidebarProps> = () => {
               <div className="sidebarItemText">Feed</div>
             </div>
           </Link>
-          <Link to="/direct" draggable={false}>
+          <Link to="/inbox" draggable={false}>
             <div
               className={`sidebarItem noneStyle${
-                location.pathname === "/direct" ? "sidebarItemActive" : ""
+                location.pathname === "/inbox" ? "sidebarItemActive" : ""
               }`}
             >
               <Chat />

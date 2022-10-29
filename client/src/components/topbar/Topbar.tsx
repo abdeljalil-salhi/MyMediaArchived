@@ -170,7 +170,7 @@ export const Topbar: FC<TopbarProps> = () => {
             </IconButton>
           </div>
           <div className="topbarIconItem">
-            <Link to="/direct" draggable={false}>
+            <Link to="/inbox" draggable={false}>
               <IconButton>
                 <Chat className="noneStyle" />
                 <span className="topbarIconBadge">2</span>

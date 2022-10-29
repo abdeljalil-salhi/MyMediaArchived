@@ -5,9 +5,11 @@ import {
   DEV_DB_CLUSTER_ID,
   DEV_DB_NAME,
   DEV_DB_USER_PASS,
+  LOCAL_DB_NAME,
   PROD_DB_CLUSTER_ID,
   PROD_DB_NAME,
   PROD_DB_USER_PASS,
+  __local__,
   __prod__,
 } from "../constants";
 
@@ -15,7 +17,9 @@ export const MongoConnection = () => {
   // Connect to MongoDB
   mongoose
     .connect(
-      __prod__
+      __local__
+        ? `mongodb://127.0.0.1:27017/${LOCAL_DB_NAME}`
+        : __prod__
         ? `mongodb+srv://${PROD_DB_USER_PASS}@${PROD_DB_CLUSTER_ID}.mongodb.net/${PROD_DB_NAME}`
         : `mongodb+srv://${DEV_DB_USER_PASS}@${DEV_DB_CLUSTER_ID}.mongodb.net/${DEV_DB_NAME}`
     )
@@ -23,7 +27,11 @@ export const MongoConnection = () => {
     .then(() =>
       logger.info(
         `[+] CONNECTED >> MongoDB >> ${
-          __prod__ ? `prod:${PROD_DB_NAME}` : `dev:${DEV_DB_NAME}`
+          __local__
+            ? `localhost:${LOCAL_DB_NAME}`
+            : __prod__
+            ? `prod:${PROD_DB_NAME}`
+            : `dev:${DEV_DB_NAME}`
         }`
       )
     )
@@ -31,7 +39,11 @@ export const MongoConnection = () => {
     .catch((err) =>
       logger.error(
         `[!] FAILED >> MongoDB >> ${
-          __prod__ ? `prod:${PROD_DB_NAME}` : `dev:${DEV_DB_NAME}`
+          __local__
+            ? `localhost:${LOCAL_DB_NAME}`
+            : __prod__
+            ? `prod:${PROD_DB_NAME}`
+            : `dev:${DEV_DB_NAME}`
         } >> ${err}`
       )
     );

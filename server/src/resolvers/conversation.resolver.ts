@@ -202,8 +202,8 @@ export class ConversationResolver {
                 $and: [
                   { owner: userId },
                   {
-                    createdAt: {
-                      $lt: cursor,
+                    timestamp: {
+                      $lt: Number(cursor),
                     },
                   },
                 ],
