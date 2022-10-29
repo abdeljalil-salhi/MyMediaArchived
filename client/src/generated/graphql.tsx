@@ -63,6 +63,33 @@ export type CommentReport = {
   userObj: User;
 };
 
+export type Conversation = {
+  __typename?: 'Conversation';
+  _id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  lastMessage?: Maybe<Scalars['String']>;
+  lastMessageObj?: Maybe<Message>;
+  lastSender: Scalars['String'];
+  lastSenderObj: User;
+  members: Array<Scalars['String']>;
+  membersObj?: Maybe<Array<User>>;
+  owner: Scalars['String'];
+  ownerObj: User;
+  timestamp: Scalars['Float'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type ConversationResponse = {
+  __typename?: 'ConversationResponse';
+  conversation?: Maybe<Conversation>;
+  errors?: Maybe<Array<ErrorResponse>>;
+};
+
+export type CreateConversationInput = {
+  receiver: Scalars['String'];
+  sender: Scalars['String'];
+};
+
 export type CreatePostInput = {
   file?: InputMaybe<Scalars['String']>;
   link?: InputMaybe<Scalars['String']>;
@@ -138,6 +165,45 @@ export type MediaType = {
   path?: Maybe<Scalars['String']>;
 };
 
+export type Message = {
+  __typename?: 'Message';
+  GIF?: Maybe<Scalars['String']>;
+  _id: Scalars['String'];
+  audio?: Maybe<Scalars['String']>;
+  conversations: Array<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  deletedBy: Array<Scalars['String']>;
+  file?: Maybe<Scalars['String']>;
+  isRemoved: Scalars['Boolean'];
+  link?: Maybe<Scalars['String']>;
+  location?: Maybe<Scalars['String']>;
+  picture?: Maybe<Scalars['String']>;
+  profile?: Maybe<Scalars['String']>;
+  profileObj?: Maybe<User>;
+  reacts: Array<Scalars['String']>;
+  reactsObj?: Maybe<Array<MessageReact>>;
+  seenBy: Array<Scalars['String']>;
+  sender: Scalars['String'];
+  senderObj: User;
+  sticker?: Maybe<Scalars['String']>;
+  text?: Maybe<Scalars['String']>;
+  textSnippet?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+  video?: Maybe<Scalars['String']>;
+  ytvideo?: Maybe<Scalars['String']>;
+};
+
+export type MessageReact = {
+  __typename?: 'MessageReact';
+  _id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  messageId: Scalars['String'];
+  react: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  user: Scalars['String'];
+  userObj: User;
+};
+
 export type Music = {
   __typename?: 'Music';
   _id: Scalars['String'];
@@ -160,6 +226,7 @@ export type Mutation = {
   addCloseFriend: UserResponse;
   changePassword: UserResponse;
   coverPicture: MediaResponse;
+  createConversation: ConversationResponse;
   createPost: PostResponse;
   deletePost: DeletePostResponse;
   deleteUser: DeleteUserResponse;
@@ -195,6 +262,11 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCoverPictureArgs = {
   file: Scalars['Upload'];
+};
+
+
+export type MutationCreateConversationArgs = {
+  input: CreateConversationInput;
 };
 
 
@@ -295,6 +367,13 @@ export type MutationUpdateUserArgs = {
   accessToken: Scalars['String'];
   input: UpdateUserInput;
   userId: Scalars['String'];
+};
+
+export type PaginatedConversationsResponse = {
+  __typename?: 'PaginatedConversationsResponse';
+  conversations?: Maybe<Array<Conversation>>;
+  errors?: Maybe<Array<ErrorResponse>>;
+  hasMore?: Maybe<Scalars['Boolean']>;
 };
 
 export type PaginatedPostsResponse = {
@@ -416,6 +495,7 @@ export type Query = {
   getSuggestions: UsersResponse;
   getTimelinePosts: PaginatedPostsResponse;
   getUser: UserResponse;
+  getUserConversations: PaginatedConversationsResponse;
   getUserPosts: PaginatedPostsResponse;
   ping: Scalars['String'];
 };
@@ -444,6 +524,13 @@ export type QueryGetTimelinePostsArgs = {
 
 
 export type QueryGetUserArgs = {
+  userId: Scalars['String'];
+};
+
+
+export type QueryGetUserConversationsArgs = {
+  cursor?: InputMaybe<Scalars['String']>;
+  limit: Scalars['Int'];
   userId: Scalars['String'];
 };
 
@@ -759,7 +846,11 @@ export type UsersResponse = {
   users?: Maybe<Array<User>>;
 };
 
+export type ConversationFragmentFragment = { __typename?: 'Conversation', _id: string, owner: string, members: Array<string>, lastMessage?: string | null, lastSender: string, timestamp: number, createdAt: any, updatedAt: any };
+
 export type ErrorFragmentFragment = { __typename?: 'ErrorResponse', field?: string | null, message?: string | null };
+
+export type MessageFragmentFragment = { __typename?: 'Message', _id: string, conversations: Array<string>, sender: string, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, audio?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, location?: string | null, GIF?: string | null, sticker?: string | null, profile?: string | null, isRemoved: boolean, deletedBy: Array<string>, seenBy: Array<string>, reacts: Array<string>, createdAt: any, updatedAt: any };
 
 export type PostArchiveFragmentFragment = { __typename?: 'PostArchive', _id: string, postId: string, user: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, feeling?: string | null, tags: Array<string>, mentions: Array<string>, location?: string | null, reacts: Array<string>, comments: Array<string>, shares: Array<string>, isShared: boolean, originalPost?: string | null, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any };
 
@@ -775,6 +866,14 @@ export type ChangePasswordMutationVariables = Exact<{
 
 
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, accessToken?: string | null, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null } | null } };
+
+export type CreateConversationMutationVariables = Exact<{
+  sender: Scalars['String'];
+  receiver: Scalars['String'];
+}>;
+
+
+export type CreateConversationMutation = { __typename?: 'Mutation', createConversation: { __typename?: 'ConversationResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, conversation?: { __typename?: 'Conversation', _id: string, owner: string, members: Array<string>, lastMessage?: string | null, lastSender: string, timestamp: number, createdAt: any, updatedAt: any, ownerObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }, membersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, lastMessageObj?: { __typename?: 'Message', _id: string, conversations: Array<string>, sender: string, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, audio?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, location?: string | null, GIF?: string | null, sticker?: string | null, profile?: string | null, isRemoved: boolean, deletedBy: Array<string>, seenBy: Array<string>, reacts: Array<string>, createdAt: any, updatedAt: any } | null, lastSenderObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } } | null } };
 
 export type CreatePostMutationVariables = Exact<{
   user: Scalars['String'];
@@ -940,6 +1039,15 @@ export type GetUserQueryVariables = Exact<{
 
 export type GetUserQuery = { __typename?: 'Query', getUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, user?: { __typename?: 'User', likes: Array<string>, saved: Array<string>, highlights: Array<string>, _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any, followersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, followingObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, closeObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null } | null } };
 
+export type GetUserConversationsQueryVariables = Exact<{
+  userId: Scalars['String'];
+  limit: Scalars['Int'];
+  cursor?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetUserConversationsQuery = { __typename?: 'Query', getUserConversations: { __typename?: 'PaginatedConversationsResponse', hasMore?: boolean | null, errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, conversations?: Array<{ __typename?: 'Conversation', _id: string, owner: string, members: Array<string>, lastMessage?: string | null, lastSender: string, timestamp: number, createdAt: any, updatedAt: any, ownerObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }, membersObj?: Array<{ __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any }> | null, lastMessageObj?: { __typename?: 'Message', _id: string, conversations: Array<string>, sender: string, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, audio?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, location?: string | null, GIF?: string | null, sticker?: string | null, profile?: string | null, isRemoved: boolean, deletedBy: Array<string>, seenBy: Array<string>, reacts: Array<string>, createdAt: any, updatedAt: any } | null, lastSenderObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } }> | null } };
+
 export type GetUserPostsQueryVariables = Exact<{
   userId: Scalars['String'];
   limit: Scalars['Int'];
@@ -949,10 +1057,47 @@ export type GetUserPostsQueryVariables = Exact<{
 
 export type GetUserPostsQuery = { __typename?: 'Query', getUserPosts: { __typename?: 'PaginatedPostsResponse', hasMore?: boolean | null, errors?: Array<{ __typename?: 'ErrorResponse', field?: string | null, message?: string | null }> | null, posts?: Array<{ __typename?: 'Post', _id: string, user: string, isEdited: boolean, text?: string | null, textSnippet?: string | null, picture?: string | null, video?: string | null, file?: string | null, link?: string | null, ytvideo?: string | null, feeling?: string | null, tags: Array<string>, mentions: Array<string>, location?: string | null, reacts: Array<string>, comments: Array<string>, shares: Array<string>, isShared: boolean, originalPost?: string | null, saves: Array<string>, reports: Array<string>, createdAt: any, updatedAt: any, userObj: { __typename?: 'User', _id: string, firstName: string, middleName?: string | null, lastName: string, fullName: string, username: string, nickname?: string | null, gender: number, phone: string, email: string, isAdmin: boolean, isVerified: boolean, isSeller: boolean, profile: string, cover: string, bio: string, online: number, birthday: string, city: string, hometown: string, relationship: number, languages: Array<string>, tags: Array<string>, socials: Array<string>, website: string, following: Array<string>, followers: Array<string>, createdAt: any, updatedAt: any } }> | null } };
 
+export const ConversationFragmentFragmentDoc = gql`
+    fragment ConversationFragment on Conversation {
+  _id
+  owner
+  members
+  lastMessage
+  lastSender
+  timestamp
+  createdAt
+  updatedAt
+}
+    `;
 export const ErrorFragmentFragmentDoc = gql`
     fragment ErrorFragment on ErrorResponse {
   field
   message
+}
+    `;
+export const MessageFragmentFragmentDoc = gql`
+    fragment MessageFragment on Message {
+  _id
+  conversations
+  sender
+  text
+  textSnippet
+  picture
+  video
+  audio
+  file
+  link
+  ytvideo
+  location
+  GIF
+  sticker
+  profile
+  isRemoved
+  deletedBy
+  seenBy
+  reacts
+  createdAt
+  updatedAt
 }
     `;
 export const PostArchiveFragmentFragmentDoc = gql`
@@ -1097,6 +1242,60 @@ export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
+export const CreateConversationDocument = gql`
+    mutation CreateConversation($sender: String!, $receiver: String!) {
+  createConversation(input: {sender: $sender, receiver: $receiver}) {
+    errors {
+      ...ErrorFragment
+    }
+    conversation {
+      ...ConversationFragment
+      ownerObj {
+        ...UserFragment
+      }
+      membersObj {
+        ...UserFragment
+      }
+      lastMessageObj {
+        ...MessageFragment
+      }
+      lastSenderObj {
+        ...UserFragment
+      }
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${ConversationFragmentFragmentDoc}
+${UserFragmentFragmentDoc}
+${MessageFragmentFragmentDoc}`;
+export type CreateConversationMutationFn = Apollo.MutationFunction<CreateConversationMutation, CreateConversationMutationVariables>;
+
+/**
+ * __useCreateConversationMutation__
+ *
+ * To run a mutation, you first call `useCreateConversationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateConversationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createConversationMutation, { data, loading, error }] = useCreateConversationMutation({
+ *   variables: {
+ *      sender: // value for 'sender'
+ *      receiver: // value for 'receiver'
+ *   },
+ * });
+ */
+export function useCreateConversationMutation(baseOptions?: Apollo.MutationHookOptions<CreateConversationMutation, CreateConversationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateConversationMutation, CreateConversationMutationVariables>(CreateConversationDocument, options);
+      }
+export type CreateConversationMutationHookResult = ReturnType<typeof useCreateConversationMutation>;
+export type CreateConversationMutationResult = Apollo.MutationResult<CreateConversationMutation>;
+export type CreateConversationMutationOptions = Apollo.BaseMutationOptions<CreateConversationMutation, CreateConversationMutationVariables>;
 export const CreatePostDocument = gql`
     mutation CreatePost($user: String!, $text: String, $link: String, $ytvideo: String, $location: String, $isMedia: Boolean!, $file: Upload) {
   createPost(
@@ -1986,6 +2185,64 @@ export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
+export const GetUserConversationsDocument = gql`
+    query GetUserConversations($userId: String!, $limit: Int!, $cursor: String) {
+  getUserConversations(userId: $userId, limit: $limit, cursor: $cursor) {
+    errors {
+      ...ErrorFragment
+    }
+    conversations {
+      ...ConversationFragment
+      ownerObj {
+        ...UserFragment
+      }
+      membersObj {
+        ...UserFragment
+      }
+      lastMessageObj {
+        ...MessageFragment
+      }
+      lastSenderObj {
+        ...UserFragment
+      }
+    }
+    hasMore
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${ConversationFragmentFragmentDoc}
+${UserFragmentFragmentDoc}
+${MessageFragmentFragmentDoc}`;
+
+/**
+ * __useGetUserConversationsQuery__
+ *
+ * To run a query within a React component, call `useGetUserConversationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserConversationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserConversationsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useGetUserConversationsQuery(baseOptions: Apollo.QueryHookOptions<GetUserConversationsQuery, GetUserConversationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserConversationsQuery, GetUserConversationsQueryVariables>(GetUserConversationsDocument, options);
+      }
+export function useGetUserConversationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserConversationsQuery, GetUserConversationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserConversationsQuery, GetUserConversationsQueryVariables>(GetUserConversationsDocument, options);
+        }
+export type GetUserConversationsQueryHookResult = ReturnType<typeof useGetUserConversationsQuery>;
+export type GetUserConversationsLazyQueryHookResult = ReturnType<typeof useGetUserConversationsLazyQuery>;
+export type GetUserConversationsQueryResult = Apollo.QueryResult<GetUserConversationsQuery, GetUserConversationsQueryVariables>;
 export const GetUserPostsDocument = gql`
     query GetUserPosts($userId: String!, $limit: Int!, $cursor: String) {
   getUserPosts(userId: $userId, limit: $limit, cursor: $cursor) {

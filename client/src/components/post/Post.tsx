@@ -28,22 +28,16 @@ import { DeleteModal } from "./DeleteModal";
 import { isEmpty } from "../../utils/isEmpty";
 import { makeSelectProfile } from "../../store/selectors/profileSelector";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { GetTimelinePosts_getTimelinePosts_posts } from "../../generated/types/GetTimelinePosts";
-import { GetUserPosts_getUserPosts_posts } from "../../generated/types/GetUserPosts";
 import { IProfileState } from "../../store/types/profileTypes";
 import { SocketContext } from "../../context/socket.context";
 import { SocketUser } from "../../context/types/socket.types";
-import { TUpdatedPosts } from "../../store/types/postsTypes";
+import { TPost, TUpdatedPosts } from "../../store/types/postsTypes";
 import { addUpdatedPost } from "../../store/slices/postsSlice";
 import {
   UpdatePostVariables,
   UpdatePost_updatePost,
 } from "../../generated/types/UpdatePost";
 import postsService from "../../store/services/postsService";
-
-export type TPost =
-  | GetTimelinePosts_getTimelinePosts_posts
-  | GetUserPosts_getUserPosts_posts;
 
 interface PostProps {
   post: TPost;

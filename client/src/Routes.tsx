@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { isEmpty } from "./utils/isEmpty";
 import { makeSelectProfile } from "./store/selectors/profileSelector";
 import { TProfile } from "./store/types/profileTypes";
+import { Direct } from "./pages/Direct";
 
 const stateSelector = createSelector(makeSelectProfile, (profile) => ({
   profile: profile?.user,
@@ -61,7 +62,13 @@ const Routes = () => {
         <Route path="auth" element={<Navigate to="/" replace />} />
         <Route path="u">
           <Route path=":username" element={<Profile />} />
+          <Route path="" element={<Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
+        </Route>
+        <Route path="inbox">
+          <Route path="" element={<Direct />} />
+          <Route path=":username" element={<Direct />} />
+          <Route path="*" element={<Navigate to="/inbox" replace />} />
         </Route>
         <Route path="404" element={<NotFound404 />} />
         <Route path="*" element={<Navigate to="/404" replace />} />

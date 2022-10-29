@@ -5,7 +5,7 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import compression from "compression";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer, ExpressContext } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -21,6 +21,7 @@ import { CLIENT_URL, PORT, __prod__ } from "./constants";
 import { resolvers } from "./resolvers";
 import { userLoader } from "./dataloaders/user.loader";
 import { postReactLoader } from "./dataloaders/postReact.loader";
+import { messageLoader } from "./dataloaders/message.loader";
 import { TypegooseMiddleware } from "./middlewares/Typegoose";
 import { connectToSocketsServer } from "./sockets";
 
@@ -29,10 +30,10 @@ const main = async () => {
   MongoConnection();
 
   // Initialize the Express app
-  const app = express();
+  const app: express.Express = express();
 
   // Cross-origin resource sharing
-  const corsOptions = {
+  const corsOptions: cors.CorsOptions = {
     origin: CLIENT_URL,
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -80,7 +81,7 @@ const main = async () => {
   app.set("trust proxy", 1);
 
   // Apollo server configuration
-  const apolloServer = new ApolloServer({
+  const apolloServer: ApolloServer<ExpressContext> = new ApolloServer({
     schema: await buildSchema({
       resolvers,
       validate: false,
@@ -91,6 +92,7 @@ const main = async () => {
       authentication: req.headers.authentication || "",
       userLoader: userLoader(),
       postReactLoader: postReactLoader(),
+      messageLoader: messageLoader(),
     }),
     plugins: [
       __prod__
@@ -124,7 +126,7 @@ const main = async () => {
 
   // Create a new HTTP server
   const server: http.Server = http.createServer(app);
-  server.on("error", (e: any) => {
+  server.on("error", (e: NodeJS.ErrnoException) => {
     if (e.code === "EADDRINUSE") {
       logger.error(`[!] EADDRINUSE >> ${PORT} in use >> Retrying...`);
       setTimeout(() => {
@@ -146,7 +148,7 @@ const main = async () => {
 };
 
 // Bootstrap the application
-main().catch((err) => {
+main().catch((err: unknown) => {
   logger.fatal(err);
   process.exit(1);
 });

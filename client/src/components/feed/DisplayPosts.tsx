@@ -1,9 +1,9 @@
 import { FC, useEffect, useState } from "react";
 import { createSelector } from "@reduxjs/toolkit";
 
-import { Post, TPost } from "../post/Post";
+import { Post } from "../post/Post";
 import { makeSelectPosts } from "../../store/selectors/postsSelector";
-import { IPostsState } from "../../store/types/postsTypes";
+import { IPostsState, TPost } from "../../store/types/postsTypes";
 import { useAppSelector } from "../../store/hooks";
 import { isEmpty } from "../../utils/isEmpty";
 import { UpdatePost_updatePost_post } from "../../generated/types/UpdatePost";
